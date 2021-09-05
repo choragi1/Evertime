@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="stylesheet" href="../public/css/total.css">
+
+    <!-- Bootstrap JQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- CSS파일  -->
+    <link rel="stylesheet" href="/public/total.css">
+
+
+    <title>게시판</title>
+  </head>
+  <body>
+
+    <%- include('nav.html')  %>
+     
+
+      <h4 class="ml-2 my-3 ">회원 리스트</h4>
+      <ul class="header list-group list-group-horizontal justify-content-center">
+        <li class="list-group-item" style="width: 6%">No</li>
+        <li class="list-group-item" style="width: 20%">글제목</li>
+        <li class="list-group-item" style="width: 5%">댓글수</li>
+        <li class="list-group-item" style="width: 5%">조회수</li>
+        <li class="list-group-item" style="width: 5%">추천</li>
+        <li class="list-group-item" style="width: 7%">시간</li>
+      </ul>
+      <% for(var i=0;i<post.length;i++){ %>
+      <ul class="memberlist list-group list-group-horizontal justify-content-center">
+        <li class="list-group-item" style="width: 6%"><%= post[i]._id %></li>
+        <a class="list-group-item" style="width: 20%" href="/detail/<%= post[i]._id %>"><%= post[i].글제목 %></a>
+        <li class="list-group-item" style="width: 5%">댓글수</li>
+        <li class="list-group-item" style="width: 5%">조회수</li>
+        <li class="list-group-item" style="width: 5%">추천</li>
+        <li class="list-group-item" style="width: 7%">등록시간</li>
+      </ul>
+      <% }; %>
+
+
+
+  </body>
+</html>

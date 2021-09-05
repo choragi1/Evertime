@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="stylesheet" href="../public/css/total.css">
+
+    <!-- Bootstrap JQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- CSS파일  -->
+    <link rel="stylesheet" href="/public/total.css">
+
+    <title>관리자 페이지</title>
+  </head>
+  <body>
+
+    <%- include('nav.html')  %>
+     
+
+      <h4 class="ml-2 my-3 ">회원 리스트</h4>
+      <ul class="header list-group list-group-horizontal justify-content-center">
+        <li class="list-group-item" style="width: 12%">회원번호</li>
+        <li class="list-group-item" style="width: 12%">아이디</li>
+        <li class="list-group-item" style="width: 12%">비밀번호</li>
+        <li class="list-group-item" style="width: 12%">이름</li>
+        <li class="list-group-item" style="width: 12%">이메일</li>
+        <li class="list-group-item" style="width: 12%">가입일</li>
+        <li class="list-group-item" style="width: 12%">관리</li>
+      </ul>
+      <% for(var i=0;i<userinfo.length;i++){ %>
+      <ul class="memberlist list-group list-group-horizontal justify-content-center">
+        <li class="list-group-item" style="width: 12%"><%= userinfo[i]._id %></li>
+        <li class="list-group-item" style="width: 12%"><%= userinfo[i].아이디 %></li>
+        <li class="list-group-item" style="width: 12%"><%= userinfo[i].비밀번호 %></li>
+        <li class="list-group-item" style="width: 12%"><%= userinfo[i].이름  %></li>
+        <li class="list-group-item" style="width: 12%"><%= userinfo[i].이메일 %></li>
+        <li class="list-group-item" style="width: 12%">가입일</li>
+        <li class="list-group-item" style="width: 12%">
+          <button class="user_update btn-primary">수정</button>
+          <button class="user_delete btn-danger" data-id="<%= userinfo[i]._id %>">탈퇴</button>
+        </li>
+      </ul>
+      <% }; %>
+
+      
+
+      <script>
+        
+        $('.user_delete').click(function(e){
+          // 콜백함수에 파라미터 e를 입력후 target 메서드를 통해 data-id를 호출하여 memberno 변수 선언하여 할당
+          var memberno = e.target.dataset.id;
+          //ajax 통신을 통해 삭제 구현
+          $.ajax({
+          method : 'DELETE',
+          url : '/delete',
+          data : {_id : memberno}
+        }).done(function(result){
+          console.log('서버 연결에 성공했습니다.');
+          // 삭제버튼을 누른 요소의 부모중 ul 객체를 제거해주세요/안보이게
+          // JQuery에서 this는 현재 지금 이벤트가 동작하는 곳
+          $(this).parents('ul').fadeOut;
+          
+
+          // textStatus : 에러코드, errorThrown : 에러메세지
+        }).fail(function(xhr,textStatus,errorThrown){
+          console.log(xhr,textStatus,errorThrown);
+        });
+      });
+
+        
+
+
+      </script>
+
+
+  </body>
+</html>
