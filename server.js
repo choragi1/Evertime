@@ -1,9 +1,18 @@
 const express = require('express');
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
+//method-override 라이브러리 사용
+const methodOverride = require('method-override');
+//날짜 관련 라이브러리인 moment 사용
+const moment = require('moment');
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
+
+
+
 // 현재 express 특정 버전 이후로는 express에 bodyParser가 자동 내장되어있어 사용되지 않는 코드입니다.
 // var bodyParser = require('body-parser');
-app.use(express.urlencoded({ extended: true }));
 app.set('view engine','ejs');
 
 // public 폴더에 path 지정
@@ -26,6 +35,7 @@ MongoClient.connect('mongodb+srv://root:adminuser@cluster0.83hv2.mongodb.net/tod
 
 // express를 사용해, post라는 파일에 /addmember로 접근하였을때 (회원가입 action)
   app.post('/addmember', function(req, res){
+    var uploadtime = moment().format("YYYY-MM-DD");
     // 클라이언트에게 전송 완료 메세지를 출력한 후
     res.send('전송완료');
     // 콘솔에 사용자가 <body>태그 안의 user_id, user_pw , ... 등으로 전송한 파라미터들을 출력한다.
@@ -36,7 +46,7 @@ MongoClient.connect('mongodb+srv://root:adminuser@cluster0.83hv2.mongodb.net/tod
         var totalMember = result.totalMember;
     
         // DB내 'userinfo' 테이블에 접속하여 파라미터로 받아온 해당 정보를을 기록한다.
-        db.collection('userinfo').insertOne( { _id : totalMember + 1,아이디 : req.body.user_id, 비밀번호 : req.body.user_pw, 이름 : req.body.user_name , 이메일 : req.body.user_email} , function(){
+        db.collection('userinfo').insertOne( { _id : totalMember + 1,id : req.body.user_id, pw : req.body.user_pw, name : req.body.user_name , email : req.body.user_email, joinDate : uploadtime} , function(){
             console.log('회원정보 저장완료');
             // counter 테이블에 있는 name이 총회원수인 데이터를 찾아 totalMember을 1을 더해주신 후, 만약 에러가 난다면 콘솔창에 에러를 찍어주세요.
             // set은 할당할때 사용하는 연산자, inc는 증감연산자
@@ -49,13 +59,14 @@ MongoClient.connect('mongodb+srv://root:adminuser@cluster0.83hv2.mongodb.net/tod
   });
 
   app.post('/uploadpost', function(req,res){
+    var uploadtime = moment().format("YYYY-DD-MM hh:mm");
     res.send('게시물 등록 완료되었습니다.');
     console.log(req.body.post_title,req.body.post_content)
     db.collection('counter').findOne({name : '총게시글수'}, function(err,result){
       console.log(result.totalPosts);
       var totalPosts = result.totalPosts;
 
-      db.collection('post').insertOne({_id : totalPosts + 1, 글제목 : req.body.post_title, 글내용 : req.body.post_content}, function(){
+      db.collection('post').insertOne({_id : totalPosts + 1, 글제목 : req.body.post_title, 글내용 : req.body.post_content, 작성일 : uploadtime}, function(){
         console.log('게시글 등록완료');
         db.collection('counter').updateOne({name:'총게시글수'},{$inc : {totalPosts:1}},function(err,result){
           if(err){return console.log(err)}
@@ -65,29 +76,27 @@ MongoClient.connect('mongodb+srv://root:adminuser@cluster0.83hv2.mongodb.net/tod
   })
 
 
-  app.post('/updatepost/:postno', function(req,res){
-    console.log(req.body.post_title,req.body.post_content)
-      var postno = req.params.postno;
-      db.collection('post').updateOne({_id : parseInt(req.params.postno) },{'$set':{글제목 : req.body.post_title, 글내용 : req.body.post_content}}, function(err,result){
-        console.log('게시글 수정완료\n','수정 후 : '+result);
-          if(err){return console.log(err)}
-      })
-      res.redirect('/detail/'+postno)
-    })
-
-
   // 업데이트포스트/포스트넘버로 접속하면 해당 포스트넘버를 _id로 가진 DB를 findOne해서
   // result를 가져오고, result.글제목과 result.글내용을 updateOne하고
   // 게시글 등록완료와 글번호, 글제목, 글내용을 콘솔로그로 찍는다.
 
 // detail/어쩌구로 get 요청을 하면, function의 동작을 수행 (URL의 파라미터)
-app.get('/detail/:postno',function(req,res){
-  db.collection('post').findOne({_id : parseInt(req.params.postno)}, function(err,result){
-    console.log(result);
-    //data : 게시글의 이름, result : 게시글 전체 내용
-    res.render('detail.ejs',{post: result})
+app.get('/detail/:postno', function (req, res) {
+  //post 테이블로 db연동. 테이블 내에 url 뒤의 게시글넘버와 DB 내 _id가 동일한 것을 찾아 조회
+  var postno = req.params.postno;
+  db.collection('post').updateOne({ _id: parseInt(postno) }, { $inc: { 조회수: 1 } }, function (err, result) {
+    db.collection('post').findOne({ _id: parseInt(postno) }, function (err, result1) {
+      db.collection('counter').findOne({ name: '총게시글수' }, function (err, result2) {
+        if (postno > result2.totalPosts) {
+          res.render('error404.ejs');
+        } else {
+          res.render('detail.ejs', { post: result1 });
+        }
+      })
+    })
   })
 })
+  
 
 
 
@@ -99,8 +108,7 @@ app.post('/memberlist',(req,res)=>{
 
 
 app.get('/board', (req, res) => {
-  db.collection('post').find().toArray(function(err,result){
-    console.log(result);
+  db.collection('post').find().sort( {"_id": -1 } ).toArray(function(err,result){
     res.render('board.ejs', {post: result} );
 });
 });
@@ -122,8 +130,13 @@ app.get('/edit/:postno',function(req,res){
 
 })})
 
+
+app.get('/introduce', (req, res) => {
+  res.render('introduce.ejs');
+ });
+
 app.get('/post', (req, res) => {
- res.render('post.ejs')
+ res.render('post.ejs');
 });
 
 app.get('/signup', (req, res) => {
@@ -149,6 +162,34 @@ app.get('/memberlist', (req,res) => {
 });
 
 
+app.post('/login', function(req, res){
+  var user_id = req.body.user_id;
+  var user_pw = req.body.user_pw;
+  console.log(req.body.user_id,req.body.user_pw);
+  // DB에 'counter'테이블에 접속하여, '총회원수' name을 가진 row를 찾고, totalMember column에 기록되어있는 값을 출력
+  db.collection('userinfo').findOne({id : req.body.user_id}, function(err,result){
+    if(user_id==''){
+      res.send("<script>alert('아이디를 입력해주세요.');</script>");
+      
+    }else if(user_pw==''){
+      res.send("<script>alert('비밀번호를 입력해주세요.');</script>");
+      
+    }else{
+      if(user_id!=result.id || user_pw!=result.pw){
+        res.send("<script>alert('아이디, 비밀번호를 확인해주세요.');</script>");
+      
+      }else if(user_id=='choragi'){
+        res.send("<script>alert('관리자 로그인에 성공했습니다.');</script>");
+      
+      }else{
+        res.send("<script>alert('로그인했습니다!');</script>");
+      
+      }}
+    })
+  })
+  
+
+
 
 app.delete('/delete', (req,res) => {
     //삭제되는 회원번호 출력
@@ -166,3 +207,23 @@ app.delete('/delete', (req,res) => {
       res.status(200).send({message : '연결에 성공했습니다.'});
     })
   });
+
+
+  //게시판 게시글 수정
+  app.put('/edit', function(req, res){
+    db.collection('post').updateOne( {_id : parseInt(req.body.id) }, {'$set' : { 글제목 : req.body.post_title , 글내용 : req.body.post_content }}, function(){
+      console.log('게시글 수정 완료')
+      res.redirect('/board');
+    });
+  });
+
+  // POST 방식으로 처리한 게시판 게시글 수정 (위의 put 방식으로 대체)
+  // app.post('/updatepost/:postno', function(req,res){
+  //   console.log(req.body.post_title,req.body.post_content)
+  //     var postno = req.params.postno;
+  //     db.collection('post').updateOne({_id : parseInt(req.params.postno) },{'$set':{글제목 : req.body.post_title, 글내용 : req.body.post_content}}, function(err,result){
+  //       console.log('게시글 수정완료\n'+'글제목 : '+req.body.post_title+'\n글내용 : '+req.body.post_content);
+  //         if(err){return console.log(err)}
+  //     })
+  //     res.redirect('/detail/'+postno)
+  //   })
