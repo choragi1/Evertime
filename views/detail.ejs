@@ -19,8 +19,8 @@
     <title>상세 페이지</title>
   </head>
   <body>
-
-    <%- include('nav.html')  %>
+    <%- include('login.ejs')  %>
+    <%- include('nav.ejs')  %>
      
 
   <div class="container">
@@ -30,11 +30,51 @@
         <h4>상세 페이지</h4>
         <h5 class="card-title"><%=post.글제목 %></h5>
         <p class="card-text"><%=post.글내용 %></p>
-        <a class="card-link btn btn-success" href="/edit/<%=post._id%>">수정</a>
-        <button class="btn btn-primary" id="like">추천</button>
+        <a class="card-link btn btn-outline-success" href="/edit/<%=post._id%>">수정</a>
+        <a class="btn btn-outline-primary" id="recommend">추천</a>
       </div>
     </div>
   </div>
+
+  <script>
+  
+  // $('.user_delete').click(function(e){
+  //         // 콜백함수에 파라미터 e를 입력후 target 메서드를 통해 data-id를 호출하여 memberno 변수 선언하여 할당
+  //         var memberno = e.target.dataset.id;
+  //         //ajax 통신을 통해 삭제 구현
+  //         $.ajax({
+  //         method : 'DELETE',
+  //         url : '/delete',
+  //         data : {_id : memberno}
+  //       }).done(function(result){
+  //         console.log('서버 연결에 성공했습니다.');
+  //         // 삭제버튼을 누른 요소의 부모중 ul 객체를 제거해주세요/안보이게
+  //         // JQuery에서 this는 현재 지금 이벤트가 동작하는 곳
+  //         $(this).parents('ul').fadeOut;
+          
+
+  //         // textStatus : 에러코드, errorThrown : 에러메세지
+  //       }).fail(function(xhr,textStatus,errorThrown){
+  //         console.log(xhr,textStatus,errorThrown);
+  //       });
+  //     });
+
+
+
+  // $("#recommend").click(function(){
+  //   $.ajax({
+  //     method: 'post',
+  //     url: 'recommand',
+  //     data: {_}
+      
+  //   })
+
+  // })
+  
+  </script>
+
+  <!-- 로그인 버튼 클릭 시 애니메이션 -->
+  <%- include('loginani.ejs') %>
 
 
   </body>

@@ -18,12 +18,13 @@
     <div>
 
 
+      <%- include('login.ejs')  %>
+        <%- include('nav.ejs')  %>
 
-        <%- include('nav.html')  %>
 
-
-
-    <form style="padding: 10px;" action="/updatepost/<%=post._id%>" method="POST">
+    
+    <form style="padding: 10px;" action="/edit?_method=PUT" method="POST">
+      <input value="<%= post._id %>" name="id" style="display : none">
         <div class="mb-3">
             <label>제목</label>
             <input type="text" value="<%= post.글제목 %>" class="form-control" name="post_title">
@@ -36,6 +37,9 @@
       </form>
 
     </div>
+
+    <!-- 로그인 버튼 클릭 시 애니메이션 -->
+    <%- include('loginani.ejs') %>
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>

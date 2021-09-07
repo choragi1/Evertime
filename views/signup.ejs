@@ -1,57 +1,83 @@
 <!doctype html>
 <html>
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
-    <link rel="stylesheet" href="/public/css/total.css" >
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- CSS파일  -->
-    <link rel="stylesheet" href="/public/total.css">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
 
-    <title>회원가입</title>
-  </head>
-  <body>
-    
-    <div>
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+  <!-- CSS파일  -->
+  <link rel="stylesheet" href="/public/css/total.css">
+
+  <title>회원가입</title>
+</head>
+
+<body>
 
 
+  <%- include('login.ejs') %>
+    <%- include('nav.ejs') %>
 
-      <%- include('nav.html')  %>
+
+      <div>
+        <form style="padding: 10px;" action="/addmember" method="POST">
+          <div class="card col-md-5">
+            <div class="card-body">
+
+              <div class="row col-md-7 form-inline">
+                <div class="mb-3">
+                  <label for="user_id" class="form-label">아이디</label>
+                  <input type="text" class="form-control" id="user_id" name="user_id">
+                </div>
+              </div>
+
+              <div class="row col-md-7 form-inline">
+                <div class="mb-3">
+                  <label for="user_pw" class="form-label">비밀번호</label>
+                  <input type="password" class="form-control" id="user_pw" name="user_pw">
+                </div>
+              </div>
 
 
+              <div class="row col-md-7 form-inline">
+                <div class="mb-3">
+                  <label for="user_name" class="form-label">이름</label>
+                  <input type="text" class="form-control" id="user_name" name="user_name">
+                </div>
+              </div>
 
-    <form style="padding: 10px;" action="/addmember" method="POST">
-        <div class="mb-3">
-            <label for="user_id" class="form-label">아이디</label>
-            <input type="text" class="form-control" id="user_id" name="user_id">
+              <div class="row col-md-7 form-inline">
+                <div class="mb-3">
+                  <label for="user_email" class="form-label">이메일</label>
+                  <input type="email" class="form-control" id="user_email" name="user_email">
+                </div>
+              </div>
+
+              <input type="hidden" id="signup_date" name="signup_date" value="">
+              <button type="submit" class="btn btn-outline-danger">등록</button>
+            </div>
           </div>
-        <div class="mb-3">
-          <label for="user_pw" class="form-label">비밀번호</label>
-          <input type="password" class="form-control" id="user_pw" name="user_pw">
-        </div>
-        <div class="mb-3">
-            <label for="user_name" class="form-label">이름</label>
-            <input type="text" class="form-control" id="user_name" name="user_name">
-          </div>
-        <div class="mb-3">
-            <label for="user_email" class="form-label">이메일</label>
-            <input type="email" class="form-control" id="user_email" name="user_email">
-          </div>
-        <input type="hidden" id="signup_date" name="signup_date" value="">
-        <button type="submit" class="btn btn-danger">등록</button>
-      </form>
+        </form>
+      </div>
+
+      <!-- 로그인 버튼 클릭 시 애니메이션 -->
+      <%- include ("loginani.ejs") %>
 
 
+        <!-- Option 1: Bootstrap Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+          crossorigin="anonymous"></script>
 
-    </div>
 
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+</body>
 
-    
-  </body>
 </html>
