@@ -171,9 +171,22 @@ app.get('/memberlist', (req,res) => {
 });
 
 app.get('/fail',function(req,res){
-  res.render('loginerr.ejs')
+  res.render('loginerr.ejs');
 })
 
+app.get('/mypage',isLogin,function(req,res){
+  console.log(req.user) // deserializeUser 에서 찾았던 DB정보임.
+  res.render('mypage.ejs', {사용자 : req.user});
+})
+
+
+function isLogin(req,res,next){
+  if (req.user){
+    next()
+  } else {
+    res.send('로그인 이후 접근해주세요.')
+  }
+}
 
 
 app.get('/login',function(){
@@ -186,31 +199,7 @@ app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), 
 
 
 
-// app.post('/login', passport.authenticate(),function(req, res){
-//   var user_id = req.body.user_id;
-//   var user_pw = req.body.user_pw;
-//   console.log(req.body.user_id,req.body.user_pw);
-//   // DB에 'counter'테이블에 접속하여, '총회원수' name을 가진 row를 찾고, totalMember column에 기록되어있는 값을 출력
-//   db.collection('userinfo').findOne({id : req.body.user_id}, function(err,result){
-//     if(user_id==''){
-//       res.send("<script>alert('아이디를 입력해주세요.');</script>");
-      
-//     }else if(user_pw==''){
-//       res.send("<script>alert('비밀번호를 입력해주세요.');</script>");
-      
-//     }else{
-//       if(user_id!=result.id || user_pw!=result.pw){
-//         res.send("<script>alert('아이디, 비밀번호를 확인해주세요.');</script>");
-      
-//       }else if(user_id=='choragi'){
-//         res.send("<script>alert('관리자 로그인에 성공했습니다.');</script>");
-      
-//       }else{
-//         res.send("<script>alert('로그인했습니다!');</script>");
-      
-//       }}
-//     })
-//   })
+
 
 
 
@@ -243,7 +232,10 @@ app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), 
   
   // 이 세션 데이터를 가진 사람을 DB에서 찾아주세요. (마이페이지 접속시)
   passport.deserializeUser(function(id,done){
-    done(null, {})
+    db.collection('userinfo').findOne({id: id},function(err,result){
+      done(null, {result})
+    })
+    
   })
   
 
@@ -287,3 +279,29 @@ app.delete('/delete', (req,res) => {
   //   })
 
 
+  // post 로그인 구현 (위의 방식으로 대체)
+  // app.post('/login', passport.authenticate(),function(req, res){
+  //   var user_id = req.body.user_id;
+  //   var user_pw = req.body.user_pw;
+  //   console.log(req.body.user_id,req.body.user_pw);
+  //   // DB에 'counter'테이블에 접속하여, '총회원수' name을 가진 row를 찾고, totalMember column에 기록되어있는 값을 출력
+  //   db.collection('userinfo').findOne({id : req.body.user_id}, function(err,result){
+  //     if(user_id==''){
+  //       res.send("<script>alert('아이디를 입력해주세요.');</script>");
+        
+  //     }else if(user_pw==''){
+  //       res.send("<script>alert('비밀번호를 입력해주세요.');</script>");
+        
+  //     }else{
+  //       if(user_id!=result.id || user_pw!=result.pw){
+  //         res.send("<script>alert('아이디, 비밀번호를 확인해주세요.');</script>");
+        
+  //       }else if(user_id=='choragi'){
+  //         res.send("<script>alert('관리자 로그인에 성공했습니다.');</script>");
+        
+  //       }else{
+  //         res.send("<script>alert('로그인했습니다!');</script>");
+        
+  //       }}
+  //     })
+  //   })
