@@ -5,9 +5,18 @@ const MongoClient = require('mongodb').MongoClient;
 const methodOverride = require('method-override');
 //날짜 관련 라이브러리인 moment 사용
 const moment = require('moment');
+// 로그인 관련 미들웨어
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+app.use(session({secret : '비밀코드',resave : true, saveUninitialized: false}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 
 
@@ -161,31 +170,80 @@ app.get('/memberlist', (req,res) => {
     });
 });
 
+app.get('/fail',function(req,res){
+  res.render('loginerr.ejs')
+})
 
-app.post('/login', function(req, res){
-  var user_id = req.body.user_id;
-  var user_pw = req.body.user_pw;
-  console.log(req.body.user_id,req.body.user_pw);
-  // DB에 'counter'테이블에 접속하여, '총회원수' name을 가진 row를 찾고, totalMember column에 기록되어있는 값을 출력
-  db.collection('userinfo').findOne({id : req.body.user_id}, function(err,result){
-    if(user_id==''){
-      res.send("<script>alert('아이디를 입력해주세요.');</script>");
+
+
+app.get('/login',function(){
+  res.render('login.ejs');
+})
+
+app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), function(req, res){
+  res.redirect('/')
+});
+
+
+
+// app.post('/login', passport.authenticate(),function(req, res){
+//   var user_id = req.body.user_id;
+//   var user_pw = req.body.user_pw;
+//   console.log(req.body.user_id,req.body.user_pw);
+//   // DB에 'counter'테이블에 접속하여, '총회원수' name을 가진 row를 찾고, totalMember column에 기록되어있는 값을 출력
+//   db.collection('userinfo').findOne({id : req.body.user_id}, function(err,result){
+//     if(user_id==''){
+//       res.send("<script>alert('아이디를 입력해주세요.');</script>");
       
-    }else if(user_pw==''){
-      res.send("<script>alert('비밀번호를 입력해주세요.');</script>");
+//     }else if(user_pw==''){
+//       res.send("<script>alert('비밀번호를 입력해주세요.');</script>");
       
-    }else{
-      if(user_id!=result.id || user_pw!=result.pw){
-        res.send("<script>alert('아이디, 비밀번호를 확인해주세요.');</script>");
+//     }else{
+//       if(user_id!=result.id || user_pw!=result.pw){
+//         res.send("<script>alert('아이디, 비밀번호를 확인해주세요.');</script>");
       
-      }else if(user_id=='choragi'){
-        res.send("<script>alert('관리자 로그인에 성공했습니다.');</script>");
+//       }else if(user_id=='choragi'){
+//         res.send("<script>alert('관리자 로그인에 성공했습니다.');</script>");
       
-      }else{
-        res.send("<script>alert('로그인했습니다!');</script>");
+//       }else{
+//         res.send("<script>alert('로그인했습니다!');</script>");
       
-      }}
+//       }}
+//     })
+//   })
+
+
+
+  // 로그인 인증 관련 미들웨어
+  passport.use(new LocalStrategy({
+    usernameField: 'user_id', // 클라이언트가 제출한 아이디가 어디 적혀있는지 (input name)
+    passwordField: 'user_pw', // 클라이언트가 제출한 비밀번호가 어디 적혀있는지 (input name)
+    session: true,  //세션 정보 저장할래?
+    passReqToCallback: false, // 아이디, 비밀번호 이외의 다른 정보 검사가 필요한지
+  }, function (입력한아이디, 입력한비번, done) {
+    //console.log(입력한아이디, 입력한비번);
+    db.collection('userinfo').findOne({ id: 입력한아이디 }, function (err, result) {
+      if (err) return done(err)
+
+      if (!result) return done(null, false, { message: '존재하지 않는 아이디입니다.' })
+      if (입력한비번 == result.pw) {
+        return done(null, result)
+      } else {
+        return done(null, false, { message: '비밀번호가 틀렸습니다.' })
+      }
     })
+  }));
+
+
+  // 로그인 성공시, 유저의 정보를 시리얼라이즈 해서 user.id라는 정보로 세션을 만들어서 저장함
+  passport.serializeUser(function(user,done){
+    done(null, user.id)
+  });
+  
+  
+  // 이 세션 데이터를 가진 사람을 DB에서 찾아주세요. (마이페이지 접속시)
+  passport.deserializeUser(function(id,done){
+    done(null, {})
   })
   
 
@@ -227,3 +285,5 @@ app.delete('/delete', (req,res) => {
   //     })
   //     res.redirect('/detail/'+postno)
   //   })
+
+
