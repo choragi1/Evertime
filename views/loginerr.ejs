@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    
+    <!-- CSS파일  -->
+    <link rel="stylesheet" href="/public/css/total.css">
+
+    
+
+    
+
+
+
+    <title>로그인 실패</title>
+  </head>
+  <body>
+
+
+        <%- include('login.ejs')  %>
+        <%- include('nav.ejs')  %>
+
+
+          <div class="container jumbotron">
+            
+            <div class="errMsg">
+              <h2 class="display-4 m-2">로그인 에러</h2><br>
+              <p class="lead display-6 m-1">로그인에 실패했습니다. 다시 로그인 해주세요.</p>
+              <a class="btn btn-primary btn-lg m-1" href="/">메인으로 돌아가기</a>
+            </div>
+            <img src="../public/img/baeyoob.gif" class="" alt="...">
+          </div>
+            
+                   
+          
+
+
+
+
+      <script>
+
+        setTimeout("location.href='/'", 3000);
+
+
+        // 로그인 모달창 변수지정
+        let loginModal = $('.login-bg');
+
+        // 로그인 버튼 클릭시 로그인 모달 출력
+          $('.login').click(()=>{
+            if(loginModal.hasClass('slidedown')){
+                loginModal.removeClass('slidedown');
+            }else if(loginModal.hasClass('slideup')){
+                loginModal.removeClass('slideup');
+            }
+                loginModal.addClass('slidedown');
+            }) 
+         
+        
+        // 로그인 모달창 내 취소 버튼 클릭시 로그인 모달 사라짐
+            $('.loginCancle').click(()=>{
+            if(loginModal.hasClass('slideup')){
+                loginModal.removeClass('slideup');
+            }else if(loginModal.hasClass('slidedown')){
+                loginModal.removeClass('slidedown');
+            }
+                loginModal.addClass('slideup');
+            }) 
+
+          
+
+      </script>
+
+      <!-- 로그인 버튼 클릭 시 애니메이션 -->
+      <%- include('loginani.ejs') %>
+
+
+    <!-- Optional JavaScript; choose one of the two! -->
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+
+  </body>
+</html>
