@@ -17,9 +17,6 @@ app.use(session({secret : '비밀코드',resave : true, saveUninitialized: false
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
-
 // 현재 express 특정 버전 이후로는 express에 bodyParser가 자동 내장되어있어 사용되지 않는 코드입니다.
 // var bodyParser = require('body-parser');
 app.set('view engine','ejs');
@@ -69,16 +66,16 @@ MongoClient.connect('mongodb+srv://root:adminuser@cluster0.83hv2.mongodb.net/tod
 
   app.post('/uploadpost', function(req,res){
     var uploadtime = moment().format("YYYY-DD-MM hh:mm");
-    res.send('게시물 등록 완료되었습니다.');
     console.log(req.body.post_title,req.body.post_content)
     db.collection('counter').findOne({name : '총게시글수'}, function(err,result){
       console.log(result.totalPosts);
       var totalPosts = result.totalPosts;
 
-      db.collection('post').insertOne({_id : totalPosts + 1, 글제목 : req.body.post_title, 글내용 : req.body.post_content, 작성일 : uploadtime}, function(){
+      db.collection('post').insertOne({_id : totalPosts + 1, 글제목 : req.body.post_title, 글내용 : req.body.post_content, 작성일 : uploadtime}, function(err,result2){
         console.log('게시글 등록완료');
-        db.collection('counter').updateOne({name:'총게시글수'},{$inc : {totalPosts:1}},function(err,result){
+        db.collection('counter').updateOne({name:'총게시글수'},{$inc : {totalPosts:1}},function(){
           if(err){return console.log(err)}
+          res.redirect("/board/free")
         })
       })
     })
@@ -90,7 +87,7 @@ MongoClient.connect('mongodb+srv://root:adminuser@cluster0.83hv2.mongodb.net/tod
   // 게시글 등록완료와 글번호, 글제목, 글내용을 콘솔로그로 찍는다.
 
 // detail/어쩌구로 get 요청을 하면, function의 동작을 수행 (URL의 파라미터)
-app.get('/detail/:postno', function (req, res) {
+app.get('/detail/free/:postno', function (req, res) {
   //post 테이블로 db연동. 테이블 내에 url 뒤의 게시글넘버와 DB 내 _id가 동일한 것을 찾아 조회
   var postno = req.params.postno;
   db.collection('post').updateOne({ _id: parseInt(postno) }, { $inc: { 조회수: 1 } }, function (err, result) {
@@ -99,7 +96,7 @@ app.get('/detail/:postno', function (req, res) {
         if (postno > result2.totalPosts) {
           res.render('error404.ejs');
         } else {
-          res.render('detail.ejs', { post: result1 });
+          res.render('detailfree.ejs', { post: result1 });
         }
       })
     })
@@ -109,24 +106,21 @@ app.get('/detail/:postno', function (req, res) {
 
 
 
-//   /list로 get 요청으로 접속하면
-//   실제 DB에 저장된 데이터들로 예쁘게 꾸며진 HTML을 보여줌
-app.post('/memberlist',(req,res)=>{
-    res.send()
-})
-
-
-app.get('/board', (req, res) => {
+app.get('/board/free', (req, res) => {
   db.collection('post').find().sort( {"_id": -1 } ).toArray(function(err,result){
-    res.render('board.ejs', {post: result} );
+    res.render('freeboard.ejs', {post: result} );
 });
 });
+
+
+
+
 
 
 
 
 //mondoDB에서 데이터를 찾은 것은 result에 저장. edit.ejs로 데이터 전송 => edit.ejs에서 해당 result를 활용 가능 
-app.get('/edit/:postno',function(req,res){
+app.get('/edit/free/:postno',function(req,res){
 
   //post 테이블로 db연동. 테이블 내에 url 뒤의 게시글넘버와 DB 내 _id가 동일한 것을 찾아 조회
   db.collection('post').findOne({_id:parseInt(req.params.postno)},function(err,result){
@@ -134,7 +128,7 @@ app.get('/edit/:postno',function(req,res){
       if(req.params.postno>result2.totalPosts){
         res.render('error404.ejs');    
     }else{
-    res.render('edit.ejs',{post: result});}
+    res.render('editfree.ejs',{post: result});}
   })
 
 })})
@@ -152,8 +146,8 @@ app.get('/signup', (req, res) => {
     res.render('signup.ejs');
   });
 
-app.get('/edit',(req,res) =>{
-  res.render('edit.ejs');
+app.get('/edit/free',(req,res) =>{
+  res.render('editfree.ejs');
 });
 
 
@@ -161,7 +155,7 @@ app.get('/', (req, res) => {
   res.render('index.ejs')
 });
 
-app.get('/memberlist', (req,res) => {
+app.get('/memberlist',isAdmin, (req,res) => {
     
     db.collection('userinfo').find().toArray(function(err,result){
         console.log(result);
@@ -170,32 +164,59 @@ app.get('/memberlist', (req,res) => {
     });
 });
 
+app.get('/postlist',isAdmin, (req,res) => {
+    
+  db.collection('post').find().sort( {"_id": -1 } ).toArray(function(err,result){
+      console.log(result);
+      res.render('postlist.ejs', {post: result} );
+  });
+});
+
 app.get('/fail',function(req,res){
   res.render('loginerr.ejs');
 })
 
+
 app.get('/mypage',isLogin,function(req,res){
   console.log(req.user) // deserializeUser 에서 찾았던 DB정보임.
-  res.render('mypage.ejs', {사용자 : req.user});
+  res.render('mypage.ejs', { userinfo: req.user })
 })
-
 
 function isLogin(req,res,next){
   if (req.user){
     next()
   } else {
-    res.send('로그인 이후 접근해주세요.')
+    res.render('mypageerr.ejs');
+  }
+}
+
+function isAdmin(req,res,next){
+  if(req.user.id=='choragi'){
+    next()
+  } else {
+    res.render('mypageerr.ejs')
   }
 }
 
 
-app.get('/login',function(){
+
+
+
+app.get('/login',function(req,res){
   res.render('login.ejs');
 })
 
 app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), function(req, res){
+  if(req.user.id=='choragi'&&req.user.pw=='eoals1592'){
+    res.redirect('/admin')
+  }else{
   res.redirect('/')
+  }
 });
+
+app.get('/admin',isAdmin,function(req,res){
+  res.render('admin.ejs');
+})
 
 
 
@@ -209,13 +230,13 @@ app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), 
     passwordField: 'user_pw', // 클라이언트가 제출한 비밀번호가 어디 적혀있는지 (input name)
     session: true,  //세션 정보 저장할래?
     passReqToCallback: false, // 아이디, 비밀번호 이외의 다른 정보 검사가 필요한지
-  }, function (입력한아이디, 입력한비번, done) {
-    //console.log(입력한아이디, 입력한비번);
-    db.collection('userinfo').findOne({ id: 입력한아이디 }, function (err, result) {
+  }, function (input_id, input_pw, done) {
+    // console.log(input_id, input_pw);
+    db.collection('userinfo').findOne({ id: input_id }, function (err, result) {
       if (err) return done(err)
 
       if (!result) return done(null, false, { message: '존재하지 않는 아이디입니다.' })
-      if (입력한비번 == result.pw) {
+      if (input_pw == result.pw) {
         return done(null, result)
       } else {
         return done(null, false, { message: '비밀번호가 틀렸습니다.' })
@@ -233,7 +254,7 @@ app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), 
   // 이 세션 데이터를 가진 사람을 DB에서 찾아주세요. (마이페이지 접속시)
   passport.deserializeUser(function(id,done){
     db.collection('userinfo').findOne({id: id},function(err,result){
-      done(null, {result})
+      done(null, result)
     })
     
   })
@@ -241,7 +262,7 @@ app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), 
 
 
 
-app.delete('/delete', (req,res) => {
+app.delete('/deletemem', (req,res) => {
     //삭제되는 회원번호 출력
     console.log('삭제회원번호:',req.body);
     //데이터 전송으로 문자열로 자동 형변환된 데이터를 정수로 변환
@@ -258,14 +279,46 @@ app.delete('/delete', (req,res) => {
     })
   });
 
+//게시글 삭제
+app.delete('/deletepost', (req, res) => {
+  //삭제되는 회원번호 출력
+  console.log('삭제게시글번호:', req.body);
+  //데이터 전송으로 문자열로 자동 형변환된 데이터를 정수로 변환
+  req.body._id = parseInt(req.body._id);
+  //DB연동(userinfo 테이블)하여 클릭한 회원 정보를 삭제 후 콘솔에 회원정보 삭제 완료 메세지 출력
+  db.collection('post').deleteOne(req.body, function (err, result) {
+    //DB 내에 있는 현재 게시글 정보에 -1
+    db.collection('userinfo').updateOne({ name: '총게시글수' }, { $inc: { currentPosts: -1 } }, function () {
+      if (err) { return console.log(err) }
+    })
+  })
+});
+
 
   //게시판 게시글 수정
-  app.put('/edit', function(req, res){
+  app.put('/edit/free', function(req, res){
     db.collection('post').updateOne( {_id : parseInt(req.body.id) }, {'$set' : { 글제목 : req.body.post_title , 글내용 : req.body.post_content }}, function(){
       console.log('게시글 수정 완료')
-      res.redirect('/board');
+      res.redirect('/board/free');
     });
   });
+
+  //질답게시판 게시판 GET 요청시
+  app.get('/board/qna', (req, res) => {
+    db.collection('post').find().sort( {"_id": -1 } ).toArray(function(err,result){
+      res.render('qnaboard.ejs', {post: result} );
+  });
+  });
+
+  //질답게시판 게시글 수정
+  app.put('/edit/qna', function(req, res){
+    db.collection('post').updateOne( {_id : parseInt(req.body.id) }, {'$set' : { 글제목 : req.body.post_title , 글내용 : req.body.post_content }}, function(){
+      console.log('게시글 수정 완료')
+      res.redirect('/board/qna');
+    });
+  });
+
+  
 
   // POST 방식으로 처리한 게시판 게시글 수정 (위의 put 방식으로 대체)
   // app.post('/updatepost/:postno', function(req,res){
