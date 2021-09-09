@@ -40,7 +40,7 @@
     <% for(var i=0;i<post.length;i++){ %>
       <ul class="postlist list-group list-group-horizontal justify-content-center text-center">
         <li class="post-content list-group-item" style="width: 6%"><%= post.length - i %></li>
-        <a class="post-content list-group-item" style="width: 20%" href="/detail/<%= post[i]._id %>"><%= post[i].글제목 %></a>
+        <a class="post-content list-group-item" style="width: 20%" href="/detail/qna/<%= post[i]._id %>"><%= post[i].글제목 %></a>
         <li class="post-content list-group-item" style="width: 10%">댓글수</li>
         <li class="post-content list-group-item" style="width: 10%"><%=post[i].조회수%></li>
         <li class="post-content list-group-item" style="width: 10%">추천</li>
@@ -50,7 +50,7 @@
         <br>
 
         <div class="justify-content-center text-center">
-          <a href="/post" class="btn btn-outline-success">글쓰기</a>
+          <a href="/postqna" class="btn btn-outline-success">글쓰기</a>
         </div>
 
         <br>
@@ -69,6 +69,10 @@
         <!-- 로그인 버튼 클릭 시 애니메이션 -->
       <%- include('loginani.ejs') %>
 
+            <!-- Optional JavaScript; choose one of the two! -->
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
 
 </body>
 
