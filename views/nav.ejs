@@ -13,7 +13,18 @@
           <a class="nav-link" href="/introduce">소개</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/board">게시판</a>
+          <div class="dropdown">
+            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              게시판
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" href="/board/free">자유게시판</a>
+              <a class="dropdown-item" href="/board/qna">질답게시판</a>
+              <a class="dropdown-item" href="#">스터디 구인</a>
+              <a class="dropdown-item" href="#">TIP</a>
+            </div>
+          </div>
+          <!-- <a class="nav-link" href="/board">게시판</a> -->
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/mypage">마이페이지</a>
@@ -24,6 +35,9 @@
         <li class="nav-item">
             <a class="login btn btn-outline-primary">로그인</a>
         </li>
+
       </ul>
     </div>
+
+    
   </nav>
