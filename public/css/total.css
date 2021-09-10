@@ -37,8 +37,9 @@
 }
 
 
-body{
-    font-family: 'Nanum Gothic', sans-serif;
+html,body{
+    height: 100vh;
+    overflow: hidden;
 }
 
 .login{
@@ -71,20 +72,22 @@ a.postlist:active {color:black}
 }
 
 .jumbotron{
-    background-color:floralwhite;
+    background-color:e9f1f8;
 }
 
+
 .footer{
+    position: absolute;
     padding-top: 5px;
     padding-bottom: 5px;
-    bottom: 0px;
-    width:100%;
-    height:10%;
-    bottom:0;
-    background-color:floralwhite;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 14%;
+    background-color: #e9f1f8;
+    border-top: 1px solid #e4e8eb;
     text-align: center;
     color: black;
-    
 }
 
 .container{

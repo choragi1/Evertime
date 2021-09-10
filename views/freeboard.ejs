@@ -26,6 +26,7 @@
       <li class="list-group-item" style="width: 6%">No</li>
       <li class="list-group-item" style="width: 20%">글제목</li>
       <li class="list-group-item" style="width: 10%">댓글수</li>
+      <li class="list-group-item" style="width: 10%">작성자</li>
       <li class="list-group-item" style="width: 10%">조회수</li>
       <li class="list-group-item" style="width: 10%">추천</li>
       <li class="list-group-item" style="width: 15%">작성일</li>
@@ -33,11 +34,12 @@
     <% for(var i=0;i<post.length;i++){ %>
       <ul class="postlist list-group list-group-horizontal justify-content-center text-center">
         <li class="post-content list-group-item" style="width: 6%"><%= post.length - i %></li>
-        <a class="post-content list-group-item" style="width: 20%" href="/detail/free/<%= post[i]._id %>"><%= post[i].글제목 %></a>
+        <a class="post-content list-group-item" style="width: 20%" href="/detail/free/<%= post[i]._id %>"><%= post[i].post_title %></a>
         <li class="post-content list-group-item" style="width: 10%">댓글수</li>
-        <li class="post-content list-group-item" style="width: 10%"><%=post[i].조회수%></li>
+        <li class="post-content list-group-item" style="width: 10%"><%= post[i].writer %></li>
+        <li class="post-content list-group-item" style="width: 10%"><%=post[i].viewcounts%></li>
         <li class="post-content list-group-item" style="width: 10%">추천</li>
-        <li class="post-content list-group-item" style="width: 15%"><%=post[i].작성일%></li>
+        <li class="post-content list-group-item" style="width: 15%"><%=post[i].date%></li>
       </ul>
       <% }; %>
         <br>

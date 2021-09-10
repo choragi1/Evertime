@@ -61,7 +61,7 @@
           //ajax 통신을 통해 삭제 구현
           $.ajax({
           method : 'DELETE',
-          url : '/deletemem',
+          url : '/member/del',
           data : {_id : memberno}
         }).done(function(result){
           console.log('서버 연결에 성공했습니다.');
