@@ -116,6 +116,7 @@ app.get('/detail/free/:postno', function (req, res) {
   var postno = req.params.postno;
   db.collection('post').updateOne({ _id: parseInt(postno) }, { $inc: { viewcount: 1 } }, function (err, result) {
     db.collection('post').findOne({ _id: parseInt(postno) }, function (err, result) {
+      db.collection('freeco')
         if (result == null) {
           res.render('error404.ejs');
         } else {
@@ -124,6 +125,17 @@ app.get('/detail/free/:postno', function (req, res) {
       })
     })
   })
+
+// 자유게시판 댓글 작성 
+app.post('/detail/free/regcomm',function(req,res){
+  var postid = parseInt(req.body.postid);
+  var uploadtime = moment().format("YYYY-DD-MM hh:mm");
+  db.collection('freecomments').insertOne({comment : req.body.comment ,parent : postid, date : uploadtime},function(err,result){
+    console.log("자유게시판 "+postid+"번 게시글에 댓글이 작성되었습니다.")
+    res.redirect("/detail/free/"+postid)
+  })
+  
+})
   
   //질답게시판 게시판 GET 요청시
   app.get('/board/qna', (req, res) => {

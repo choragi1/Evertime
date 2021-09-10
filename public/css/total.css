@@ -73,6 +73,11 @@ a.postlist:active {color:black}
 
 .jumbotron{
     background-color:e9f1f8;
+    height: 10%;
+}
+
+.carousel-item{
+    display: inline-block;
 }
 
 
