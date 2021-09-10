@@ -7,7 +7,6 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <link rel="stylesheet" href="../public/css/total.css">
 
     <!-- Bootstrap JQuery -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
@@ -31,45 +30,12 @@
         <p class="card-text"><%=post.글내용 %></p>
         <a class="btn btn-outline-primary" href="#" id="recommend">추천</a>
         <a class="btn btn-outline-success" href="/edit/free/<%=post._id%>">수정</a>
-        <a class="btn btn-outline-danger post_delete" data-id="<%= post._id %>">삭제</a>
+        <a class="btn btn-outline-danger post-delete" href="/deletepost/<%=post._id%>">삭제</a>
       </div>
     </div>
   </div>
 
-  <script>
-  
-  $('.post_delete').click(function(e){
-          flag=confirm('해당 게시글을 삭제하시겠습니까?');
-          if(flag==true){
-          // 콜백함수에 파라미터 e를 입력후 target 메서드를 통해 data-id를 호출하여 postno 변수 선언하여 할당
-          var postno = e.target.dataset.id;
-          //ajax 통신을 통해 삭제 구현
-          $.ajax({
-          method : 'DELETE',
-          url : '/deletepost',
-          data : {_id : postno}
-        }).done(function(result){
-          console.log('서버 연결에 성공했습니다.');
-          window.location.href('/board')
-        }).fail(function(xhr,textStatus,errorThrown){
-          console.log(xhr,textStatus,errorThrown);
-        });
-      };
-    })
 
-
-
-  // $("#recommend").click(function(){
-  //   $.ajax({
-  //     method: 'post',
-  //     url: 'recommand',
-  //     data: {_}
-      
-  //   })
-
-  // })
-  
-  </script>
 
   <!-- 로그인 버튼 클릭 시 애니메이션 -->
   <%- include('loginani.ejs') %>

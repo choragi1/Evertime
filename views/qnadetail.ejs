@@ -27,35 +27,11 @@
         <p class="card-text"><%= qnapost.글내용 %></p>
         <a class="btn btn-outline-primary" href="#" id="recommend">추천</a>
         <a class="btn btn-outline-success" href="/edit/qna/<%=qnapost._id%>">수정</a>
-        <a class="btn btn-outline-danger post_delete" data-id="<%= qnapost._id %>">삭제</a>
+        <a class="btn btn-outline-danger qna-post-delete" href="/deleteqnapost/<%=qnapost._id%>">삭제</a>
       </div>
     </div>
   </div>
 
-  <script>
-  
-  $('.post_delete').click(function(e){
-          flag=confirm('해당 게시글을 삭제하시겠습니까?');
-          if(flag==true){
-          // 콜백함수에 파라미터 e를 입력후 target 메서드를 통해 data-id를 호출하여 postno 변수 선언하여 할당
-          var postno = e.target.dataset.id;
-          //ajax 통신을 통해 삭제 구현
-          $.ajax({
-          method : 'DELETE',
-          url : '/deletepost',
-          data : {_id : postno}
-        }).done(function(result){
-          console.log('서버 연결에 성공했습니다.');
-          window.location.href('/board')
-        }).fail(function(xhr,textStatus,errorThrown){
-          console.log(xhr,textStatus,errorThrown);
-        });
-      };
-    })
-
-
-  
-  </script>
 
   <!-- 로그인 버튼 클릭 시 애니메이션 -->
   <%- include('loginani.ejs') %>

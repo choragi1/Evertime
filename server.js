@@ -41,31 +41,25 @@ MongoClient.connect('mongodb+srv://root:adminuser@cluster0.83hv2.mongodb.net/tod
 });
 
 
-// express를 사용해, post라는 파일에 /addmember로 접근하였을때 (회원가입 action)
+//회원가입
   app.post('/addmember', function(req, res){
     var uploadtime = moment().format("YYYY-MM-DD");
-    // 클라이언트에게 전송 완료 메세지를 출력한 후
-    res.send('전송완료');
-    // 콘솔에 사용자가 <body>태그 안의 user_id, user_pw , ... 등으로 전송한 파라미터들을 출력한다.
     console.log(req.body.user_id,req.body.user_pw,req.body.user_name,req.body.user_email);
-    // DB에 'counter'테이블에 접속하여, 'member' name을 가진 row를 찾고, totalMember column에 기록되어있는 값을 출력
     db.collection('counter').findOne({name : 'member'}, function(err,result){
         console.log(result.totalMember);
         var totalMember = result.totalMember;
     
-        // DB내 'userinfo' 테이블에 접속하여 파라미터로 받아온 해당 정보를을 기록한다.
         db.collection('userinfo').insertOne( { _id : totalMember + 1,id : req.body.user_id, pw : req.body.user_pw, name : req.body.user_name , email : req.body.user_email, joinDate : uploadtime} , function(){
             console.log('회원정보 저장완료');
-            // counter 테이블에 있는 name이 member인 데이터를 찾아 totalMember을 1을 더해주신 후, 만약 에러가 난다면 콘솔창에 에러를 찍어주세요.
-            // set은 할당할때 사용하는 연산자, inc는 증감연산자
-            // DB의 'counter' 테이블에 접속하여 'member' name을 가진 row를 찾고, totalMember에 1을 더하여 수정한다.
             db.collection('counter').updateOne({name:'member'},{$inc : {totalMember:1}},function(err,result){
                 if(err){return console.log(err)}
+                res.redirect('/');
             })
     });
     });
   });
 
+  // 자유게시판 게시글 쓰기
   app.post('/uploadpost', function(req,res){
     var uploadtime = moment().format("YYYY-DD-MM hh:mm");
     console.log(req.body.post_title,req.body.post_content)
@@ -83,7 +77,7 @@ MongoClient.connect('mongodb+srv://root:adminuser@cluster0.83hv2.mongodb.net/tod
     })
   })
 
-
+  // 질답게시판 게시글 쓰기
   app.post('/uploadpostqna', function(req,res){
     var uploadtime = moment().format("YYYY-DD-MM hh:mm");
     console.log(req.body.post_title,req.body.post_content)
@@ -106,9 +100,23 @@ MongoClient.connect('mongodb+srv://root:adminuser@cluster0.83hv2.mongodb.net/tod
   // result를 가져오고, result.글제목과 result.글내용을 updateOne하고
   // 게시글 등록완료와 글번호, 글제목, 글내용을 콘솔로그로 찍는다.
 
-// detail/어쩌구로 get 요청을 하면, function의 동작을 수행 (URL의 파라미터)
+
+
+
+
+  
+  
+
+
+// 자유게시판 GET
+app.get('/board/free', (req, res) => {
+  db.collection('post').find().sort( {"_id": -1 } ).toArray(function(err,result){
+    res.render('freeboard.ejs', {post: result} );
+});
+});
+
+// 자유게시판 게시글 상세페이지 GET
 app.get('/detail/free/:postno', function (req, res) {
-  //post 테이블로 db연동. 테이블 내에 url 뒤의 게시글넘버와 DB 내 _id가 동일한 것을 찾아 조회
   var postno = req.params.postno;
   db.collection('post').updateOne({ _id: parseInt(postno) }, { $inc: { 조회수: 1 } }, function (err, result) {
     db.collection('post').findOne({ _id: parseInt(postno) }, function (err, result) {
@@ -120,10 +128,16 @@ app.get('/detail/free/:postno', function (req, res) {
       })
     })
   })
+  
+  //질답게시판 게시판 GET 요청시
+  app.get('/board/qna', (req, res) => {
+    db.collection('qnapost').find().sort( {"_id": -1 } ).toArray(function(err,result){
+      res.render('qnaboard.ejs', {post: result} );
+  });
+  });
 
-
+// 질답게시판 게시글 상세페이지 GET
   app.get('/detail/qna/:postno', function (req, res) {
-    //post 테이블로 db연동. 테이블 내에 url 뒤의 게시글넘버와 DB 내 _id가 동일한 것을 찾아 조회
     var postno = req.params.postno;
     db.collection('qnapost').updateOne({ _id: parseInt(postno) }, { $inc: { 조회수: 1 } }, function (err, result) {
       db.collection('qnapost').findOne({ _id: parseInt(postno) }, function (err, result) {
@@ -136,16 +150,24 @@ app.get('/detail/free/:postno', function (req, res) {
       })
     })
 
-  
-  
 
 
+  //게시판 게시글 수정
+  app.put('/edit/free', function(req, res){
+    db.collection('post').updateOne( {_id : parseInt(req.body.id) }, {'$set' : { 글제목 : req.body.post_title , 글내용 : req.body.post_content }}, function(){
+      console.log('게시글 수정 완료')
+      res.redirect('/board/free');
+    });
+  });
 
-app.get('/board/free', (req, res) => {
-  db.collection('post').find().sort( {"_id": -1 } ).toArray(function(err,result){
-    res.render('freeboard.ejs', {post: result} );
-});
-});
+  //질답게시판(QnA) 게시글 수정
+  app.put('/edit/qna', function(req, res){
+    db.collection('qnapost').updateOne( {_id : parseInt(req.body.id) }, {'$set' : { 글제목 : req.body.post_title , 글내용 : req.body.post_content }}, function(){
+      console.log('게시글 수정 완료')
+      res.redirect('/board/qna');
+    });
+  });
+
 
 
 
@@ -182,99 +204,26 @@ app.get('/edit/qna/:postno',function(req,res){
 
 })})
 
-
-app.get('/introduce', (req, res) => {
-  res.render('introduce.ejs');
- });
-
-app.get('/post', (req, res) => {
- res.render('post.ejs');
-});
-
-app.get('/postqna', (req, res) => {
-  res.render('qnapost.ejs');
- });
-
-app.get('/signup', (req, res) => {
-    res.render('signup.ejs');
-  });
-
+// 메인페이지(index)
 app.get('/', (req, res) => {
   res.render('index.ejs')
 });
 
-app.get('/memberlist',isAdmin, (req,res) => {
-    
-    db.collection('userinfo').find().toArray(function(err,result){
-        console.log(result);
-        res.render('memberlist.ejs', {userinfo: result} );
-    
-    });
+// 소개 페이지
+app.get('/introduce', (req, res) => {
+  res.render('introduce.ejs');
+ });
+
+
+//게시글 작성 (자유게시판)
+app.get('/post', (req, res) => {
+ res.render('post.ejs');
 });
 
-app.get('/postlist',isAdmin, (req,res) => {
-    
-  db.collection('post').find().sort( {"_id": -1 } ).toArray(function(err,result){
-      console.log(result);
-      res.render('postlist.ejs', {post: result} );
-  });
-});
-
-app.get('/qnapostlist',isAdmin, (req,res) => {
-    
-  db.collection('qnapost').find().sort( {"_id": -1 } ).toArray(function(err,result){
-      console.log(result);
-      res.render('qnapostlist.ejs', {qnapost: result} );
-  });
-});
-
-app.get('/fail',function(req,res){
-  res.render('loginerr.ejs');
-})
-
-
-app.get('/mypage',isLogin,function(req,res){
-  console.log(req.user) // deserializeUser 에서 찾았던 DB정보임.
-  res.render('mypage.ejs', { userinfo: req.user })
-})
-
-function isLogin(req,res,next){
-  if (req.user){
-    next()
-  } else {
-    res.render('mypageerr.ejs');
-  }
-}
-
-function isAdmin(req,res,next){
-  if(req.user.id=='choragi'){
-    next()
-  } else {
-    res.render('mypageerr.ejs')
-  }
-}
-
-
-
-
-
-app.get('/login',function(req,res){
-  res.render('login.ejs');
-})
-
-app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), function(req, res){
-  if(req.user.id=='choragi'&&req.user.pw=='eoals1592'){
-    res.redirect('/admin')
-  }else{
-  res.redirect('/')
-  }
-});
-
-app.get('/admin',isAdmin,function(req,res){
-  res.render('admin.ejs');
-})
-
-
+//게시글 작성 (질답게시판)
+app.get('/postqna', (req, res) => {
+  res.render('qnapost.ejs');
+ });
 
 
 
@@ -314,76 +263,165 @@ app.get('/admin',isAdmin,function(req,res){
     })
     
   })
-  
 
 
 
-app.delete('/deletemem', (req,res) => {
-    //삭제되는 회원번호 출력
-    console.log('삭제회원번호:',req.body);
-    //데이터 전송으로 문자열로 자동 형변환된 데이터를 정수로 변환
-    req.body._id = parseInt(req.body._id);
-    //DB연동(userinfo 테이블)하여 클릭한 회원 정보를 삭제 후 콘솔에 회원정보 삭제 완료 메세지 출력
-    db.collection('userinfo').deleteOne(req.body,function(err,result){
-      console.log('회원정보 삭제 완료')
-    //DB 내에 있는 현재 회원숫자 정보에 -1
-    db.collection('userinfo').updateOne({name:'member'},{$inc : {currentMember:-1}},function(err,result){
-      if(err){return console.log(err)}
-  })
-      //응답코드 200(정상)을 전송해주시고 연결 성공 메세지도 같이 보내주세요
-      res.status(200).send({message : '연결에 성공했습니다.'});
-    })
+
+
+//로그인
+app.get('/login',function(req,res){
+  res.render('login.ejs');
+})
+
+//로그인 post (관리자 로그인 확인)
+app.post('/login', passport.authenticate('local', {failureRedirect : '/fail'}), function(req, res){
+  if(req.user.id=='choragi'&&req.user.pw=='eoals1592'){
+    res.redirect('/admin')
+  }else{
+  res.redirect('/')
+  }
+});
+
+//로그인 실패시
+app.get('/fail',function(req,res){
+  res.render('loginerr.ejs');
+})
+
+
+//회원가입
+app.get('/signup', (req, res) => {
+    res.render('signup.ejs');
   });
 
-//게시글 삭제
-app.delete('/deletepost', (req, res) => {
+
+
+//마이페이지
+app.get('/mypage',isLogin,function(req,res){
+  // console.log(req.user) // deserializeUser 에서 찾았던 DB정보임.
+  res.render('mypage.ejs', { userinfo: req.user })
+})
+
+
+
+
+//관리자 페이지
+app.get('/admin',isAdmin,function(req,res){
+  res.render('admin.ejs');
+})
+
+
+//회원 관리
+app.get('/memberlist',isAdmin, (req,res) => {
+    
+    db.collection('userinfo').find().toArray(function(err,result){
+        console.log(result);
+        res.render('memberlist.ejs', {userinfo: result} );
+    
+    });
+});
+
+
+//자유게시판 관리
+app.get('/postlist',isAdmin, (req,res) => {
+    
+  db.collection('post').find().sort( {"_id": -1 } ).toArray(function(err,result){
+      console.log(result);
+      res.render('postlist.ejs', {post: result} );
+  });
+});
+
+
+//질답게시판 관리
+app.get('/qnapostlist',isAdmin, (req,res) => {
+    
+  db.collection('qnapost').find().sort( {"_id": -1 } ).toArray(function(err,result){
+      console.log(result);
+      res.render('qnapostlist.ejs', {qnapost: result} );
+  });
+});
+
+
+//회원 삭제(회원 탈퇴)
+app.delete('/deletemem', (req,res) => {
   //삭제되는 회원번호 출력
-  console.log('삭제게시글번호:', req.body);
+  console.log('삭제회원번호:',req.body);
   //데이터 전송으로 문자열로 자동 형변환된 데이터를 정수로 변환
   req.body._id = parseInt(req.body._id);
   //DB연동(userinfo 테이블)하여 클릭한 회원 정보를 삭제 후 콘솔에 회원정보 삭제 완료 메세지 출력
-  db.collection('post').deleteOne(req.body, function (err, result) {
-    //DB 내에 있는 현재 게시글 정보에 -1
-    db.collection('userinfo').updateOne({ name: 'totalfreeposts' }, { $inc: { currentPosts: -1 } }, function () {
-      if (err) { return console.log(err) }
-    })
+  db.collection('userinfo').deleteOne(req.body,function(err,result){
+    console.log('회원정보 삭제 완료')
+  //DB 내에 있는 현재 회원숫자 정보에 -1
+  db.collection('userinfo').updateOne({name:'member'},{$inc : {currentMember:-1}},function(err,result){
+    if(err){return console.log(err)}
+})
+    //응답코드 200(정상)을 전송해주시고 연결 성공 메세지도 같이 보내주세요
+    res.status(200).send({message : '연결에 성공했습니다.'});
   })
 });
 
-//질답게시판(qna) 게시글 삭제
-app.delete('/deleteqnapost', (req, res) => {
-  console.log('삭제게시글번호:', req.body);
-  req.body._id = parseInt(req.body._id);
-  db.collection('qnapost').deleteOne(req.body, function (err, result) {
+// //게시글 삭제
+// app.delete('/deletepost', (req, res) => {
+// console.log('삭제게시글번호:', req.body);
+// req.body._id = parseInt(req.body._id);
+// db.collection('post').deleteOne(req.body, function (err, result) {
+//   db.collection('userinfo').updateOne({ name: 'totalfreeposts' }, { $inc: { currentPosts: -1 } }, function () {
+//     if (err) { return console.log(err) }
+//   })
+// })
+// });
+
+app.get('/deletepost/:postno', (req, res) => {
+  var postno = req.params.postno;
+  console.log('삭제게시글번호:'+postno);
+  db.collection('post').deleteOne({_id : parseInt(postno)},function (err, result) {
     db.collection('counter').updateOne({ name: 'totalqnaposts' }, { $inc: { currentPosts: -1 } }, function () {
       if (err) { return console.log(err) }
+      console.log("자유게시판 "+postno+"번 게시글 삭제 완료")
+      res.redirect('/board/free')
     })
   })
+  });
+
+
+
+//질답게시판(qna) 게시글 삭제
+app.get('/deleteqnapost/:postno', (req, res) => {
+var postno = req.params.postno;
+console.log('삭제게시글번호:'+postno);
+db.collection('qnapost').deleteOne({_id : parseInt(postno)},function (err, result) {
+  db.collection('counter').updateOne({ name: 'totalqnaposts' }, { $inc: { currentPosts: -1 } }, function () {
+    if (err) { return console.log(err) }
+    console.log("질답게시판 "+postno+"번 게시글 삭제 완료")
+    res.redirect('/board/qna')
+  })
+})
 });
 
 
-  //게시판 게시글 수정
-  app.put('/edit/free', function(req, res){
-    db.collection('post').updateOne( {_id : parseInt(req.body.id) }, {'$set' : { 글제목 : req.body.post_title , 글내용 : req.body.post_content }}, function(){
-      console.log('게시글 수정 완료')
-      res.redirect('/board/free');
-    });
-  });
 
-  //질답게시판(QnA) 게시글 수정
-  app.put('/edit/qna', function(req, res){
-    db.collection('qnapost').updateOne( {_id : parseInt(req.body.id) }, {'$set' : { 글제목 : req.body.post_title , 글내용 : req.body.post_content }}, function(){
-      console.log('게시글 수정 완료')
-      res.redirect('/board/qna');
-    });
-  });
 
-  //질답게시판 게시판 GET 요청시
-  app.get('/board/qna', (req, res) => {
-    db.collection('qnapost').find().sort( {"_id": -1 } ).toArray(function(err,result){
-      res.render('qnaboard.ejs', {post: result} );
-  });
-  });
+
+
+
+//로그인 확인(로그인했니?)
+function isLogin(req,res,next){
+  if (req.user){
+    next()
+  } else {
+    res.render('mypageerr.ejs');
+  }
+}
+
+//관리자 로그인 확인(관리자세요?)
+function isAdmin(req,res,next){
+  if(req.user.id=='choragi'){
+    next()
+  } else {
+    res.render('mypageerr.ejs')
+  }
+}
+
+
 
 
 
@@ -396,6 +434,15 @@ app.delete('/deleteqnapost', (req, res) => {
   //   )
   
   // })})
+
+app.post('/updatemem', function (req, res) {
+  console.log(req.body.keyid)
+  db.collection('userinfo').updateOne({ _id: parseInt(req.body.keyid) }, { $set: { id: req.body.user_id, pw: req.body.user_pw, name: req.body.user_name, email: req.body.user_email } }, function (err, result) {
+    if (err) { return console.log(err) }
+    console.log(req.body.user_id + "님 회원정보 수정이 완료되었습니다.")
+    res.redirect('/')
+  })
+})
 
 
   // // 회원정보 수정
