@@ -9,6 +9,7 @@ const moment = require('moment');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
+require('dotenv').config()
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -23,7 +24,7 @@ app.set('view engine','ejs');
 app.use('/public', express.static('public'));
 
 var db;
-MongoClient.connect('mongodb+srv://root:adminuser@cluster0.83hv2.mongodb.net/todoapp?retryWrites=true&w=majority', { useUnifiedTopology: true } ,function (err, client) {
+MongoClient.connect(process.env.DB_URL , { useUnifiedTopology: true } ,function (err, client) {
   if (err){
     return console.log(err)
   } 
@@ -31,8 +32,8 @@ MongoClient.connect('mongodb+srv://root:adminuser@cluster0.83hv2.mongodb.net/tod
   db = client.db('todoapp');
  
 
-  app.listen(3000, function () {
-    console.log('listening on 3000')
+  app.listen(process.env.PORT, function () {
+    console.log('listening on 8000')
   });
 });
 
@@ -99,6 +100,27 @@ app.get('/board/free', (req, res) => {
     res.render('freeboard.ejs', {post: result, user:req.user});
 });
 });
+
+//자유게시판 검색기능
+app.get('/search', (req,res) => {
+  var searchcondition = [
+    {
+      $search: {
+        index: 'titleSearch',
+        text: {
+          query: req.query.value,
+          path: ['post_title', 'post_content']
+        }
+      }
+    },
+    { $sort : {_id : 1}},
+    { $limit : 100},
+] 
+  db.collection('post').aggregate(searchcondition).toArray((err,result)=>{
+    console.log(result)
+    res.render('search.ejs',{post:result})
+  })
+})
 
 // 자유게시판 게시글 상세페이지 GET
 app.get('/detail/free/:postno', function (req, res) {
