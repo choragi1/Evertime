@@ -37,9 +37,9 @@
     </ul>
     <% for(var i=0;i<post.length;i++){ %>
       <ul class="postlist list-group list-group-horizontal justify-content-center text-center">
-        <li class="post-content list-group-item" style="width: 6%"><%= post.length - i %></li>
+        <li class="post-content list-group-item" style="width: 6%"><%= post[i]._id %></li>
         <a class="post-content list-group-item" style="width: 20%" href="/detail/qna/<%= post[i]._id %>"><%= post[i].post_title %></a>
-        <li class="post-content list-group-item" style="width: 10%">댓글수</li>
+        <li class="post-content list-group-item" style="width: 10%"><%= post[i].commentcnt %></li>
         <li class="post-content list-group-item" style="width: 10%"><%= post[i].writer %></li>
         <li class="post-content list-group-item" style="width: 10%"><%=post[i].viewcounts%></li>
         <li class="post-content list-group-item" style="width: 10%">추천</li>

@@ -30,14 +30,14 @@
 
     
     <form style="padding: 10px;" action="/edit/qna?_method=PUT" method="POST">
-      <input value="<%= post._id %>" name="id" style="display : none">
+      <input value="<%= qnapost._id %>" name="id" style="display : none">
         <div class="mb-3">
             <label>제목</label>
-            <input type="text" value="<%= post.post_title %>" class="form-control" name="post_title">
+            <input type="text" value="<%= qnapost.post_title %>" class="form-control" name="post_title">
           </div>
         <div class="mb-3">
           <label>내용</label>
-          <input type="text" value="<%= post.post_content %>" class="form-control" name="post_content">
+          <input type="text" value="<%= qnapost.post_content %>" class="form-control" name="post_content">
         </div>
         <button type="submit" class="btn btn-danger">등록</button>
       </form>

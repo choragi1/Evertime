@@ -33,9 +33,21 @@
         <p class="card-text">작성일 : <%=post.date %></p>
         <hr>
         <p class="card-text"><%=post.post_content %></p>
-        <a class="btn btn-outline-success" href="/edit/free/<%=post._id%>">수정</a>
-        <a class="btn btn-outline-danger post-delete" href="/free/del/<%=post._id%>">삭제</a>
-        <button class="btn btn-outline-primary like" data-id="<%= post._id%>">추천</button>
+        <hr>
+        
+        <form method="POST" action="/free/edit">
+          <input type="hidden" name="_id" value="<%= post._id %>">
+          <input type="hidden" name="writer" value="<%= post.writer %>">
+          <input type="submit" class="btn btn-outline-success" value="수정">
+        </form>
+
+        <form method="POST" action="/free/del">
+          <input type="hidden" name="_id" value="<%= post._id %>">
+          <input type="hidden" name="writer" value="<%= post.writer %>">
+          <input type="submit" class="btn btn-outline-danger" value="삭제">
+        </form>
+        
+        <button class="btn btn-outline-primary" id="like" data-id="<%= post._id%>">추천</button>
       </div>
       <form class="ml-4 mb-4" method="POST" action="/detail/free/regcomm">
         <h5><b>댓글</b></h5>
@@ -49,7 +61,10 @@
 
 
  <script>
-   $('.like').click(function(e){
+
+
+
+   $('#like').click(function(e){
     var postno = e.target.dataset.id;
     $.ajax({
       method : 'POST',
