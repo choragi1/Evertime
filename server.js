@@ -119,15 +119,17 @@ app.post('/free/post', function (req, res) {
 
 // 자유게시판 게시글 상세페이지 GET
 app.get('/detail/free/:postno', function (req, res) {
-  var postno = req.params.postno;
-  db.collection('post').updateOne({ _id: parseInt(postno) }, { $inc: { viewcounts: 1 } }, function (err, result) {
-    db.collection('post').findOne({ _id: parseInt(postno) }, function (err, result) {
-      db.collection('freeco')
-      if (result == null) {
-        res.render('error404.ejs');
-      } else {
-        res.render('detailfree.ejs', { post: result });
-      }
+  var postno = parseInt(req.params.postno);
+  db.collection('post').updateOne({ _id: postno }, { $inc: { viewcounts: 1 } }, function (err, result) {
+    db.collection('post').findOne({ _id: postno }, function (err, result) {
+      db.collection('freecomments').find({parent : postno}).sort({ "_id": -1 }).toArray(function (err, result2) {
+        if (result == null) {
+          res.render('error404.ejs');
+        } else {
+          console.log(result2)
+          res.render('detailfree.ejs', { post: result, post2 : result2});
+        }
+      })
     })
   })
 })
@@ -181,8 +183,9 @@ app.post('/detail/free/regcomm', function (req, res) {
 
 
 // 자유게시판 추천(미구현상태)
-app.post('detail/free/like',function(req,res){
-  var postid = parseInt(req.body.postid);
+app.post('/detail/free/like',function(req,res){
+  var postid = parseInt(req.body._id);
+  console.log(postid)
   db.collection('post').updateOne({_id : postid},{$inc:{recommend : 1}})
   console.log("자유게시판 "+postid+"번 게시글이 추천되었습니다.")
 })
@@ -344,17 +347,20 @@ passport.deserializeUser(function (id, done) {
 
 //로그인 post (관리자 로그인 확인)
 app.post('/login', passport.authenticate('local', { failureRedirect: '/fail' }), function (req, res) {
-  if (req.user.id == 'choragi' && req.user.pw == 'eoals1592') {
-    res.redirect('/admin')
-  } else {
-    res.send("<script>location.href = document.referrer;</script>")
-  }
+  db.collection('userinfo').findOne({id : req.user.id},(err,result)=>{
+    if(err){return console.log(err)}
+    if(result.auth=='admin'){
+      res.redirect('/admin')
+    } else {
+      res.send("<script>location.href = document.referrer;</script>")  
+    }
+  })
 });
 
-//로그인 실패시
-app.get('/fail', function (req, res) {
-  res.render('loginerr.ejs');
-})
+// //로그인 실패시
+// app.get('/fail', function (req, res) {
+//   res.render('loginerr.ejs');
+// })
 
 
 //회원가입
@@ -383,7 +389,6 @@ app.get('/admin', isAdmin, function (req, res) {
 app.get('/manage/member', isAdmin, (req, res) => {
 
   db.collection('userinfo').find().toArray(function (err, result) {
-    console.log(result);
     res.render('memberlist.ejs', { userinfo: result });
 
   });

@@ -51,10 +51,19 @@
       </div>
       <form class="ml-4 mb-4" method="POST" action="/detail/free/regcomm">
         <h5><b>댓글</b></h5>
+
         <input type="text" style="width:500px;height:100px;" name="comment">
         <input type="hidden" name="postid" value="<%=post._id%>">
         <input type="submit" class="comment btn btn-outline-primary" data-id="<%= post._id%>" value="등록">
+
+        <% for(var i=0;i<post2.length;i++){ %>
+          <div class="m-1 p-2" style="border: 1px solid black;">
+           <%= post2[i].comment %>
+          </div>
+          <% } %>
       </form>
+
+      
     
     </div>    
   </div>
