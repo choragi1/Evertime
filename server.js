@@ -40,21 +40,48 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (
 
 //회원가입
 app.post('/member/add', function (req, res) {
+  let reg_id = /^[a-z0-9]{4,20}$/;
+  let reg_pw = /(?=.*\d)(?=.*[a-zA-ZS]).{8,}/;
+  let reg_name = /^[가-힣a-zA-Z]+$/;
+  let reg_email =/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/;
+
+  let user_id = req.body.user_id;
+  let user_pw = req.body.user_pw;
+  let user_name = req.body.user_name;
+  let user_email = req.body.user_email;
+
+  if(user_id==null|user_pw==null|user_name==null|user_email==null|user_id.length==0|user_pw.length==0|user_name.length==0|user_email.length==0){
+    res.send("<script>alert('필수정보를 입력해주세요');location.href = document.referrer;</script>")
+  }else if(!reg_id.test(user_id)){
+    res.send("<script>alert('아이디는 4~20자리 이상의 영문,숫자 조합만 가능합니다.');location.href = document.referrer;</script>")
+  }else if(!reg_pw.test(user_pw)){
+    res.send("<script>alert('비밀번호는 문자,숫자를 1개 이상 포함한 8자리 이상만 가능합니다.');location.href = document.referrer;</script>")
+  }else if(!reg_name.test(user_name)){
+    res.send("<script>alert('이름은 한글,영문만 가능합니다.');location.href = document.referrer;</script>")
+  }else if(!reg_email.test(user_email)){
+    res.send("<script>alert('이메일 양식을 확인해주세요.');location.href = document.referrer;</script>")
+  }else {
   var uploadtime = moment().format("YYYY-MM-DD");
-  console.log(req.body.user_id, req.body.user_pw, req.body.user_name, req.body.user_email);
   db.collection('counter').findOne({ name: 'member' }, function (err, result) {
     console.log(result.totalMember);
     var totalMember = result.totalMember;
-    // if(req.body.user_id == db.collection('userinfo').findOne())----------------------------
     db.collection('userinfo').insertOne({ _id: totalMember + 1, id: req.body.user_id, pw: req.body.user_pw, name: req.body.user_name, email: req.body.user_email, joinDate: uploadtime }, function () {
       console.log('회원정보 저장완료');
+      console.log(req.body.user_id, req.body.user_pw, req.body.user_name, req.body.user_email);
       db.collection('counter').updateOne({ name: 'member' }, { $inc: { totalMember: 1 } }, function (err, result) {
         if (err) { return console.log(err) }
         res.redirect('/');
       })
     });
   });
+}
 });
+
+// 회원가입 중복 아이디 검사(미구현상태)
+// app.post('/check/id',(req,res) => {
+//   console.log(id)
+//   db.collection('userinfo').findOne({id : id})
+// })
 
 
 
