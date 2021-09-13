@@ -91,7 +91,7 @@ app.get('/search', (req, res) => {
 //자유게시판 게시글 작성 페이지 GET 요청
 app.get('/free/write', isLogin, function (req, res) {
   console.log(req.body)
-  res.render('post.ejs', { user: req.user });
+  res.render('freepost.ejs', { user: req.user });
 });
 
 
@@ -127,7 +127,7 @@ app.get('/detail/free/:postno', function (req, res) {
           res.render('error404.ejs');
         } else {
           console.log(result2)
-          res.render('detailfree.ejs', { post: result, post2 : result2});
+          res.render('freedetail.ejs', { post: result, post2 : result2});
         }
       })
     })
@@ -140,7 +140,7 @@ app.post('/free/edit', isLogin, function (req, res) {
   console.log('자유게시판 글수정 POST 요청', '게시글번호 : ' + req.user._id)
   if (req.user.id == req.body.writer) {
     db.collection('post').findOne({ _id: parseInt(req.body._id) }, (err, result) => {
-      res.render('editfree.ejs', { post: result })
+      res.render('freeedit.ejs', { post: result })
     })
   } else {
     res.send("<script>alert('수정 권한이 없습니다.');location.href = document.referrer;</script>")
@@ -182,7 +182,7 @@ app.post('/detail/free/regcomm', function (req, res) {
 })
 
 
-// 자유게시판 추천(미구현상태)
+// 자유게시판 추천
 app.post('/detail/free/like',function(req,res){
   var postid = parseInt(req.body._id);
   console.log(postid)
@@ -265,7 +265,7 @@ app.post('/qna/edit', isLogin, function (req, res) {
   console.log('QnA게시판 글수정 POST 요청', '게시글번호 : ' + req.user._id)
   if (req.user.id == req.body.writer) {
     db.collection('qnapost').findOne({ _id: parseInt(req.body._id) }, (err, result) => {
-      res.render('editqna.ejs', { qnapost: result })
+      res.render('qnaedit.ejs', { qnapost: result })
     })
   } else {
     res.send("<script>alert('수정 권한이 없습니다.');location.href = document.referrer;</script>")
@@ -350,17 +350,17 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/fail' }),
   db.collection('userinfo').findOne({id : req.user.id},(err,result)=>{
     if(err){return console.log(err)}
     if(result.auth=='admin'){
-      res.redirect('/admin')
+      res.send("<script>alert('관리자 로그인에 성공했습니다.');location.href = document.referrer;</script>")  
     } else {
       res.send("<script>location.href = document.referrer;</script>")  
     }
   })
 });
 
-// //로그인 실패시
-// app.get('/fail', function (req, res) {
-//   res.render('loginerr.ejs');
-// })
+//로그인 실패시
+app.get('/fail', function (req, res) {
+  res.send("<script>alert('로그인에 실패했습니다');location.href = document.referrer;</script>")  
+})
 
 
 //회원가입
