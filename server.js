@@ -103,7 +103,7 @@ app.post('/free/post', function (req, res) {
     console.log(result.totalPosts);
     var totalPosts = result.totalPosts;
     console.log(req.body.user_id)
-    db.collection('post').insertOne({ _id: totalPosts + 1, post_title: req.body.post_title, post_content: req.body.post_content, date: uploadtime, writer: req.body.user_id}, function (err, result2) {
+    db.collection('post').insertOne({ _id: totalPosts + 1, post_title: req.body.post_title, post_content: req.body.post_content, date: uploadtime, writer: req.body.user_id, viewcounts: 0, recommend: 0}, function (err, result2) {
       console.log('게시글 등록완료');
       db.collection('counter').updateOne({ name: 'totalfreeposts' }, { $inc: { totalPosts: 1 } }, function () {
         if (err) { return console.log(err) }
