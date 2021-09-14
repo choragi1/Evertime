@@ -33,7 +33,7 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (
 
 
   app.listen(process.env.PORT, function () {
-    console.log('listening on 8000')
+    console.log('listening on 8080')
   });
 });
 
@@ -80,7 +80,9 @@ app.post('/member/add', function (req, res) {
 // 회원가입 중복 아이디 검사(미구현상태)
 // app.post('/check/id',(req,res) => {
 //   console.log(id)
-//   db.collection('userinfo').findOne({id : id})
+//   db.collection('userinfo').findOne({id : id},(err,result)=>{
+//     console.log(result)
+//   })
 // })
 
 
@@ -130,7 +132,7 @@ app.post('/free/post', function (req, res) {
     console.log(result.totalPosts);
     var totalPosts = result.totalPosts;
     console.log(req.body.user_id)
-    db.collection('post').insertOne({ _id: totalPosts + 1, post_title: req.body.post_title, post_content: req.body.post_content, date: uploadtime, writer: req.body.user_id, viewcounts: 0, recommend: 0}, function (err, result2) {
+    db.collection('post').insertOne({ _id: totalPosts + 1, post_title: req.body.post_title, post_content: req.body.post_content, date: uploadtime, writer: req.body.user_id, viewcounts: 0, recommend: 0, commentcnt: 0}, function (err, result2) {
       console.log('게시글 등록완료');
       db.collection('counter').updateOne({ name: 'totalfreeposts' }, { $inc: { totalPosts: 1 } }, function () {
         if (err) { return console.log(err) }
@@ -153,7 +155,6 @@ app.get('/detail/free/:postno', function (req, res) {
         if (result == null) {
           res.render('error404.ejs');
         } else {
-          console.log(result2)
           res.render('freedetail.ejs', { post: result, post2 : result2});
         }
       })
@@ -197,9 +198,9 @@ app.post('/free/del', (req, res) => {
 
 
 // 자유게시판 댓글 작성
-app.post('/detail/free/regcomm', function (req, res) {
+app.post('/detail/free/regcomm', isLogin ,function (req, res) {
   var postid = parseInt(req.body.postid);
-  var uploadtime = moment().format("YYYY-DD-MM hh:mm");
+  var uploadtime = moment().format("YYYY-MM-DD HH:mm");
   db.collection('freecomments').insertOne({ comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id }, function (err, result) {
     db.collection('post').updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
     console.log("자유게시판 " + postid + "번 게시글에 댓글이 작성되었습니다.")
@@ -226,16 +227,20 @@ app.get('/board/qna', (req, res) => {
   });
 });
 
+
+
 // 질답게시판 게시글 상세페이지 GET
 app.get('/detail/qna/:postno', function (req, res) {
-  var postno = req.params.postno;
-  db.collection('qnapost').updateOne({ _id: parseInt(postno) }, { $inc: { viewcounts: 1 } }, function (err, result) {
-    db.collection('qnapost').findOne({ _id: parseInt(postno) }, function (err, result) {
-      if (result == null) {
-        res.render('error404.ejs');
-      } else {
-        res.render('qnadetail.ejs', { qnapost: result });
-      }
+  var postno = parseInt(req.params.postno);
+  db.collection('qnapost').updateOne({ _id: postno }, { $inc: { viewcounts: 1 } }, function (err, result) {
+    db.collection('qnapost').findOne({ _id: postno }, function (err, result) {
+      db.collection('qnacomments').find({parent : postno}).sort({ "_id": -1 }).toArray(function (err, result2) {
+        if (result == null) {
+          res.render('error404.ejs');
+        } else {
+          res.render('qnadetail.ejs', { qnapost: result, qnapost2 : result2});
+        }
+      })
     })
   })
 })
@@ -274,15 +279,23 @@ app.post('/qna/post', function (req, res) {
 
 
 // 질답게시판 댓글 작성 
-app.post('/detail/qna/regcomm', function (req, res) {
+app.post('/detail/qna/regcomm', isLogin ,function (req, res) {
   var postid = parseInt(req.body.postid);
-  var uploadtime = moment().format("YYYY-DD-MM hh:mm");
+  var uploadtime = moment().format("YYYY-MM-DD HH:mm");
   db.collection('qnacomments').insertOne({ comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id }, function (err, result) {
     db.collection('qnapost').updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
     console.log("질답게시판 " + postid + "번 게시글에 댓글이 작성되었습니다.")
     res.redirect("/detail/qna/" + postid)
   })
   })
+})
+
+// 질답게시판 추천
+app.post('/detail/qna/like',function(req,res){
+  var postid = parseInt(req.body._id);
+  console.log(postid)
+  db.collection('qnapost').updateOne({_id : postid},{$inc:{recommend : 1}})
+  console.log("질답게시판 "+postid+"번 게시글이 추천되었습니다.")
 })
 
 
@@ -519,3 +532,44 @@ app.post('/mem/edit', function (req, res) {
   })
 })
 
+app.get('/upload',(req,res) => {
+  res.render('upload.ejs');
+})
+
+
+//파일 업로드, 저장을 위한 multer 라이브러리
+const multer = require('multer');
+
+//memoryStorage RAM에 저장해주세요~ (휘발성 O)
+// var storage = multer.memoryStorage({})
+
+//diskStorage 일반 하드(저장공간)에 저장해주세요~
+var uploadtime = moment().format("YYMMDD_hhmmss");
+var storage = multer.diskStorage({
+  destination : (req,file,cb) => {
+    cb(null, './public/userimage')
+  },
+  filename : (req, file, cb) => {
+    cb(null, uploadtime+"_"+file.originalname)
+  }
+});
+
+var path = require('path');
+var upload = multer({
+                      storage : storage,
+                      fileFilter: (req,file,callback)=>{
+                      var ext = path.extname(file.originalname);
+                      if(ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
+                        return callback(new Error('PNG, JPG만 업로드하세요'))
+                        }
+                        callback(null, true)
+                    },
+                    limits:{
+                        fileSize: 1024 * 1024 * 2
+                    }
+                });
+
+
+app.post('/upload', upload.single('file'), (req,res) => {
+  res.send("<script>alert('파일을 업로드 했습니다.');location.href = '/';</script>")
+});

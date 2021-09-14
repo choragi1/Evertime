@@ -30,27 +30,40 @@
       <input class="form-control" id="search-input">
       <button class="input-group-append btn btn-danger" id="search">검색</button>
     </div>
-    <ul class="text-center font-weight-bold header list-group list-group-horizontal justify-content-center">
-      <li class="list-group-item" style="width: 6%">No</li>
-      <li class="list-group-item" style="width: 20%">글제목</li>
-      <li class="list-group-item" style="width: 10%">댓글수</li>
-      <li class="list-group-item" style="width: 10%">작성자</li>
-      <li class="list-group-item" style="width: 10%">조회수</li>
-      <li class="list-group-item" style="width: 10%">추천</li>
-      <li class="list-group-item" style="width: 15%">작성일</li>
-    </ul>
-    <% for(var i=0;i<post.length;i++){ %>
-      <ul class="postlist list-group list-group-horizontal justify-content-center text-center">
-        <li class="post-content list-group-item" style="width: 6%"><%= post[i]._id %></li>
-        <a class="post-content list-group-item" style="width: 20%" href="/detail/free/<%= post[i]._id %>"><%= post[i].post_title %></a>
-        <li class="post-content list-group-item" style="width: 10%"><%= post[i].commentcnt %></li>
-        <li class="post-content list-group-item" style="width: 10%"><%= post[i].writer %></li>
-        <li class="post-content list-group-item" style="width: 10%"><%= post[i].viewcounts %></li>
-        <li class="post-content list-group-item" style="width: 10%"><%= post[i].recommend %></li>
-        <li class="post-content list-group-item" style="width: 15%"><%= post[i].date %></li>
-      </ul>
-      <% }; %>
-        <br>
+
+        <table class="table table-hover text-center">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 6%">No</th>
+              <th scope="col" style="width: 20%">글제목</th>
+              <th scope="col" style="width: 10%">작성자</th>
+              <th scope="col" style="width: 10%">조회수</th>
+              <th scope="col" style="width: 10%">댓글수</th>
+              <th scope="col" style="width: 10%">추천</th>
+              <th scope="col" style="width: 15%">작성일</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(var i=0;i<post.length;i++){ %>
+            <tr>
+              <td style="width: 6%" id="board-post"><%= post[i]._id %></td>
+              <td style="width: 20%; cursor:pointer" id="board-post" onclick="location.href='/detail/free/<%= post[i]._id %>'"><%= post[i].post_title %></td>
+              <td style="width: 10%" id="board-post"><%= post[i].writer %></td>
+              <td style="width: 10%" id="board-post"><%= post[i].viewcounts %></td>
+              <td style="width: 10%" id="board-post"><%= post[i].commentcnt %></td>
+              <td style="width: 10%" id="board-post"><%= post[i].recommend %></td>
+              <td style="width: 15%" id="board-post"><%= post[i].date %></td>
+            </tr>
+            <% }; %>
+          </tbody>
+        </table>
+
+
+
+
+
+
+
 
         <div class="justify-content-center text-center">
           <a href="/free/write" class="btn btn-outline-success">글쓰기</a>

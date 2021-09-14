@@ -107,3 +107,5 @@ a.postlist:active {color:black}
 .errMsg{
     width:80%
 }
+
+tr:hover {font-weight: bold;}
