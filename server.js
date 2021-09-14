@@ -14,7 +14,7 @@ require('dotenv').config()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-app.use(session({ secret: '비밀코드', resave: true, saveUninitialized: false }));
+app.use(session({ secret: '!%(@byebye!%(@', resave: true, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 

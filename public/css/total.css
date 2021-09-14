@@ -46,22 +46,6 @@ html,body{
     float:right;
 }
 
-.err-jb{
-    width: 1920px;
-    height: 500px;
-    padding: 0px;
-    align-items: center;
-}
-
-
-
-ul.postlist:hover {color: lightskyblue; font-weight: bold;}
-
-a.postlist:link {color:black}
-a.postlist:visited {color:black}
-a.postlist:hover {color:lightskyblue; font-weight: bold;}
-a.postlist:active {color:black}
-
 
 .intro-card{
     width: 80rem;
@@ -73,22 +57,23 @@ a.postlist:active {color:black}
 
 .jumbotron{
     background-color:e9f1f8;
-    height: 10%;
+    height: 25vh;
+    margin-bottom: 0px;
 }
 
 .carousel-item{
-    height:520px;
+    height:80vh;
 }
 
 
 .footer{
-    position: absolute;
+    /* position: absolute; */
     padding-top: 5px;
     padding-bottom: 5px;
-    bottom: 0;
+    bottom: 0px;
     left: 0;
     right: 0;
-    height: 14%;
+    height: 15vh;
     background-color: #e9f1f8;
     border-top: 1px solid #e4e8eb;
     text-align: center;
