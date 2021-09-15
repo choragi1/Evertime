@@ -79,10 +79,14 @@ app.post('/member/add', function (req, res) {
 
 // 회원가입 중복 아이디 검사(미구현상태)
 // app.post('/check/id',(req,res) => {
+//   if(id!=''){
 //   console.log(id)
 //   db.collection('userinfo').findOne({id : id},(err,result)=>{
 //     console.log(result)
 //   })
+// }else{
+//   res.send("<script>alert('아이디를 입력해주세요.')</script>")
+// }
 // })
 
 
@@ -185,8 +189,9 @@ app.put('/free/edit', function (req, res) {
 
 //자유게시판 게시글 삭제(DELETE)
 app.post('/free/del', (req, res) => {
-  console.log(req.user)
+  console.log('자유게시판 글삭제 요청', '게시글번호 : ' + req.user._id)
   var postno = parseInt(req.body._id)
+  if (req.user.id == req.body.writer) {
   db.collection('post').deleteOne({ _id: postno , writer: req.user.id }, (err, result) => {
     db.collection('counter').updateOne({ name: 'totalposts' }, { $inc: { currentPosts: -1 } }, function () {
       if (err) { return console.log(err) }
@@ -194,6 +199,9 @@ app.post('/free/del', (req, res) => {
       res.redirect('/board/free')
     })
   })
+} else {
+  res.send("<script>alert('삭제 권한이 없습니다.');location.href = document.referrer;</script>")
+}
 })
 
 
@@ -267,7 +275,7 @@ app.post('/qna/post', function (req, res) {
     console.log(result.totalPosts);
     var totalPosts = result.totalPosts;
 
-    db.collection('qnapost').insertOne({ _id: totalPosts + 1, post_title: req.body.post_title, post_content: req.body.post_content, date: uploadtime, writer: req.body.user_id }, function (err, result2) {
+    db.collection('qnapost').insertOne({ _id: totalPosts + 1, post_title: req.body.post_title, post_content: req.body.post_content, date: uploadtime, writer: req.body.user_id, viewcounts:0, comment:0, recommend:0 }, function (err, result2) {
       console.log('게시글 등록완료');
       db.collection('counter').updateOne({ name: 'totalqnaposts' }, { $inc: { totalPosts: 1 } }, function () {
         if (err) { return console.log(err) }
@@ -322,8 +330,9 @@ app.put('/edit/qna', function (req, res) {
 
 //질답게시판 게시글 삭제(DELETE)
 app.post('/qna/del', (req, res) => {
-  console.log(req.user)
+  console.log('질답게시판 글삭제 요청', '게시글번호 : ' + req.user._id)
   var postno = parseInt(req.body._id)
+  if (req.user.id == req.body.writer) {
   db.collection('qnapost').deleteOne({ _id: postno , writer: req.user.id }, (err, result) => {
     db.collection('counter').updateOne({ name: 'totalposts' }, { $inc: { currentPosts: -1 } }, function () {
       if (err) { return console.log(err) }
@@ -331,6 +340,9 @@ app.post('/qna/del', (req, res) => {
       res.redirect('/board/qna')
     })
   })
+} else {
+  res.send("<script>alert('삭제 권한이 없습니다.');location.href = document.referrer;</script>")
+}
 })
 
 
@@ -396,6 +408,14 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/fail' }),
     }
   })
 });
+
+app.get('/logout', (req,res)=>{
+  req.session.destroy((err,res)=>{
+    if(err){return err} 
+  })
+  res.send("<script>alert('로그아웃 되었습니다.');location.href = document.referrer;</script>")  
+})
+
 
 //로그인 실패시
 app.get('/fail', function (req, res) {
@@ -472,26 +492,6 @@ app.delete('/member/del', (req, res) => {
     res.status(200).send({ message: '연결에 성공했습니다.' });
   })
 });
-
-
-
-
-
-//질답게시판(qna) 게시글 삭제
-app.get('/qna/del/:postno', (req, res) => {
-  var postno = req.params.postno;
-  console.log('삭제게시글번호:' + postno);
-  db.collection('qnapost').deleteOne({ _id: parseInt(postno) }, function (err, result) {
-    db.collection('counter').updateOne({ name: 'totalqnaposts' }, { $inc: { currentPosts: -1 } }, function () {
-      if (err) { return console.log(err) }
-      console.log("질답게시판 " + postno + "번 게시글 삭제 완료")
-      res.redirect('/board/qna')
-    })
-  })
-});
-
-
-
 
 
 
