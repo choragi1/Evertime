@@ -31,12 +31,13 @@
           <div class="card col-md-5">
             <form style="padding: 10px;" action="/member/add" method="POST">
             <div class="card-body">
-
               <div class="row col-md-7 form-inline" style="margin:auto;">
                 <div class="mb-3">
                   <label for="user_id" class="form-label">아이디</label>
                   <input type="text" class="form-control" id="user_id" name="user_id">
+                  <div id="idcheckmsg"></div>
                 </div>
+                <button type="button" id="id_check" class="btn btn-outline-success btn-sm ml-4">아이디 체크</button>
               </div>
 
               <div class="row col-md-7 form-inline" style="margin:auto;">
@@ -65,8 +66,8 @@
               <button type="submit" class="btn btn-outline-danger" style="float:right;">회원가입</button>
             </div>
           </form>
-          <button id="id_check" class="btn btn-outline-danger btn-sm ml-4">아이디 체크</button>
           </div>
+          
       </div>
 
       
@@ -78,6 +79,7 @@
 
       <!-- 중복 아이디 검사 (미구현상태) -->
       <script>
+
         $('#id_check').click(() => {
           var checkId = $('#user_id').val()
           $.ajax({

@@ -78,12 +78,20 @@ app.post('/member/add', function (req, res) {
 });
 
 // 회원가입 중복 아이디 검사(미구현상태)
-// app.post('/check/id',(req,res) => {
-//   console.log(id)
-//   db.collection('userinfo').findOne({id : id},(err,result)=>{
-//     console.log(result)
-//   })
-// })
+app.post('/check/id',(req,res) => {
+  let checkId = req.body.id
+  if(checkId!=null | checkId!=''){
+  db.collection('userinfo').findOne({id : checkId},(err,result)=>{
+    if(result!=null | result!=''){
+      res.send("<script>alert('이미 존재하는 아이디입니다.');</script>")
+    }else{
+      res.send("<script>alert('사용 가능한 아이디입니다..');</script>")
+    }
+  })
+}else{
+  res.send("<script>alert('아이디를 입력해주세요!');</script>")
+}
+})
 
 
 
@@ -339,6 +347,7 @@ app.post('/qna/del', (req, res) => {
 
 // 메인페이지(index)
 app.get('/', (req, res) => {
+  console.log(req.session)
   res.render('index.ejs')
 });
 
@@ -372,13 +381,13 @@ passport.use(new LocalStrategy({
 
 // 로그인 성공시, 유저의 정보를 시리얼라이즈 해서 user.id라는 정보로 세션을 만들어서 저장함
 passport.serializeUser(function (user, done) {
-  done(null, user.id)
+  done(null, user)
 });
 
 
 // 이 세션 데이터를 가진 사람을 DB에서 찾아주세요. (마이페이지 접속시)
-passport.deserializeUser(function (id, done) {
-  db.collection('userinfo').findOne({ id: id }, function (err, result) {
+passport.deserializeUser(function (user, done) {
+  db.collection('userinfo').findOne({ id: user.id }, function (err, result) {
     done(null, result)
   })
 
