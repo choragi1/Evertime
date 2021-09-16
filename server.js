@@ -9,6 +9,8 @@ const moment = require('moment');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
+const cookieParser = require('cookie-parser')
+
 require('dotenv').config()
 
 app.use(express.json());
@@ -17,6 +19,7 @@ app.use(methodOverride('_method'));
 app.use(session({ secret: '!%(@byebye!%(@', resave: true, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cookieParser());
 
 app.set('view engine', 'ejs');
 
@@ -65,7 +68,7 @@ app.post('/member/add', function (req, res) {
   db.collection('counter').findOne({ name: 'member' }, function (err, result) {
     console.log(result.totalMember);
     var totalMember = result.totalMember;
-    db.collection('userinfo').insertOne({ _id: totalMember + 1, id: req.body.user_id, pw: req.body.user_pw, name: req.body.user_name, email: req.body.user_email, joinDate: uploadtime }, function () {
+    db.collection('userinfo').insertOne({ _id: totalMember + 1, id: req.body.user_id, pw: req.body.user_pw, name: req.body.user_name, email: req.body.user_email, joinDate: uploadtime, auth : "normal" }, function () {
       console.log('회원정보 저장완료');
       console.log(req.body.user_id, req.body.user_pw, req.body.user_name, req.body.user_email);
       db.collection('counter').updateOne({ name: 'member' }, { $inc: { totalMember: 1 } }, function (err, result) {
@@ -347,7 +350,7 @@ app.post('/qna/del', (req, res) => {
 
 // 메인페이지(index)
 app.get('/', (req, res) => {
-  console.log(req.session)
+  // console.log(req.session.passport)
   res.render('index.ejs')
 });
 
@@ -365,7 +368,6 @@ passport.use(new LocalStrategy({
   session: true,  //세션 정보 저장할래?
   passReqToCallback: false, // 아이디, 비밀번호 이외의 다른 정보 검사가 필요한지
 }, function (input_id, input_pw, done) {
-  // console.log(input_id, input_pw);
   db.collection('userinfo').findOne({ id: input_id }, function (err, result) {
     if (err) return done(err)
 
@@ -381,21 +383,20 @@ passport.use(new LocalStrategy({
 
 // 로그인 성공시, 유저의 정보를 시리얼라이즈 해서 user.id라는 정보로 세션을 만들어서 저장함
 passport.serializeUser(function (user, done) {
-  done(null, user)
+  done(null, user.id)
 });
 
-
 // 이 세션 데이터를 가진 사람을 DB에서 찾아주세요. (마이페이지 접속시)
-passport.deserializeUser(function (user, done) {
-  db.collection('userinfo').findOne({ id: user.id }, function (err, result) {
+passport.deserializeUser(function (id, done) {
+  db.collection('userinfo').findOne({ id: id }, function (err, result) {
     done(null, result)
   })
-
 })
 
 
 //로그인 post (관리자 로그인 확인)
-app.post('/login', passport.authenticate('local', { failureRedirect: '/fail' }), function (req, res) {
+app.post('/login',
+  passport.authenticate('local', { failureRedirect: '/fail' }), function (req, res) {
   db.collection('userinfo').findOne({id : req.user.id},(err,result)=>{
     if(err){return console.log(err)}
     if(result.auth=='admin'){
@@ -570,6 +571,10 @@ var storage = multer.diskStorage({
   }
 });
 
+
+
+
+//파일 업로드 관련
 var path = require('path');
 var upload = multer({
                       storage : storage,
