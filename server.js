@@ -100,9 +100,10 @@ app.post('/check/id',(req,res) => {
 
 
 // 자유게시판 페이지 GET 요청
-app.get('/board/free', (req, res) => {
-  db.collection('post').find().sort({ "_id": -1 }).toArray(function (err, result) {
-    res.render('freeboard.ejs', { post: result, user: req.user });
+app.get('/free/board/:page', (req, res) => {
+  var page = req.params.page;
+  db.collection('post').find().limit(5).skip(5*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
+    res.render('freeboard.ejs', { post: result, page: page });
   });
 });
 
@@ -232,9 +233,10 @@ app.post('/detail/free/like',function(req,res){
 
 
 //질답게시판 게시판 GET 요청
-app.get('/board/qna', (req, res) => {
-  db.collection('qnapost').find().sort({ "_id": -1 }).toArray(function (err, result) {
-    res.render('qnaboard.ejs', { post: result });
+app.get('/qna/board/:page', (req, res) => {
+  var page = req.params.page;
+  db.collection('qnapost').find().limit(5).skip(5*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
+    res.render('qnaboard.ejs', { post: result, page: page });
   });
 });
 
