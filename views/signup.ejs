@@ -78,7 +78,7 @@
 
 
       <!-- 중복 아이디 검사 (미구현상태) -->
-      <!-- <script>
+      <script>
 
         $('#id_check').click(() => {
           var checkId = $('#user_id').val()
@@ -86,10 +86,12 @@
             method : 'POST',
             url : '/check/id',
             data : {id : checkId}
-          })
+          }).done(function(data, textStatus, xhr){
+            alert(data);
+          })  
         })
 
-      </script> -->
+      </script>
 
 </body>
 

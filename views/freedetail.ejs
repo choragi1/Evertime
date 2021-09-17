@@ -94,12 +94,10 @@
       method : 'POST',
       url : '/detail/free/like',
       data : {_id : postno}
-    }).done(function(result){
-      console.log('서버 연결에 성공했습니다.');
-    }
-    )
-    alert('추천하였습니다.'); 
-  })
+    }).done(function(data, textStatus, xhr){
+            alert(data);
+          })  
+        })
 
 
 
