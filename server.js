@@ -162,7 +162,7 @@ app.post('/free/post', function (req, res) {
       console.log('게시글 등록완료');
       db.collection('counter').updateOne({ name: 'totalfreeposts' }, { $inc: { totalPosts: 1 } }, function () {
         if (err) { return console.log(err) }
-        res.redirect("/free/board")
+        res.redirect("/free/board/1")
       })
     })
   })
@@ -205,7 +205,7 @@ app.post('/free/edit', isLogin, function (req, res) {
 app.put('/free/edit', function (req, res) {
   db.collection('post').updateOne({ _id: parseInt(req.body.id) }, { $set: { post_title: req.body.post_title, post_content: req.body.post_content } }, function () {
     console.log('게시글 수정 완료')
-    res.redirect('/free/board');
+    res.redirect('/free/board/1');
   });
 });
 
@@ -217,7 +217,7 @@ app.post('/free/del', (req, res) => {
     db.collection('counter').updateOne({ name: 'totalposts' }, { $inc: { currentPosts: -1 } }, function () {
       if (err) { return console.log(err) }
       console.log("자유게시판 " + postno + "번 게시글 삭제 완료")
-      res.redirect('/free/board')
+      res.redirect('/free/board/1')
     })
   })
 })
@@ -312,7 +312,7 @@ app.post('/qna/post', function (req, res) {
       console.log('게시글 등록완료');
       db.collection('counter').updateOne({ name: 'totalqnaposts' }, { $inc: { totalPosts: 1 } }, function () {
         if (err) { return console.log(err) }
-        res.redirect("/qna/board")
+        res.redirect("/qna/board/1")
       })
     })
   })
@@ -370,7 +370,7 @@ app.post('/qna/edit', isLogin, function (req, res) {
 app.put('/qna/edit', function (req, res) {
   db.collection('qnapost').updateOne({ _id: parseInt(req.body.id) }, { $set: { post_title: req.body.post_title, post_content: req.body.post_content } }, function () {
     console.log('게시글 수정 완료')
-    res.redirect('/qna/board');
+    res.redirect('/qna/board/1');
   });
 });
 
@@ -382,7 +382,7 @@ app.post('/qna/del', (req, res) => {
     db.collection('counter').updateOne({ name: 'totalposts' }, { $inc: { currentPosts: -1 } }, function () {
       if (err) { return console.log(err) }
       console.log("질답게시판 " + postno + "번 게시글 삭제 완료")
-      res.redirect('/qna/board')
+      res.redirect('/qna/board/1')
     })
   })
 })
@@ -532,27 +532,6 @@ app.delete('/member/del', (req, res) => {
     res.status(200).send({ message: '연결에 성공했습니다.' });
   })
 });
-
-
-
-
-
-//질답게시판(qna) 게시글 삭제
-app.get('/qna/del/:postno', (req, res) => {
-  var postno = req.params.postno;
-  console.log('삭제게시글번호:' + postno);
-  db.collection('qnapost').deleteOne({ _id: parseInt(postno) }, function (err, result) {
-    db.collection('counter').updateOne({ name: 'totalqnaposts' }, { $inc: { currentPosts: -1 } }, function () {
-      if (err) { return console.log(err) }
-      console.log("질답게시판 " + postno + "번 게시글 삭제 완료")
-      res.redirect('/qna/board')
-    })
-  })
-});
-
-
-
-
 
 
 
