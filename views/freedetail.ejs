@@ -49,7 +49,7 @@
         
         <button style="display: inline-block;" class="btn btn-outline-primary" id="like" data-id="<%= post._id%>">추천</button>
       </div>
-      <form class="m-4" method="POST" action="/detail/free/regcomm">
+      <form class="m-4" method="POST" action="/free/detail/regcomm">
         
         <h5><b>댓글</b></h5>
         <input type="text" style="width:500px;height:100px;" name="comment">
@@ -92,7 +92,7 @@
     var postno = e.target.dataset.id;
     $.ajax({
       method : 'POST',
-      url : '/detail/free/like',
+      url : '/free/detail/like',
       data : {_id : postno}
     }).done(function(data, textStatus, xhr){
             alert(data);

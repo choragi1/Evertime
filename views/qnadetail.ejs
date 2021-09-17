@@ -49,7 +49,7 @@
           
           <button style="display: inline-block;" class="btn btn-outline-primary" id="like" data-id="<%= qnapost._id%>">추천</button>
         </div>
-        <form class="m-4" method="POST" action="/detail/qna/regcomm">
+        <form class="m-4" method="POST" action="/qna/detail/regcomm">
           
           <h5><b>댓글</b></h5>
           <input type="text" style="width:500px;height:100px;" name="comment">
@@ -88,18 +88,16 @@
   
   
   
-     $('#like').click(function(e){
+    $('#like').click(function(e){
       var postno = e.target.dataset.id;
       $.ajax({
         method : 'POST',
-        url : '/detail/qna/like',
+        url : '/qna/detail/like',
         data : {_id : postno}
-      }).done(function(result){
-        console.log('서버 연결에 성공했습니다.');
-      }
-      )
-      alert('추천하였습니다.');
-    })
+      }).done(function(data, textStatus, xhr){
+              alert(data);
+            })  
+          })
   
   
   
