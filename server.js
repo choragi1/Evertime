@@ -69,19 +69,19 @@ app.post('/member/add', function (req, res) {
       console.log(result.totalMember);
       var totalMember = result.totalMember;
       db.collection('userinfo').findOne({ id: user_id }, (err, result) => {
-      
-        if (user_id != result.id) {
+        if(result==null){
           db.collection('userinfo').insertOne({ _id: totalMember + 1, id: req.body.user_id, pw: req.body.user_pw, name: req.body.user_name, email: req.body.user_email, joinDate: uploadtime, auth: "normal" }, function (err, result) {
             console.log('회원정보 저장완료');
             console.log(req.body.user_id, req.body.user_pw, req.body.user_name, req.body.user_email);
             db.collection('counter').updateOne({ name: 'member' }, { $inc: { totalMember: 1 } }, function (err, result) {
               if (err) { return console.log(err) }
-              res.redirect('/');
+              res.send("<script>alert('회원가입에 성공했습니다.');location.href = document.referrer;</script>")
             })
           });
         } else {
           res.send("<script>alert('중복된 아이디입니다.');location.href = document.referrer;</script>")
         }
+      
       }
       )
     }
@@ -93,7 +93,7 @@ app.post('/member/add', function (req, res) {
 // 회원가입 중복 아이디 검사
 app.post('/check/id',(req,res) => {
   let checkId = req.body.id
-  console.log(checkId)
+  console.log(`중복된 아이디 확인 요청 : ${checkId}`)
   if(checkId==null | checkId==''){
     res.send("아이디를 입력해주세요!")
 }else{
