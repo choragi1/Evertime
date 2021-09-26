@@ -41,6 +41,12 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (
 });
 
 
+//인증정보 저장(네이게이션바 로딩완료시)
+app.get('/getauth', (req,res) => {
+  res.send(req.user)
+})
+
+
 //회원가입
 app.post('/member/add', function (req, res) {
   let reg_id = /^[a-z0-9]{4,20}$/;
@@ -114,8 +120,14 @@ app.post('/check/id',(req,res) => {
 // 자유게시판 페이지 GET 요청
 app.get('/free/board/:page', (req, res) => {
   var page = req.params.page;
-  db.collection('post').find().limit(8).skip(8*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
-    res.render('freeboard.ejs', { post: result, page: page });
+  let num = 8;
+
+  db.collection('post').find().limit(8).skip(num*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
+    db.collection('post').count({},(err,result2)=>{
+      let pagenum = Math.ceil(result2/num);
+      res.render('freeboard.ejs', { post: result, pagenum : pagenum, page:page});
+    })
+    
   });
 });
 
