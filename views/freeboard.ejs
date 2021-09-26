@@ -72,11 +72,10 @@
         <div class="justify-content-center">
           <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
-              <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-              <li class="page-item"><a class="page-link" href="/free/board/1">1</a></li>
-              <li class="page-item"><a class="page-link" href="/free/board/2">2</a></li>
-              <li class="page-item"><a class="page-link" href="/free/board/3">3</a></li>
-              <li class="page-item"><a class="page-link" href="#">Next</a></li>
+              
+              <% for(var j=1;j<=pagenum;j++){ %>
+              <li class="page-item"><a class="page-link" id="page-<%=j%>" href="/free/board/<%=j%>"><%=j%></a></li>
+              <%}%>
             </ul>
           </nav>
         </div>
