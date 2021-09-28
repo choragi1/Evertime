@@ -45,15 +45,15 @@
                   method : 'GET',
                   url : "/getauth",
                 }).done( (data, textStatus, xhr) => {
-                console.log(data)
-
-
-
-
-
+                if(data.id==null){
+                  $("#logout, #adminlink").addClass('hide')
+                } else if(data.id!=null){
+                  $("#login").addClass('hide')
+                } 
+                if(data.auth!="admin"){
+                $("#adminlink").addClass('hide')
+                }
               })
-
-
               )
               
 
