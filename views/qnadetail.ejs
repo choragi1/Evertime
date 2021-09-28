@@ -41,7 +41,7 @@
             <input type="submit" class="btn btn-outline-success" value="수정">
           </form>
   
-          <form style="display: inline-block;" method="POST" action="/qna/del">
+          <form style="display: inline-block;" method="POST" action="/qna/del?_method=DELETE">
             <input type="hidden" name="_id" value="<%= qnapost._id %>">
             <input type="hidden" name="writer" value="<%= qnapost.writer %>">
             <input type="submit" class="btn btn-outline-danger" value="삭제">
