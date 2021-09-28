@@ -9,8 +9,7 @@ const moment = require('moment');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
-const cookieParser = require('cookie-parser')
-
+// const cookieParser = require('cookie-parser')
 require('dotenv').config()
 
 app.use(express.json());
@@ -19,7 +18,7 @@ app.use(methodOverride('_method'));
 app.use(session({ secret: '!%(@byebye!%(@', resave: true, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cookieParser());
+// app.use(cookieParser());
 
 app.set('view engine', 'ejs');
 
@@ -203,7 +202,7 @@ app.get('/free/detail/:postno', function (req, res) {
 })
 
 
-//자유게시판 게시글 수정 POST 요청
+//자유게시판 게시글수정 페이지 POST 요청
 app.post('/free/edit', isLogin, function (req, res) {
   console.log('자유게시판 글수정 POST 요청', '게시글번호 : ' + req.user._id)
   if (req.user.id == req.body.writer) {
@@ -224,9 +223,10 @@ app.put('/free/edit', function (req, res) {
 });
 
 //자유게시판 게시글 삭제(DELETE)
-app.post('/free/del', (req, res) => {
+app.delete('/free/del', isLogin, (req, res) => {
   console.log(req.user)
   var postno = parseInt(req.body._id)
+  if (req.user.id == req.body.writer) {
   db.collection('post').deleteOne({ _id: postno , writer: req.user.id }, (err, result) => {
     db.collection('counter').updateOne({ name: 'totalposts' }, { $inc: { currentPosts: -1 } }, function () {
       if (err) { return console.log(err) }
@@ -234,6 +234,9 @@ app.post('/free/del', (req, res) => {
       res.redirect('/free/board/1')
     })
   })
+}else{
+  res.send("<script>alert('작성자만 삭제 가능합니다.');location.href = document.referrer;</script>")
+}
 })
 
 
@@ -368,7 +371,7 @@ app.post('/qna/detail/like', function (req, res) {
 
 
 
-//질답게시판(qna) 게시글 수정 POST 요청
+//질답게시판(qna) 게시글 수정 페이지 POST 요청
 app.post('/qna/edit', isLogin, function (req, res) {
   console.log('QnA게시판 글수정 POST 요청', '게시글번호 : ' + req.user._id)
   if (req.user.id == req.body.writer) {
@@ -389,7 +392,7 @@ app.put('/qna/edit', function (req, res) {
 });
 
 //질답게시판 게시글 삭제(DELETE)
-app.post('/qna/del', (req, res) => {
+app.delete('/qna/del', (req, res) => {
   console.log(req.user)
   var postno = parseInt(req.body._id)
   db.collection('qnapost').deleteOne({ _id: postno , writer: req.user.id }, (err, result) => {
@@ -473,7 +476,7 @@ app.get('/logout', (req,res)=>{
   req.session.destroy((err,res)=>{
     if(err){return err} 
   })
-  res.send("<script>alert('로그아웃 되었습니다.');location.href = '/';</script>")
+  res.send("<script>alert('로그아웃 되었습니다.');location.href = document.referrer;</script>")
 })
 
 
@@ -554,7 +557,7 @@ function isLogin(req, res, next) {
   if (req.user) {
     next()
   } else {
-    res.send("<script>alert('로그인 후 이용해주세요.');location.href = '/';</script>");
+    res.send("<script>alert('로그인 후 이용해주세요.');location.href = document.referrer;</script>");
   }
 }
 
@@ -565,17 +568,17 @@ function isAdmin(req, res, next) {
       if (result.auth === 'admin') {
         next()
       } else {
-        res.send("<script>alert('관리자 권한이 없습니다.');location.href = '/';</script>")
+        res.send("<script>alert('관리자 권한이 없습니다.');location.href = document.referrer;</script>")
       }
     })
   } else {
-    res.send("<script>alert('관리자 권한이 없습니다.');location.href = '/';</script>")
+    res.send("<script>alert('관리자 권한이 없습니다.');location.href = document.referrer;</script>")
   }
 }
 
 
-
-app.post('/mem/edit', function (req, res) {
+// 회원정보 수정
+app.put('/mem/edit', function (req, res) {
   console.log(req.body.keyid)
   db.collection('userinfo').updateOne({ _id: parseInt(req.body.keyid) }, { $set: { id: req.body.user_id, pw: req.body.user_pw, name: req.body.user_name, email: req.body.user_email } }, function (err, result) {
     if (err) { return console.log(err) }
@@ -627,5 +630,5 @@ var upload = multer({
 
 
 app.post('/upload', upload.single('file'), (req,res) => {
-  res.send("<script>alert('파일을 업로드 했습니다.');location.href = '/';</script>")
+  res.send("<script>alert('파일을 업로드 했습니다.');location.href = document.referrer;</script>")
 });

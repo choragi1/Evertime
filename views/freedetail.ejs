@@ -41,7 +41,7 @@
           <input type="submit" class="btn btn-outline-success" value="수정">
         </form>
 
-        <form style="display: inline-block;" method="POST" action="/free/del">
+        <form style="display: inline-block;" method="POST" action="/free/del?_method=DELETE">
           <input type="hidden" name="_id" value="<%= post._id %>">
           <input type="hidden" name="writer" value="<%= post.writer %>">
           <input type="submit" class="btn btn-outline-danger" value="삭제">
