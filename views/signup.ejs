@@ -80,16 +80,23 @@
       <!-- 중복 아이디 검사 (미구현상태) -->
       <script>
 
-        $('#id_check').click(() => {
-          var checkId = $('#user_id').val()
-          $.ajax({
-            method : 'POST',
-            url : '/check/id',
-            data : {id : checkId}
-          }).done(function(data, textStatus, xhr){
-            alert(data);
-          })  
-        })
+  $('#id_check').click(() => {
+      var checkId = $('#user_id').val()
+      $.ajax({
+        method: 'POST',
+        url: '/check/id',
+        data: { id: checkId }
+      }).done(function (data, textStatus, xhr) {
+
+        if (`${data}` == '사용 가능한 아이디입니다.') {
+          $("#idcheckmsg").text(`${data}`).addClass('idCheckMsg')
+          flag = true;
+
+        } else {
+          $("#idcheckmsg").text(`${data}`).addClass('idCheckMsg')
+        }
+      })
+    })
 
       </script>
 

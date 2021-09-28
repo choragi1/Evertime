@@ -99,15 +99,17 @@ app.post('/member/add', function (req, res) {
 // 회원가입 중복 아이디 검사
 app.post('/check/id',(req,res) => {
   let checkId = req.body.id
-  console.log(`중복된 아이디 확인 요청 : ${checkId}`)
+
   if(checkId==null | checkId==''){
     res.send("아이디를 입력해주세요!")
 }else{
 
   db.collection('userinfo').findOne({id : checkId},(err,result)=>{
     if(result!=null){
+      console.log(`중복된 아이디 확인 요청 : ${checkId}`)
       res.send("이미 존재하는 아이디입니다.")
     }else{
+
       res.send("사용 가능한 아이디입니다.")
     }
   }) 
