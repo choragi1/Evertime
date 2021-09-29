@@ -10,6 +10,9 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 // const cookieParser = require('cookie-parser')
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 require('dotenv').config()
 
 app.use(express.json());
@@ -18,6 +21,18 @@ app.use(methodOverride('_method'));
 app.use(session({ secret: '!%(@byebye!%(@', resave: true, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// 로그인 성공시 호출되며 유저의 정보를 세션에 저장함
+passport.serializeUser(function (user, done) {
+  done(null, user.id)
+});
+
+// 세션에 저장된 데이터를 기준으로 해서 필요한 정보를 조회할 때 사용
+passport.deserializeUser(function (id, done) {
+  db.collection('userinfo').findOne({ id: id }, function (err, result) {
+    done(null, result)
+  })
+})
 // app.use(cookieParser());
 
 app.set('view engine', 'ejs');
@@ -73,11 +88,12 @@ app.post('/member/add', function (req, res) {
     db.collection('counter').findOne({ name: 'member' }, function (err, result) {
       console.log(result.totalMember);
       var totalMember = result.totalMember;
+      bcrypt.hash(user_pw, 10, (err,hash) => {
       db.collection('userinfo').findOne({ id: user_id }, (err, result) => {
         if(result==null){
-          db.collection('userinfo').insertOne({ _id: totalMember + 1, id: req.body.user_id, pw: req.body.user_pw, name: req.body.user_name, email: req.body.user_email, joinDate: uploadtime, auth: "normal" }, function (err, result) {
+          db.collection('userinfo').insertOne({ _id: totalMember + 1, id: user_id, pw: hash, name: user_name, email: user_email, joinDate: uploadtime, auth: "normal" }, function (err, result) {
             console.log('회원정보 저장완료');
-            console.log(req.body.user_id, req.body.user_pw, req.body.user_name, req.body.user_email);
+            console.log(user_id, user_pw, user_name, user_email);
             db.collection('counter').updateOne({ name: 'member' }, { $inc: { totalMember: 1 } }, function (err, result) {
               if (err) { return console.log(err) }
               res.send("<script>alert('회원가입에 성공했습니다.');location.href = document.referrer;</script>")
@@ -89,6 +105,7 @@ app.post('/member/add', function (req, res) {
       
       }
       )
+    })
     }
     )
   }
@@ -152,7 +169,7 @@ app.get('/search', (req, res) => {
   ]
   db.collection('post').aggregate(searchcondition).toArray((err, result) => {
     console.log(result)
-    res.render('search.ejs', { post: result })
+    res.render('freesearch.ejs', { post: result })
   })
 })
 
@@ -436,28 +453,17 @@ passport.use(new LocalStrategy({
 }, function (input_id, input_pw, done) {
   db.collection('userinfo').findOne({ id: input_id }, function (err, result) {
     if (err) return done(err)
-
     if (!result) return done(null, false, { message: '존재하지 않는 아이디입니다.' })
-    if (input_pw == result.pw) {
-      return done(null, result)
-    } else {
-      return done(null, false, { message: '비밀번호가 틀렸습니다.' })
-    }
+    bcrypt.compare(input_pw,result.pw,(err,result2) => {
+      if (result2) {
+        return done(null, result)
+      } else {
+        return done(null, false, { message: '비밀번호가 틀렸습니다.' })
+      }
+    })
+    
   })
 }));
-
-
-// 로그인 성공시, 유저의 정보를 시리얼라이즈 해서 user.id라는 정보로 세션을 만들어서 저장함
-passport.serializeUser(function (user, done) {
-  done(null, user.id)
-});
-
-// 이 세션 데이터를 가진 사람을 DB에서 찾아주세요. (마이페이지 접속시)
-passport.deserializeUser(function (id, done) {
-  db.collection('userinfo').findOne({ id: id }, function (err, result) {
-    done(null, result)
-  })
-})
 
 
 //로그인 post (관리자 로그인 확인)
@@ -482,7 +488,7 @@ app.get('/logout', (req,res)=>{
   req.session.destroy((err,res)=>{
     if(err){return err} 
   })
-  res.send("<script>alert('로그아웃 되었습니다.');location.href = document.referrer;</script>")
+    res.send("<script>alert('로그아웃 되었습니다.');location.href = document.referrer;</script>")
 })
 
 
