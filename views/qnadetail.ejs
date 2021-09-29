@@ -38,13 +38,13 @@
           <form style="display: inline-block;" method="POST" action="/qna/edit">
             <input type="hidden" name="_id" value="<%= qnapost._id %>">
             <input type="hidden" name="writer" value="<%= qnapost.writer %>">
-            <input type="submit" class="btn btn-outline-success" value="수정">
+            <input type="submit" id="qna-edit" class="btn btn-outline-success" value="수정">
           </form>
   
           <form style="display: inline-block;" method="POST" action="/qna/del?_method=DELETE">
-            <input type="hidden" name="_id" value="<%= qnapost._id %>">
-            <input type="hidden" name="writer" value="<%= qnapost.writer %>">
-            <input type="submit" class="btn btn-outline-danger" value="삭제">
+            <input type="hidden" id="_id" value="<%= qnapost._id %>">
+            <input type="hidden" id="writer" value="<%= qnapost.writer %>">
+            <button type="button" id="qna-del" class="btn btn-outline-danger" data-id="<%= qnapost._id%>">삭제</button>
           </form>
           
           <button style="display: inline-block;" class="btn btn-outline-primary" id="like" data-id="<%= qnapost._id%>">추천</button>
@@ -86,7 +86,24 @@
   
    <script>
   
-  
+    $('#qna-del').click(function (e) {
+      var postno = e.target.dataset.id;
+      var writer = $('#writer').val();
+      $.ajax({
+        method: 'DELETE',
+        url: '/qna/del',
+        data: { _id: postno, writer:writer},
+        success : (data) => {
+          alert(data)
+          if(data=="삭제되었습니다."){
+          let url = "/qna/board/1"
+          location.replace(url);
+        }
+        }
+      }).fail(function (data, textStatus, xhr) {
+        alert(data);
+      })
+    })
   
     $('#like').click(function(e){
       var postno = e.target.dataset.id;

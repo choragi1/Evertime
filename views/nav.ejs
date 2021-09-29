@@ -23,17 +23,17 @@
           </div>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/mypage">마이페이지</a>
+          <a class="nav-link" id="mypage" href="/mypage">마이페이지</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" id="adminlink" href="/admin">관리</a>
         </li>
         <li class="nav-item">
-            <a class="login btn btn-outline-primary" id="login">로그인</a>
+            <a class="btn btn-outline-primary" id="login">로그인</a>
         </li>
-        <li class="nav-item">
-          <a class="logout btn btn-outline-danger ml-2" id="logout" href="/logout">로그아웃</a>
-        </li>
+        <!-- <li class="nav-item">
+          <a class="btn btn-outline-danger ml-2" id="logout" href="/logout">로그아웃</a>
+        </li> -->
 
       </ul>
     </div>
@@ -45,16 +45,20 @@
                   method : 'GET',
                   url : "/getauth",
                 }).done( (data, textStatus, xhr) => {
-                if(data.id==null){
-                  $("#logout, #adminlink").addClass('hide')
-                } else if(data.id!=null){
-                  $("#login").addClass('hide')
+                if(data.id!=null){
+                  $("#login").attr({"id":"logout","href":"/logout","class":"btn btn-outline-danger"}).text("로그아웃")
+                  $("#mypage").css("display",'block')
+                  
+                  if(data.auth!="admin"){
+                  $("#adminlink").css("display","none")
+                  }else{
+                    $("#adminlink").css("display","block")
                 } 
-                if(data.auth!="admin"){
-                $("#adminlink").addClass('hide')
+
+                } else {
+                  $("#logout").attr({"id":"login","href":"/login","class":"btn btn-outline-danger"}).text("로그인")
+                  $("#mypage").css("display","none")
                 }
               })
               )
-              
-
   </script>

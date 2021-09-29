@@ -38,13 +38,13 @@
         <form style="display: inline-block;" method="POST" action="/free/edit">
           <input type="hidden" name="_id" value="<%= post._id %>">
           <input type="hidden" name="writer" value="<%= post.writer %>">
-          <input type="submit" class="btn btn-outline-success" value="수정">
+          <input type="submit" id="free-edit" class="btn btn-outline-success" data-id="<%= post._id%>" value="수정">
         </form>
 
         <form style="display: inline-block;" method="POST" action="/free/del?_method=DELETE">
-          <input type="hidden" name="_id" value="<%= post._id %>">
-          <input type="hidden" name="writer" value="<%= post.writer %>">
-          <input type="submit" class="btn btn-outline-danger" value="삭제">
+          <input type="hidden" id="_id" value="<%= post._id %>">
+          <input type="hidden" id="writer" value="<%= post.writer %>">
+          <button type="button" id="free-del" class="btn btn-outline-danger" data-id="<%= post._id%>">삭제</button>
         </form>
         
         <button style="display: inline-block;" class="btn btn-outline-primary" id="like" data-id="<%= post._id%>">추천</button>
@@ -84,24 +84,41 @@
   </div>
 
 
- <script>
+<script>
 
+  $('#free-del').click(function (e) {
+    var postno = e.target.dataset.id;
+    var writer = $('#writer').val();
+    $.ajax({
+      method: 'DELETE',
+      url: '/free/del',
+      data: { _id: postno, writer:writer},
+      success : (data) => {
+        alert(data)
+        if(data=="삭제되었습니다."){
+        let url = "/free/board/1"
+        location.replace(url);
+      }
+      }
+    }).fail(function (data, textStatus, xhr) {
+      alert(data);
+    })
+  })
 
-
-   $('#like').click(function(e){
+  $('#like').click(function (e) {
     var postno = e.target.dataset.id;
     $.ajax({
-      method : 'POST',
-      url : '/free/detail/like',
-      data : {_id : postno}
-    }).done(function(data, textStatus, xhr){
-            alert(data);
-          })  
-        })
+      method: 'POST',
+      url: '/free/detail/like',
+      data: { _id: postno }
+    }).done(function (data, textStatus, xhr) {
+      alert(data);
+    })
+  })
 
 
 
- </script>
+</script>
 
   
 
