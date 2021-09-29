@@ -58,23 +58,16 @@
           </tbody>
         </table>
 
-
-
-
-
-
-
         <div class="justify-content-center text-center">
           <a href="/free/write" class="btn btn-outline-success">글쓰기</a>
         </div>
 
-        <br>
         <div class="justify-content-center">
           <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
               
               <% for(var j=1;j<=pagenum;j++){ %>
-              <li class="page-item"><a class="page-link" id="page-<%=j%>" href="/free/board/<%=j%>"><%=j%></a></li>
+                <li class="page-item mt-2"><a class="page-link" id="page-<%=j%>" href="/free/board/<%=j%>"><%=j%></a></li>
               <%}%>
             </ul>
           </nav>

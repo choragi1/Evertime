@@ -4,7 +4,7 @@
     let loginModal = $('.login-bg');
 
     // 로그인 버튼 클릭시 로그인 모달 출력
-      $('.login').click(()=>{
+      $('#login').click(()=>{
         if(loginModal.hasClass('slidedown')){
             loginModal.removeClass('slidedown');
         }else if(loginModal.hasClass('slideup')){
@@ -15,7 +15,7 @@
      
     
     // 로그인 모달창 내 취소 버튼 클릭시 로그인 모달 사라짐
-        $('.loginCancle').click(()=>{
+        $('#loginCancle').click(()=>{
         if(loginModal.hasClass('slideup')){
             loginModal.removeClass('slideup');
         }else if(loginModal.hasClass('slidedown')){

@@ -165,7 +165,7 @@ app.get('/free/write', isLogin, function (req, res) {
 
 // 자유게시판 게시글 쓰기
 app.post('/free/post', function (req, res) {
-  var uploadtime = moment().format("YYYY-DD-MM hh:mm");
+  var uploadtime = moment().format("YYYY-MM-DD hh:mm");
   console.log(req.body.post_title, req.body.post_content)
   db.collection('counter').findOne({ name: 'totalfreeposts' }, function (err, result) {
     console.log(result.totalPosts);
@@ -224,20 +224,21 @@ app.put('/free/edit', function (req, res) {
 
 //자유게시판 게시글 삭제(DELETE)
 app.delete('/free/del', isLogin, (req, res) => {
-  console.log(req.user)
+  console.log(req.user,req.body.writer)
   var postno = parseInt(req.body._id)
   if (req.user.id == req.body.writer) {
   db.collection('post').deleteOne({ _id: postno , writer: req.user.id }, (err, result) => {
     db.collection('counter').updateOne({ name: 'totalposts' }, { $inc: { currentPosts: -1 } }, function () {
       if (err) { return console.log(err) }
       console.log("자유게시판 " + postno + "번 게시글 삭제 완료")
-      res.redirect('/free/board/1')
+      res.send('삭제되었습니다.')
     })
   })
 }else{
-  res.send("<script>alert('작성자만 삭제 가능합니다.');location.href = document.referrer;</script>")
+  res.send("작성자만 삭제 가능합니다.")
 }
 })
+
 
 
 // 자유게시판 댓글 작성
@@ -274,17 +275,18 @@ app.post('/free/detail/like', function (req, res) {
 })
 
 
-
-
-
-//질답게시판 게시판 GET 요청
+// 질답게시판 페이지 GET 요청
 app.get('/qna/board/:page', (req, res) => {
   var page = req.params.page;
-  db.collection('qnapost').find().limit(8).skip(8*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
-    res.render('qnaboard.ejs', { post: result, page: page });
+  let num = 8;
+
+  db.collection('qnapost').find().limit(8).skip(num*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
+    db.collection('qnapost').count({},(err,result2)=>{
+      let pagenum = Math.ceil(result2/num);
+      res.render('qnaboard.ejs', { post: result, pagenum : pagenum, page:page});
+    })  
   });
 });
-
 
 
 // 질답게시판 게시글 상세페이지 GET
@@ -319,13 +321,13 @@ app.get('/qna/write', isLogin, (req, res) => {
 
 // 질답게시판 게시글 쓰기
 app.post('/qna/post', function (req, res) {
-  var uploadtime = moment().format("YYYY-DD-MM hh:mm");
+  var uploadtime = moment().format("YYYY-MM-DD hh:mm");
   console.log(req.body.post_title, req.body.post_content)
   db.collection('counter').findOne({ name: 'totalqnaposts' }, function (err, result) {
     console.log(result.totalPosts);
     var totalPosts = result.totalPosts;
 
-    db.collection('qnapost').insertOne({ _id: totalPosts + 1, post_title: req.body.post_title, post_content: req.body.post_content, date: uploadtime, writer: req.body.user_id, likeusers: [] }, function (err, result2) {
+    db.collection('qnapost').insertOne({ _id: totalPosts + 1, post_title: req.body.post_title, post_content: req.body.post_content, date: uploadtime, writer: req.body.user_id, viewcounts: 0, recommend: 0, commentcnt: 0, likeusers : []}, function (err, result2) {
       console.log('게시글 등록완료');
       db.collection('counter').updateOne({ name: 'totalqnaposts' }, { $inc: { totalPosts: 1 } }, function () {
         if (err) { return console.log(err) }
@@ -392,16 +394,20 @@ app.put('/qna/edit', function (req, res) {
 });
 
 //질답게시판 게시글 삭제(DELETE)
-app.delete('/qna/del', (req, res) => {
-  console.log(req.user)
+app.delete('/qna/del', isLogin, (req, res) => {
+  console.log(req.user,req.body.writer)
   var postno = parseInt(req.body._id)
+  if (req.user.id == req.body.writer) {
   db.collection('qnapost').deleteOne({ _id: postno , writer: req.user.id }, (err, result) => {
     db.collection('counter').updateOne({ name: 'totalposts' }, { $inc: { currentPosts: -1 } }, function () {
       if (err) { return console.log(err) }
       console.log("질답게시판 " + postno + "번 게시글 삭제 완료")
-      res.redirect('/qna/board/1')
+      res.send('삭제되었습니다.')
     })
   })
+}else{
+  res.send("작성자만 삭제 가능합니다.")
+}
 })
 
 

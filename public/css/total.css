@@ -42,9 +42,7 @@ html,body{
     /* overflow: hidden; */
 }
 
-.login{
-    float:right;
-}
+
 
 
 .intro-card{
@@ -99,9 +97,21 @@ tr:hover {font-weight: bold;}
     display:none;
 }
 
+.show{
+    display:block;
+}
+
 .idCheckMsg{
     color:red;
     font-size:16px;
     text-align:center;
     display:block;
+}
+
+#login{
+float:right;
+}
+
+#adminlink, #mypage{
+    display : none;
 }
