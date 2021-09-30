@@ -392,7 +392,7 @@ app.post('/qna/comment', isLogin ,function (req, res) {
     let commentNum = parseInt(count.currentcomments);
     db.collection('counter').updateOne({name : "totalqnacomments"},{$inc:{currentcomments : 1}},()=>{
       db.collection('qnacomments').insertOne({ _id : commentNum+1 ,comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id }, function (err, result) {
-        db.collection('post').updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
+        db.collection('qnapost').updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
         console.log(`질답게시판 ${postid}번 게시글에 댓글이 작성되었습니다.`)
         res.redirect(`/qna/detail/${postid}`)
       })
