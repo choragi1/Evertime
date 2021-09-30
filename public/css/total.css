@@ -115,3 +115,5 @@ float:right;
 #adminlink, #mypage{
     display : none;
 }
+
+svg {cursor: pointer;}

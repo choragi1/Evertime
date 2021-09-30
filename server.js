@@ -207,7 +207,7 @@ app.get('/free/detail/:postno', function (req, res) {
   var postno = parseInt(req.params.postno);
   db.collection('post').updateOne({ _id: postno }, { $inc: { viewcounts: 1 } }, function (err, result) {
     db.collection('post').findOne({ _id: postno }, function (err, result) {
-      db.collection('freecomments').find({parent : postno}).sort({ "_id": -1 }).toArray(function (err, result2) {
+      db.collection('freecomments').find({parent : postno}).sort({ "date": -1 }).toArray(function (err, result2) {
         if (result == null) {
           res.render('error404.ejs');
         } else {
@@ -259,15 +259,44 @@ app.delete('/free/del', isLogin, (req, res) => {
 
 
 // 자유게시판 댓글 작성
-app.post('/free/detail/regcomm', isLogin ,function (req, res) {
+app.post('/free/comment', isLogin ,function (req, res) {
   var postid = parseInt(req.body.postid);
   var uploadtime = moment().format("YYYY-MM-DD HH:mm");
-  db.collection('freecomments').insertOne({ comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id }, function (err, result) {
-    db.collection('post').updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
-    console.log(`자유게시판 ${postid}번 게시글에 댓글이 작성되었습니다.`)
-    res.redirect(`/free/detail/"${postid}`)
+  db.collection('counter').findOne({name : "totalfreecomments"},(err,count)=>{
+    let commentNum = parseInt(count.currentcomments);
+    db.collection('counter').updateOne({name : "totalfreecomments"},{$inc:{currentcomments : 1}},()=>{
+      db.collection('freecomments').insertOne({ _id : commentNum+1 ,comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id }, function (err, result) {
+        db.collection('post').updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
+        console.log(`자유게시판 ${postid}번 게시글에 댓글이 작성되었습니다.`)
+        res.redirect(`/free/detail/${postid}`)
+      })
+      })
+    })
   })
-  })
+})
+
+
+// 자유게시판 댓글 삭제
+app.delete('/free/comment', (req,res)=>{
+  let commentid = parseInt(req.body._id);
+  let writer = req.body.writer;
+  if(req.user===undefined){
+    res.send('로그인 후 이용 가능합니다.')
+  }else if(req.user.id === writer){
+    db.collection('freecomments').findOne({_id:commentid},(err,result)=>{
+      db.collection('freecomments').deleteOne({_id : commentid},(err,result2)=>{
+        let parent = result.parent;
+      db.collection('post').updateOne({_id:parent},{$inc:{commentcnt : -1}}, (err,result3) =>{
+        db.collection('counter').updateOne({name:"totalfreecomments"},{$inc:{currentcomments:-1}},(err,result4)=>{
+          console.log(`자유게시판 ${parent}번 게시글에서 ${writer}님이 댓글을 삭제하셨습니다.`)
+          res.send('삭제되었습니다.')
+        })
+      })
+    })
+})      
+  }else{
+    res.send('작성자만 삭제 가능합니다.')
+  }
 })
 
 
@@ -311,7 +340,7 @@ app.get('/qna/detail/:postno', function (req, res) {
   var postno = parseInt(req.params.postno);
   db.collection('qnapost').updateOne({ _id: postno }, { $inc: { viewcounts: 1 } }, function (err, result) {
     db.collection('qnapost').findOne({ _id: postno }, function (err, result) {
-      db.collection('qnacomments').find({parent : postno}).sort({ "_id": -1 }).toArray(function (err, result2) {
+      db.collection('qnacomments').find({parent : postno}).sort({ "date": -1 }).toArray(function (err, result2) {
         if (result == null) {
           res.render('error404.ejs');
         } else {
@@ -355,17 +384,46 @@ app.post('/qna/post', function (req, res) {
 })
 
 
-// 질답게시판 댓글 작성 
-app.post('/qna/detail/regcomm', isLogin ,function (req, res) {
+// 질답게시판 댓글 작성
+app.post('/qna/comment', isLogin ,function (req, res) {
   var postid = parseInt(req.body.postid);
   var uploadtime = moment().format("YYYY-MM-DD HH:mm");
-  db.collection('qnacomments').insertOne({ comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id }, function (err, result) {
-    db.collection('qnapost').updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
-    console.log("질답게시판 " + postid + "번 게시글에 댓글이 작성되었습니다.")
-    res.redirect("/detail/qna/" + postid)
-  })
+  db.collection('counter').findOne({name : "totalqnacomments"},(err,count)=>{
+    let commentNum = parseInt(count.currentcomments);
+    db.collection('counter').updateOne({name : "totalqnacomments"},{$inc:{currentcomments : 1}},()=>{
+      db.collection('qnacomments').insertOne({ _id : commentNum+1 ,comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id }, function (err, result) {
+        db.collection('post').updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
+        console.log(`질답게시판 ${postid}번 게시글에 댓글이 작성되었습니다.`)
+        res.redirect(`/qna/detail/${postid}`)
+      })
+      })
+    })
   })
 })
+
+// 질답게시판 댓글 삭제
+app.delete('/qna/comment', (req,res)=>{
+  let commentid = parseInt(req.body._id);
+  let writer = req.body.writer;
+  if(req.user===undefined){
+    res.send('로그인 후 이용 가능합니다.')
+  }else if(req.user.id === writer){
+    db.collection('qnacomments').findOne({_id:commentid},(err,result)=>{
+      db.collection('qnacomments').deleteOne({_id : commentid},(err,result2)=>{
+        let parent = result.parent;
+      db.collection('post').updateOne({_id:parent},{$inc:{commentcnt : -1}}, (err,result3) =>{
+        db.collection('counter').updateOne({name:"totalqnacomments"},{$inc:{currentcomments:-1}},(err,result4)=>{
+          console.log(`자유게시판 ${parent}번 게시글에서 ${writer}님이 댓글을 삭제하셨습니다.`)
+          res.send('삭제되었습니다.')
+        })
+      })
+    })
+})      
+  }else{
+    res.send('작성자만 삭제 가능합니다.')
+  }
+})
+
 
 
 // 질답게시판 추천 (ID당 한명씩만 가능)
