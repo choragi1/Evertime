@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS,JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+    integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+    crossorigin="anonymous"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/total.css">
+
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+
+  <title>회원가입</title>
+</head>
+
+<body>
+
+
+  <%- include('login.ejs') %>
+    <%- include('nav.ejs') %>
+
+
+      <div>
+        <div class="card col-md-5">
+          <form id="signup-form" style="padding: 10px;" action="/member/add" method="POST">
+            <div class="card-body">
+              <div class="row col-md-7 form-inline" style="margin:auto;">
+                <div class="mb-3">
+                  <label for="user_id" class="form-label">아이디</label>
+                  <input type="text" class="form-control" id="user_id" name="user_id">
+                  <div id="idcheckmsg"></div>
+                </div>
+                <button type="button" id="id_check" class="btn btn-outline-success btn-sm ml-4">아이디 체크</button>
+              </div>
+
+              <div class="row col-md-7 form-inline" style="margin:auto;">
+                <div class="mb-3">
+                  <label for="user_pw" class="form-label">비밀번호</label>
+                  <input type="password" class="form-control" id="user_pw" name="user_pw">
+                </div>
+              </div>
+
+
+              <div class="row col-md-7 form-inline" style="margin:auto;">
+                <div class="mb-3">
+                  <label for="user_name" class="form-label">이름</label>
+                  <input type="text" class="form-control" id="user_name" name="user_name">
+                </div>
+              </div>
+
+              <div class="row col-md-7 form-inline" style="margin:auto;">
+                <div class="mb-3">
+                  <label for="user_email" class="form-label">이메일</label>
+                  <input type="email" class="form-control" id="user_email" name="user_email">
+                </div>
+              </div>
+
+              <button type="submit" id="signup" class="btn btn-outline-danger" style="float:right;">회원가입</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+
+
+
+      <!-- 로그인 버튼 클릭 시 애니메이션 -->
+      <%- include ("loginani.ejs") %>
+
+
+        <!-- 중복 아이디 검사, Ajax를 통한 회원가입 데이터 전송(미구현) -->
+        <script>
+
+          $('#id_check').click(() => {
+            var checkId = $('#user_id').val()
+            $.ajax({
+              method: 'POST',
+              url: '/check/id',
+              data: { id: checkId }
+            }).done(function (data, textStatus, xhr) {
+
+              if (`${data}` == '사용 가능한 아이디입니다.') {
+                $("#idcheckmsg").text(`${data}`).addClass('idCheckMsg')
+                flag = true;
+
+              } else {
+                $("#idcheckmsg").text(`${data}`).addClass('idCheckMsg')
+              }
+            })
+          })
+
+          // $('#signup').click( () => {
+          //   let formdata = $('#signup-form').serialize();
+          //   console.log(formdata)
+          //   let formdata2 = formdata.split('&')
+          //   console.log(formdata2)
+
+
+          // })
+
+        </script>
+
+</body>
+
+</html>
