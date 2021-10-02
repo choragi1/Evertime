@@ -26,7 +26,7 @@ router.get('/getauth', (req, res) => {
 })
 
 // 회원가입 중복 아이디 검사
-router.post('/check/id', (req, res) => {
+router.post('/checkid', (req, res) => {
     let checkId = req.body.id
 
     if (checkId == null | checkId == '') {
