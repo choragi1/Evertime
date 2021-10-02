@@ -21,26 +21,30 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (
 
 //회원가입
 router.post('/add', function (req, res) {
-    let reg_id = /^[a-z0-9]{4,20}$/;
+    let reg_id = /^[a-z0-9]{5,12}$/;
     let reg_pw = /(?=.*\d)(?=.*[a-zA-ZS]).{8,}/;
-    let reg_name = /^[가-힣a-zA-Z]+$/;
+    let reg_nick = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{2,10}$/;
+    let reg_name = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{2,10}$/;
     let reg_email = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/;
-
-    let userID = req.body.user_id;
-    let userPW = req.body.user_pw;
-    let userName = req.body.user_name;
-    let userEmail = req.body.user_email;
-
-    if (userID == null | userPW == null | userName == null | userEmail == null | userID.length == 0 | userPW.length == 0 | userName.length == 0 | userEmail.length == 0) {
-        res.send("<script>alert('필수정보를 입력해주세요');location.href = document.referrer;</script>")
+    
+    let userID = req.body.userID;
+    let userPW = req.body.userPW;
+    let userNick = req.body.userNick;
+    let userName = req.body.userName;
+    let userEmail = req.body.userEmail;
+    
+    if (userID == null | userPW == null | userName == null | userEmail == null | userID.length == 0 | userPW.length == 0 | userNick.length == 0 | userName.length == 0 | userEmail.length == 0) {
+        res.send("필수정보를 입력해주세요")
     } else if (!reg_id.test(userID)) {
-        res.send("<script>alert('아이디는 4~20자리 이상의 영문,숫자 조합만 가능합니다.');location.href = document.referrer;</script>")
+        res.send("아이디는 6~12자리 내의 영문,숫자 조합만 가능합니다.")
     } else if (!reg_pw.test(userPW)) {
-        res.send("<script>alert('비밀번호는 문자,숫자를 1개 이상 포함한 8자리 이상만 가능합니다.');location.href = document.referrer;</script>")
-    } else if (!reg_name.test(userName)) {
-        res.send("<script>alert('이름은 한글,영문만 가능합니다.');location.href = document.referrer;</script>")
+        res.send("비밀번호는 문자,숫자를 1개 이상 포함한 8자리 이상만 가능합니다.")
+    } else if (!reg_nick.test(userNick)) {
+        res.send("닉네임은 2~10자리 내의 한글,영문만 사용가능합니다.")
+    }else if (!reg_name.test(userName)) {
+        res.send("이름은 2~10자리 내의 한글,영문만 사용가능합니다.")
     } else if (!reg_email.test(userEmail)) {
-        res.send("<script>alert('이메일 양식을 확인해주세요.');location.href = document.referrer;</script>")
+        res.send("이메일 양식을 확인해주세요.")
     } else {
         var uploadtime = moment().format("YYYY-MM-DD");
         db.collection('counter').findOne({ name: 'member' }, function (err, result) {
@@ -49,16 +53,16 @@ router.post('/add', function (req, res) {
             bcrypt.hash(userPW, 10, (err, hash) => {
                 db.collection('userinfo').findOne({ id: userID }, (err, result) => {
                     if (result == null) {
-                        db.collection('userinfo').insertOne({ _id: totalMember + 1, id: userID, pw: hash, name: userName, email: userEmail, joinDate: uploadtime, auth: "normal" }, function (err, result) {
+                        db.collection('userinfo').insertOne({ _id: totalMember + 1, id: userID, pw: hash, name: userName, email: userEmail, nickname : userNick,joinDate: uploadtime, auth: "normal" }, function (err, result) {
                             console.log('회원정보 저장완료');
-                            console.log(userID, userPW, user_name, userEmail);
+                            console.log(userID, userPW, userName, userEmail);
                             db.collection('counter').updateOne({ name: 'member' }, { $inc: { totalMember: 1 } }, function (err, result) {
                                 if (err) { return console.log(err) }
-                                res.send("<script>alert('회원가입에 성공했습니다.');location.href = document.referrer;</script>")
+                                res.send("회원가입에 성공했습니다.")
                             })
                         });
                     } else {
-                        res.send("<script>alert('중복된 아이디입니다.');location.href = document.referrer;</script>")
+                        res.send("중복된 아이디입니다.")
                     }
                 }
                 )
@@ -70,7 +74,6 @@ router.post('/add', function (req, res) {
 
 // 회원정보 수정
 router.put('/edit', function (req, res) {
-    let userID = req.body.user_id;
     let userPW = req.body.user_pw;
     let userName = req.body.user_name;
     let userEmail = req.body.user_email;
@@ -98,7 +101,7 @@ router.delete('/del', (req, res) => {
             if (err) { return console.log(err) }
         })
         //응답코드 200(정상)을 전송해주시고 연결 성공 메세지도 같이 보내주세요
-        res.status(200).send({ message: '연결에 성공했습니다.' });
+        res.send('탈퇴 처리 되었습니다.')
     })
 });
 

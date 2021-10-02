@@ -43,7 +43,7 @@
                   <input type="text" class="form-control" id="user_id" name="user_id">
                   <div id="idcheckmsg"></div>
                 </div>
-                <button type="button" id="id_check" class="btn btn-outline-success btn-sm ml-4">아이디 체크</button>
+                <button type="button" id="id_check" class="btn btn-xs btn-outline-success btn-sm ml-4">아이디 체크</button>
               </div>
 
               <div class="row col-md-7 form-inline" style="margin:auto;">
@@ -53,6 +53,12 @@
                 </div>
               </div>
 
+              <div class="row col-md-7 form-inline" style="margin:auto;">
+                <div class="mb-3">
+                  <label for="user_nick" class="form-label">닉네임</label>
+                  <input type="text" class="form-control" id="user_nick" name="user_nick">
+                </div>
+              </div>
 
               <div class="row col-md-7 form-inline" style="margin:auto;">
                 <div class="mb-3">
@@ -68,7 +74,7 @@
                 </div>
               </div>
 
-              <button type="submit" id="signup" class="btn btn-outline-danger" style="float:right;">회원가입</button>
+              <button type="button" id="signup" class="btn btn-outline-danger" style="float:right;">회원가입</button>
             </div>
           </form>
         </div>
@@ -89,7 +95,7 @@
             var checkId = $('#user_id').val()
             $.ajax({
               method: 'POST',
-              url: '/check/id',
+              url: 'auth/checkid',
               data: { id: checkId }
             }).done(function (data, textStatus, xhr) {
 
@@ -103,14 +109,46 @@
             })
           })
 
-          // $('#signup').click( () => {
-          //   let formdata = $('#signup-form').serialize();
-          //   console.log(formdata)
-          //   let formdata2 = formdata.split('&')
-          //   console.log(formdata2)
+          $('#signup').click(() => {
+            let userID = $("#user_id").val();
+            let userPW = $("#user_pw").val();
+            let userNick = $("#user_nick").val();
+            let userName = $("#user_name").val();
+            let userEmail = $("#user_email").val();
 
+            let reg_id = /^[a-z0-9]{5,12}$/;
+            let reg_pw = /(?=.*\d)(?=.*[a-zA-ZS]).{8,}/;
+            let reg_nick = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{2,10}$/;
+            let reg_name = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{2,10}$/;
+            let reg_email = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/;
 
-          // })
+            console.log (userID,userPW,userNick,userName,userEmail)
+            if (!reg_id.test(userID)) {
+              alert('아이디는 6~12자리 내의 영문,숫자 조합만 가능합니다.')
+            } else if (!reg_pw.test(userPW)) {
+              alert('비밀번호는 문자,숫자를 1개 이상 포함한 8자리 이상만 가능합니다.')
+            } else if (!reg_nick.test(userNick)) {
+              alert('닉네임은 2~10자리 내의 한글,영문만 사용가능합니다.')
+            } else if (!reg_name.test(userName)) {
+              alert('이름은 2~10자리 내의 한글,영문만 사용가능합니다.')
+            } else if (!reg_email.test(userEmail)) {
+              alert('이메일 양식을 확인해주세요.')
+            } else {
+              console.log('프론트는 넘어갔네')
+              $.ajax({
+                method: 'POST',
+                url: '/member/add',
+                data: { userID: userID, userPW: userPW, userNick: userNick, userName: userName, userEmail: userEmail },
+                success: (data) => {
+                  alert(data)
+                  history.back();
+                }
+              }).fail((data, textStatus, xhr) => {
+                console.log(data)
+                alert(data);
+              })
+            }
+          })
 
         </script>
 

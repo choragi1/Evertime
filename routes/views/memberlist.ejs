@@ -31,7 +31,6 @@
           <tr>
         <th scope="col" style="width: 8%">회원번호</th>
         <th scope="col" style="width: 8%">아이디</th>
-        <th scope="col" style="width: 8%">비밀번호</th>
         <th scope="col" style="width: 8%">이름</th>
         <th scope="col" style="width: 11%">이메일</th>
         <th scope="col" style="width: 11%">가입일</th>
@@ -44,7 +43,6 @@
       <ul class="memberlist list-group list-group-horizontal justify-content-center">
         <td style="width: 8%" id="board-post"><%= userinfo[i]._id %></td>
         <td style="width: 8%" id="board-post"><%= userinfo[i].id %></td>
-        <td style="width: 8%" id="board-post"><%= userinfo[i].pw %></td>
         <td style="width: 8%" id="board-post"><%= userinfo[i].name  %></td>
         <td style="width: 11%" id="board-post"><%= userinfo[i].email %></td>
         <td style="width: 11%" id="board-post"><%= userinfo[i].joinDate %></td>
@@ -70,16 +68,12 @@
           method : 'DELETE',
           url : '/member/del',
           data : {_id : memberno}
-        }).done(function(result){
-          console.log('서버 연결에 성공했습니다.');
-          // 삭제버튼을 누른 요소의 부모중 ul 객체를 제거해주세요/안보이게
-          // JQuery에서 this는 현재 지금 이벤트가 동작하는 곳
-          $(this).parents('tr').fadeOut;
-          
-
-          // textStatus : 에러코드, errorThrown : 에러메세지
+        }).done((data, textStatus, xhr) => {
+          alert(data)
+          history.go();
         }).fail(function(xhr,textStatus,errorThrown){
           console.log(xhr,textStatus,errorThrown);
+          
         });
       };
     })
