@@ -97,6 +97,31 @@ router.post('/comment', isLogin, function (req, res) {
     })
 })
 
+
+  // 자유게시판 댓글 수정
+  router.put('/comment', (req,res)=>{
+    let commentid = parseInt(req.body._id);
+    let writer = req.body.writer;
+    let comment = req.body.comment
+    if(req.user===undefined){
+      res.send('로그인 후 이용 가능합니다.')
+    }else if(req.user.id === writer){
+      db.collection('qnacomments').findOne({_id:commentid},(err,result)=>{
+        db.collection('qnacomments').updateOne({_id : commentid},{$set:{comment:comment}},(err,result2)=>{
+            let parent = result.parent;
+            console.log(`질답게시판 ${parent}번 게시글에서 ${writer}님이 댓글을 수정하셨습니다.`)
+            res.send('수정되었습니다.')
+          })
+        })    
+    }else{
+      res.send('수정 권한이 없습니다.')
+    }
+  })
+
+
+
+
+
 // 질답게시판 댓글 삭제
 router.delete('/comment', (req, res) => {
     let commentid = parseInt(req.body._id);
@@ -107,7 +132,7 @@ router.delete('/comment', (req, res) => {
         db.collection('qnacomments').findOne({ _id: commentid }, (err, result) => {
             db.collection('qnacomments').deleteOne({ _id: commentid }, (err, result2) => {
                 let parent = result.parent;
-                db.collection('post').updateOne({ _id: parent }, { $inc: { commentcnt: -1 } }, (err, result3) => {
+                db.collection('qnapost').updateOne({ _id: parent }, { $inc: { commentcnt: -1 } }, (err, result3) => {
                     db.collection('counter').updateOne({ name: "totalqnacomments" }, { $inc: { currentcomments: -1 } }, (err, result4) => {
                         console.log(`자유게시판 ${parent}번 게시글에서 ${writer}님이 댓글을 삭제하셨습니다.`)
                         res.send('삭제되었습니다.')

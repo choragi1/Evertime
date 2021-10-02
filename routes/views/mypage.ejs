@@ -27,20 +27,23 @@
 
     <div>
       <form style="padding: 10px;" action="/member/edit?_method=PUT" method="POST">
-        <div class="card col-md-5">
+        <div class="card col-md-7">
           <div class="card-body">
             <h4 style="text-align: center;"><%= userinfo.id %> 님의 마이페이지입니다.</h4>
             <div class="row col-md-5 form-inline" style="float:none; margin:auto;">
               <div class="mb-3">
                 <label for="user_id" class="form-label">아이디</label>
-                <input type="text" class="form-control" id="user_id" name="user_id" value="<%= userinfo.id %>">
+                <input type="text" class="form-control" id="user_id" name="user_id" value="<%= userinfo.id %>" disabled>
               </div>
             </div>
 
             <div class="row col-md-5 form-inline" style="float:none; margin:auto;">
               <div class="mb-3">
                 <label for="user_pw" class="form-label">비밀번호</label>
-                <input type="password" class="form-control" id="user_pw" name="user_pw" value="<%= userinfo.pw %>">
+                <div>
+                <input type="password" class="form-control" id="user_pw" name="user_pw" disabled>
+                <button id="changepw" type="button" class="btn btn-outline-primary">변경</button>
+                </div>
               </div>
             </div>
 
@@ -71,6 +74,14 @@
   <!-- 로그인 버튼 클릭 시 애니메이션 -->
   <%- include('loginani.ejs') %>
 
+
+  <script>
+    $("#changepw").click(()=>{
+      let flag = confirm('비밀번호 변경을 활성화 하시겠습니까?')
+      if(flag===true){
+      $("#user_pw").attr('disabled', false);
+    }})
+  </script>
 
   </body>
 </html>

@@ -151,11 +151,31 @@ router.get('/board/:page', (req, res) => {
         db.collection('freecomments').insertOne({ _id : commentNum+1 ,comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id }, function (err, result) {
           db.collection('post').updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
           console.log(`자유게시판 ${postid}번 게시글에 댓글이 작성되었습니다.`)
-          res.redirect(`free/detail/${postid}`)
+          res.redirect(`/free/detail/${postid}`)
         })
         })
       })
     })
+  })
+
+  // 자유게시판 댓글 수정
+  router.put('/comment', (req,res)=>{
+    let commentid = parseInt(req.body._id);
+    let writer = req.body.writer;
+    let comment = req.body.comment
+    if(req.user===undefined){
+      res.send('로그인 후 이용 가능합니다.')
+    }else if(req.user.id === writer){
+      db.collection('freecomments').findOne({_id:commentid},(err,result)=>{
+        db.collection('freecomments').updateOne({_id : commentid},{$set:{comment:comment}},(err,result2)=>{
+            let parent = result.parent;
+            console.log(`자유게시판 ${parent}번 게시글에서 ${writer}님이 댓글을 수정하셨습니다.`)
+            res.send('수정되었습니다.')
+          })
+        })    
+    }else{
+      res.send('수정 권한이 없습니다.')
+    }
   })
   
   
@@ -178,7 +198,7 @@ router.get('/board/:page', (req, res) => {
       })
   })      
     }else{
-      res.send('작성자만 삭제 가능합니다.')
+      res.send('삭제 권한이 없습니다.')
     }
   })
   

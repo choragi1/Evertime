@@ -39,7 +39,6 @@
 
 html,body{
     height: 100vh;
-    /* overflow: hidden; */
 }
 
 
@@ -65,7 +64,6 @@ html,body{
 
 
 .footer{
-    /* position: absolute; */
     padding-top: 5px;
     padding-bottom: 5px;
     bottom: 0px;
@@ -117,3 +115,13 @@ float:right;
 }
 
 svg {cursor: pointer;}
+
+
+[id^="comment-edit"]{
+    display: none;
+}
+
+[id^="edit-input"]{
+    width:700px;
+    text-align: center;
+}
