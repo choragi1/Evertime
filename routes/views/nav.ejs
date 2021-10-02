@@ -43,7 +43,7 @@
                   url : "/auth/getauth",
                 }).done( (data, textStatus, xhr) => {
                 if(data.id!=null){
-                  $("#login").attr({"id":"logout","href":"/logout","class":"btn btn-outline-danger"}).text("로그아웃")
+                  $("#login").attr({"id":"logout","href":"/auth/logout","class":"btn btn-outline-danger"}).text("로그아웃")
                   $("#mypage").css("display",'block')
                   
                   if(data.auth!="admin"){
@@ -53,7 +53,7 @@
                 } 
 
                 } else {
-                  $("#logout").attr({"id":"login","href":"/login","class":"btn btn-outline-danger"}).text("로그인")
+                  $("#logout").attr({"id":"login","href":"/auth/login","class":"btn btn-outline-danger"}).text("로그인")
                   $("#mypage").css("display","none")
                 }
               })

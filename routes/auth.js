@@ -68,15 +68,8 @@ router.get('/logout', (req, res) => {
     req.session.destroy((err, res) => {
         if (err) { return err }
     })
-    res.send("<script>alert('로그아웃 되었습니다.');location.href = document.referrer;</script>")
+    res.send("<script>alert('로그아웃 되었습니다.');location.href = '/'</script>")
 })
-
-
-// 카카오로그인 (미구현)
-let kakaoCredentials = require('../config/kakao.json')
-const kakao = kakaoCredentials
-
-
 
 
 module.exports = router;

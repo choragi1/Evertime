@@ -26,32 +26,32 @@ router.post('/add', function (req, res) {
     let reg_name = /^[가-힣a-zA-Z]+$/;
     let reg_email = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/;
 
-    let user_id = req.body.user_id;
-    let user_pw = req.body.user_pw;
-    let user_name = req.body.user_name;
-    let user_email = req.body.user_email;
+    let userID = req.body.user_id;
+    let userPW = req.body.user_pw;
+    let userName = req.body.user_name;
+    let userEmail = req.body.user_email;
 
-    if (user_id == null | user_pw == null | user_name == null | user_email == null | user_id.length == 0 | user_pw.length == 0 | user_name.length == 0 | user_email.length == 0) {
+    if (userID == null | userPW == null | userName == null | userEmail == null | userID.length == 0 | userPW.length == 0 | userName.length == 0 | userEmail.length == 0) {
         res.send("<script>alert('필수정보를 입력해주세요');location.href = document.referrer;</script>")
-    } else if (!reg_id.test(user_id)) {
+    } else if (!reg_id.test(userID)) {
         res.send("<script>alert('아이디는 4~20자리 이상의 영문,숫자 조합만 가능합니다.');location.href = document.referrer;</script>")
-    } else if (!reg_pw.test(user_pw)) {
+    } else if (!reg_pw.test(userPW)) {
         res.send("<script>alert('비밀번호는 문자,숫자를 1개 이상 포함한 8자리 이상만 가능합니다.');location.href = document.referrer;</script>")
-    } else if (!reg_name.test(user_name)) {
+    } else if (!reg_name.test(userName)) {
         res.send("<script>alert('이름은 한글,영문만 가능합니다.');location.href = document.referrer;</script>")
-    } else if (!reg_email.test(user_email)) {
+    } else if (!reg_email.test(userEmail)) {
         res.send("<script>alert('이메일 양식을 확인해주세요.');location.href = document.referrer;</script>")
     } else {
         var uploadtime = moment().format("YYYY-MM-DD");
         db.collection('counter').findOne({ name: 'member' }, function (err, result) {
             console.log(result.totalMember);
             var totalMember = result.totalMember;
-            bcrypt.hash(user_pw, 10, (err, hash) => {
-                db.collection('userinfo').findOne({ id: user_id }, (err, result) => {
+            bcrypt.hash(userPW, 10, (err, hash) => {
+                db.collection('userinfo').findOne({ id: userID }, (err, result) => {
                     if (result == null) {
-                        db.collection('userinfo').insertOne({ _id: totalMember + 1, id: user_id, pw: hash, name: user_name, email: user_email, joinDate: uploadtime, auth: "normal" }, function (err, result) {
+                        db.collection('userinfo').insertOne({ _id: totalMember + 1, id: userID, pw: hash, name: userName, email: userEmail, joinDate: uploadtime, auth: "normal" }, function (err, result) {
                             console.log('회원정보 저장완료');
-                            console.log(user_id, user_pw, user_name, user_email);
+                            console.log(userID, userPW, user_name, userEmail);
                             db.collection('counter').updateOne({ name: 'member' }, { $inc: { totalMember: 1 } }, function (err, result) {
                                 if (err) { return console.log(err) }
                                 res.send("<script>alert('회원가입에 성공했습니다.');location.href = document.referrer;</script>")
@@ -70,12 +70,18 @@ router.post('/add', function (req, res) {
 
 // 회원정보 수정
 router.put('/edit', function (req, res) {
-    console.log(req.body.keyid)
-    db.collection('userinfo').updateOne({ _id: parseInt(req.body.keyid) }, { $set: { id: req.body.user_id, pw: req.body.user_pw, name: req.body.user_name, email: req.body.user_email } }, function (err, result) {
+    let userID = req.body.user_id;
+    let userPW = req.body.user_pw;
+    let userName = req.body.user_name;
+    let userEmail = req.body.user_email;
+    let userNo = req.body.keyid
+    bcrypt.hash(userPW, 10, (err, hash) => {
+    db.collection('userinfo').updateOne({ _id: parseInt(userNo) }, { $set: {pw: hash, name: userName, email: userEmail } }, function (err, result) {
         if (err) { return console.log(err) }
-        console.log(req.body.user_id + "님 회원정보 수정이 완료되었습니다.")
+        console.log(`${userNo}님 회원정보 수정이 완료되었습니다.`)
         res.redirect('/')
     })
+})
 })
 
 //회원 삭제(회원 탈퇴)
