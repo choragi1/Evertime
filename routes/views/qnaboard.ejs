@@ -62,9 +62,31 @@
           <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
               
-              <% for(var j=1;j<=pagenum;j++){ %>
-              <li class="page-item mt-2"><a class="page-link" id="page-<%=j%>" href="/qna/board/<%=j%>"><%=j%></a></li>
+              <li class="page-item mt-2"><a class="page-link" id="page-first" href="/qna/board/1"> << </a></li>
+              <% if(page<=5){ %>
+              <li class="page-item mt-2"><a class="page-link" id="page-prev" href="/qna/board/<%=1%>"> < </a></li>
+              <% } %>
+
+              <% if(page>5){ %>
+              <li class="page-item mt-2"><a class="page-link" id="page-prev" href="/qna/board/<%=page-5%>"> < </a></li>
+              <% } %>
+
+              <% for(var j=0;j<maxPage;j++){ %>
+                <% if(page<=2){ %>
+                  <li class="page-item mt-2"><a class="page-link" id="page-<%=j+1%>" href="/qna/board/<%=j+1%>"><%=j+1%></a></li>
+                  <% }else if(page<=pagenum-2){%>
+                    <li class="page-item mt-2"><a class="page-link" id="page-<%=viewPage+j%>" href="/qna/board/<%=viewPage+j%>"><%=viewPage+j%></a></li>
+                    <%}else{%>
+                      <li class="page-item mt-2"><a class="page-link" id="page-<%=pagenum-4+j%>" href="/qna/board/<%=pagenum-4+j%>"><%=pagenum-4+j%></a></li>
+                      <%}%>
               <%}%>
+
+              <% if(page<pagenum-5) { %>
+              <li class="page-item mt-2"><a class="page-link" id="page-next" href="/qna/board/<%=page+5%>"> > </a></li>
+              <% } else {%>
+                <li class="page-item mt-2"><a class="page-link" id="page-next" href="/qna/board/<%=pagenum%>"> > </a></li>
+                <% } %>
+              <li class="page-item mt-2"><a class="page-link" id="page-last" href="/qna/board/<%=pagenum%>"> >> </a></li>
             </ul>
           </nav>
         </div>
