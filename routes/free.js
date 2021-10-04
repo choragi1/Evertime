@@ -20,13 +20,14 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (
 
 // 자유게시판 페이지 GET 요청
 router.get('/board/:page', (req, res) => {
-    var page = req.params.page;
-    let num = 8;
-  
-    db.collection('post').find().limit(8).skip(num*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
-      db.collection('post').count({},(err,result2)=>{
-        let pagenum = Math.ceil(result2/num);
-        res.render('freeboard.ejs', { post: result, pagenum : pagenum, page:page});
+  let page = parseInt(req.params.page);
+  const maxPost = 1;
+  const maxPage = 5;
+  const viewPage = page-2
+    db.collection('post').find().limit(maxPost).skip(maxPost*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
+      db.collection('post').count({},(err,count)=>{
+        let pagenum = Math.ceil(count / maxPost);
+        res.render('freeboard.ejs', { post: result, pagenum : pagenum, page:page, maxPage : maxPage, count:count, viewPage : viewPage});
       })
       
     });
