@@ -21,12 +21,12 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (
 // 자유게시판 페이지 GET 요청
 router.get('/board/:page', (req, res) => {
   let page = parseInt(req.params.page);
-  const maxPost = 1;
-  const maxPage = 5;
+  const maxPost = 3;
   const viewPage = page-2
     db.collection('post').find().limit(maxPost).skip(maxPost*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
       db.collection('post').count({},(err,count)=>{
         let pagenum = Math.ceil(count / maxPost);
+        const maxPage = pagenum<5 ? count : 5;
         res.render('freeboard.ejs', { post: result, pagenum : pagenum, page:page, maxPage : maxPage, count:count, viewPage : viewPage});
       })
       

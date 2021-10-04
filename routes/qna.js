@@ -17,18 +17,20 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (
   db = client.db('todoapp');
 })
 
-// 질답게시판 페이지 GET 요청
+// 자유게시판 페이지 GET 요청
 router.get('/board/:page', (req, res) => {
-    var page = req.params.page;
-    let num = 8;
-
-    db.collection('qnapost').find().limit(8).skip(num * (page - 1)).sort({ "_id": -1 }).toArray(function (err, result) {
-        db.collection('qnapost').count({}, (err, result2) => {
-            let pagenum = Math.ceil(result2 / num);
-            res.render('qnaboard.ejs', { post: result, pagenum: pagenum, page: page });
+    let page = parseInt(req.params.page);
+    const maxPost = 3;
+    const viewPage = page-2
+      db.collection('qnapost').find().limit(maxPost).skip(maxPost*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
+        db.collection('qnapost').count({},(err,count)=>{
+            let pagenum = Math.ceil(count / maxPost);
+            const maxPage = pagenum<5 ? pagenum : 5;
+            res.render('qnaboard.ejs', { post: result, pagenum : pagenum, page:page, maxPage : maxPage, count:count, viewPage : viewPage});
         })
+        
+      });
     });
-});
 
 
 // 질답게시판 게시글 상세페이지 GET
