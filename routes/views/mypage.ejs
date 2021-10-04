@@ -31,50 +31,94 @@
           <div class="card-body">
             <h4 style="text-align: center;"><%= userinfo.id %> 님의 마이페이지입니다.</h4>
             
+            
             <div class="row col-md-5 form-inline" style="float:none; margin:auto;">
               <div class="mb-3">
-                <label for="user_pw" class="form-label">비밀번호</label>
-                <div>
-                <input type="password" class="form-control" id="user_pw" name="user_pw" disabled>
-                <button id="changepw" type="button" class="btn btn-outline-primary">변경</button>
-                </div>
+                <label for="user_nick" class="form-label">닉네임</label>
+                <input type="text" class="form-control" id="user_nick" name="user_name" value="<%= userinfo.nickname %>">
               </div>
             </div>
-
-
+            
             <div class="row col-md-5 form-inline" style="float:none; margin:auto;">
               <div class="mb-3">
                 <label for="user_name" class="form-label">이름</label>
                 <input type="text" class="form-control" id="user_name" name="user_name" value="<%= userinfo.name %>">
               </div>
             </div>
-
+            
+            
             <div class="row col-md-5 form-inline" style="float:none; margin:auto;">
               <div class="mb-3">
                 <label for="user_email" class="form-label">이메일</label>
                 <input type="email" class="form-control" id="user_email" name="user_email" value="<%= userinfo.email %>">
               </div>
-              <input type="hidden" name="keyid" value="<%= userinfo._id %>">
+              <input type="hidden" id="user_keyid" name="keyid" value="<%= userinfo._id %>">
             </div>
-            <button type="submit" class="btn btn-outline-danger" style="float:right;">수정</button>
+
+            <div class="row col-md-5 form-inline" style="float:none; margin:auto;">
+              <div class="mb-3">
+                <label for="user_pw" class="form-label">비밀번호 확인</label>
+                <div>
+                <input type="password" class="form-control" id="user_pw" name="user_pw">
+                </div>
+              </div>
+            </div>
+
+            <button type="button" id="useredit" class="btn btn-outline-danger" style="float:right;">수정</button>
           </div>
         </div>
       </form>
     </div>
+    
 
-
-    <%- include('footer.ejs') %>
-
-  <!-- 로그인 버튼 클릭 시 애니메이션 -->
   <%- include('loginani.ejs') %>
 
 
   <script>
-    $("#changepw").click(()=>{
-      let flag = confirm('비밀번호 변경을 활성화 하시겠습니까?')
-      if(flag===true){
-      $("#user_pw").attr('disabled', false);
-    }})
+
+    $('#useredit').click(() => {
+      let userPW = $("#user_pw").val();
+      let userNick = $("#user_nick").val();
+      let userName = $("#user_name").val();
+      let userEmail = $("#user_email").val();
+      let userNo = $("#user_keyid").val();
+
+      let reg_nick = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,10}$/;
+      let reg_name = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,10}$/;
+      let reg_email = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/;
+
+      if (userPW==='') {
+        alert('비밀번호를 입력해주세요')
+      } else if (!reg_nick.test(userNick)) {
+        alert('닉네임은 2~10자리 내의 한글,영문만 사용가능합니다.')
+      } else if (!reg_name.test(userName)) {
+        alert('이름은 2~10자리 내의 한글,영문만 사용가능합니다.')
+      } else if (!reg_email.test(userEmail)) {
+        alert('이메일 양식을 확인해주세요.')
+      } else {
+        $.ajax({
+          method: 'PUT',
+          url: '/member/edit',
+          data: { userPW: userPW, userNick: userNick, userName: userName, userEmail: userEmail, userNo: userNo },
+
+        }).done((data, textStatus, xhr) => {
+            alert(data)
+            if(data!='비밀번호가 틀렸습니다.'){
+            history.back();
+          }
+          })
+      }
+
+      
+    })
+
+
+
+
+
+
+
+
   </script>
 
   </body>
