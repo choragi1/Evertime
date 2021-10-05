@@ -38,7 +38,7 @@
 
 
         <div>
-          <form style="padding: 10px;" action="/free/post" method="POST">
+          <form style="padding: 10px;">
             <div class="card col-md-12">
               <div class="card-body">
 
@@ -55,24 +55,34 @@
                     <input type="text" class="form-control" id="post_content" name="post_content">
                   </div>
                 </div>
-                <input type="hidden" name="user_id" value="<%= user.id %>">
 
-                <button type="submit" class="btn btn-outline-danger">등록</button>
+                <button type="button" id="post" class="btn btn-outline-danger" data-id="<%= user.id %>">등록</button>
               </div>
           </form>
 
-
-
-          <!-- <div class="row col-md-5 form-inline mt-4">
-            <form method="POST" action="/upload" enctype="multipart/form-data">
-              <input type="file" name="file" id="post-file">
-              <input type="submit" value="업로드">
-            </form>
-          </div> -->
         </div>
   </div>
 
   <%- include('loginani.ejs') %>
+
+<script>
+  $('#post').click((e) => {
+    let title = $("#post_title").val();
+    let content = $("#post_content").val();
+    let id = e.target.dataset.id;
+      $.ajax({
+        method : "POST",
+        url : '/free/post',
+        data : {title : title, content : content, id:id},
+        success : (data)=>{
+          alert(data)
+          let url = "/free/board/1"
+          location.replace(url);
+        }
+      })
+    })
+  
+</script>
 
 </body>
 

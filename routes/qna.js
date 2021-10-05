@@ -65,21 +65,22 @@ router.get('/write', isLogin, (req, res) => {
 
 // 질답게시판 게시글 쓰기
 router.post('/post', function (req, res) {
-    var uploadtime = moment().format("YYYY-MM-DD hh:mm");
-    console.log(req.body.post_title, req.body.post_content)
+    let uploadtime = moment().format("YYYY-MM-DD hh:mm");
+    let title = req.body.title;
+    let content = req.body.content;
+    let id = req.body.id;
+    console.log(req.body.title, req.body.content)
     db.collection('counter').findOne({ name: 'totalqnaposts' }, function (err, result) {
-        console.log(result.totalPosts);
-        var totalPosts = result.totalPosts;
-
-        db.collection('qnapost').insertOne({ _id: totalPosts + 1, post_title: req.body.post_title, post_content: req.body.post_content, date: uploadtime, writer: req.body.user_id, viewcounts: 0, recommend: 0, commentcnt: 0, likeusers: [] }, function (err, result2) {
-            console.log('게시글 등록완료');
-            db.collection('counter').updateOne({ name: 'totalqnaposts' }, { $inc: { totalPosts: 1 } }, function () {
-                if (err) { return console.log(err) }
-                res.redirect("/qna/board/1")
-            })
+      let totalPosts = result.totalPosts;
+      db.collection('qnapost').insertOne({ _id: totalPosts + 1, post_title: title, post_content: content, date: uploadtime, writer: id, viewcounts: 0, recommend: 0, commentcnt: 0, likeusers : []}, function (err, result2) {
+        console.log('게시글 등록완료');
+        db.collection('counter').updateOne({ name: 'totalqnaposts' }, { $inc: { totalPosts: 1 } }, function () {
+          if (err) { return console.log(err) }
+          res.send('등록되었습니다.')
         })
+      })
     })
-})
+  })
 
 
 // 질답게시판 댓글 작성
