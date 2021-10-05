@@ -21,7 +21,7 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (
 // 자유게시판 페이지 GET 요청
 router.get('/board/:page', (req, res) => {
   let page = parseInt(req.params.page);
-  const maxPost = 2;
+  const maxPost = 1;
   const viewPage = page-2
     db.collection('post').find().limit(maxPost).skip(maxPost*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
       db.collection('post').count({},(err,count)=>{
@@ -66,17 +66,18 @@ router.get('/board/:page', (req, res) => {
   
   // 자유게시판 게시글 쓰기
   router.post('/post', function (req, res) {
-    var uploadtime = moment().format("YYYY-MM-DD hh:mm");
-    console.log(req.body.post_title, req.body.post_content)
+    let uploadtime = moment().format("YYYY-MM-DD hh:mm");
+    let title = req.body.title;
+    let content = req.body.content;
+    let id = req.body.id;
+    console.log(req.body.title, req.body.content)
     db.collection('counter').findOne({ name: 'totalfreeposts' }, function (err, result) {
-      console.log(result.totalPosts);
-      var totalPosts = result.totalPosts;
-      console.log(req.body.user_id)
-      db.collection('post').insertOne({ _id: totalPosts + 1, post_title: req.body.post_title, post_content: req.body.post_content, date: uploadtime, writer: req.body.user_id, viewcounts: 0, recommend: 0, commentcnt: 0, likeusers : []}, function (err, result2) {
+      let totalPosts = result.totalPosts;
+      db.collection('post').insertOne({ _id: totalPosts + 1, post_title: title, post_content: content, date: uploadtime, writer: id, viewcounts: 0, recommend: 0, commentcnt: 0, likeusers : []}, function (err, result2) {
         console.log('게시글 등록완료');
         db.collection('counter').updateOne({ name: 'totalfreeposts' }, { $inc: { totalPosts: 1 } }, function () {
           if (err) { return console.log(err) }
-          res.redirect("/free/board/1")
+          res.send('등록되었습니다.')
         })
       })
     })
@@ -124,7 +125,8 @@ router.get('/board/:page', (req, res) => {
   });
   
   //자유게시판 게시글 삭제(DELETE)
-  router.delete('/del', isLogin, (req, res) => {
+  router.delete('/del', (req, res) => {
+    if(req.user!=undefined){
     console.log(req.user,req.body.writer)
     var postno = parseInt(req.body._id)
     if (req.user.id == req.body.writer) {
@@ -137,13 +139,16 @@ router.get('/board/:page', (req, res) => {
     })
   }else{
     res.send("작성자만 삭제 가능합니다.")
+  }}else{
+    res.send("작성자만 삭제 가능합니다.")
   }
   })
   
   
   
   // 자유게시판 댓글 작성
-  router.post('/comment', isLogin ,function (req, res) {
+  router.post('/comment' ,function (req, res) {
+    if(req.user!=undefined){
     var postid = parseInt(req.body.postid);
     var uploadtime = moment().format("YYYY-MM-DD HH:mm");
     db.collection('counter').findOne({name : "totalfreecomments"},(err,count)=>{
@@ -157,6 +162,9 @@ router.get('/board/:page', (req, res) => {
         })
       })
     })
+  }else{
+    res.send('로그인 후 작성 가능합니다.')
+  }
   })
 
   // 자유게시판 댓글 수정
@@ -229,7 +237,7 @@ function isLogin(req, res, next) {
     if (req.user) {
       next()
     } else {
-      res.send("<script>alert('로그인 후 이용해주세요.');location.href = document.referrer;</script>");
+      res.send("로그인 후 이용해주세요.");
     }
   }
   

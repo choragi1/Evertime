@@ -76,9 +76,10 @@
               <% } %>
 
               <% for(var j=0;j<maxPage;j++){ %>
-                <% if(page<=pagenum-3){ %>
-                  <li class="page-item mt-2"><a class="page-link" id="page-<%=page+j%>" href="/free/board/<%=page+j%>"><%=page+j%></a></li>
-                  
+                <% if(page<=2){ %>
+                  <li class="page-item mt-2"><a class="page-link" id="page-<%=j+1%>" href="/free/board/<%=j+1%>"><%=j+1%></a></li>
+                  <% }else if(page<=pagenum-2){%>
+                    <li class="page-item mt-2"><a class="page-link" id="page-<%=viewPage+j%>" href="/free/board/<%=viewPage+j%>"><%=viewPage+j%></a></li>
                     <%}else{%>
                       <li class="page-item mt-2"><a class="page-link" id="page-<%=pagenum-4+j%>" href="/free/board/<%=pagenum-4+j%>"><%=pagenum-4+j%></a></li>
                       <%}%>
@@ -102,9 +103,6 @@
           var input = $("#search-input").val()
           window.location.replace('/free/search?value='+input)
         })
-
-        
-        
 
         
 
