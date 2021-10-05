@@ -33,7 +33,6 @@ router.get('/signup', (req, res) => {
 
 //마이페이지
 router.get('/mypage', isLogin, function (req, res) {
-    // console.log(req.user) // deserializeUser 에서 찾았던 DB정보임.
     res.render('mypage.ejs', { userinfo: req.user })
 })
 
@@ -42,7 +41,7 @@ function isLogin(req, res, next) {
     if (req.user) {
         next()
     } else {
-        res.send("<script>alert('로그인 후 이용해주세요.');location.href = document.referrer;</script>");
+        res.send("로그인 후 이용해주세요.");
     }
 }
 

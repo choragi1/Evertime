@@ -21,7 +21,7 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (
 // 자유게시판 페이지 GET 요청
 router.get('/board/:page', (req, res) => {
   let page = parseInt(req.params.page);
-  const maxPost = 3;
+  const maxPost = 2;
   const viewPage = page-2
     db.collection('post').find().limit(maxPost).skip(maxPost*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
       db.collection('post').count({},(err,count)=>{
@@ -152,7 +152,7 @@ router.get('/board/:page', (req, res) => {
         db.collection('freecomments').insertOne({ _id : commentNum+1 ,comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id }, function (err, result) {
           db.collection('post').updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
           console.log(`자유게시판 ${postid}번 게시글에 댓글이 작성되었습니다.`)
-          res.redirect(`/free/detail/${postid}`)
+          res.send('등록되었습니다.')
         })
         })
       })
