@@ -1,10 +1,11 @@
 const express = require('express');
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
+// const db = require('./config/db');
+
+
 //method-override 라이브러리 사용
 const methodOverride = require('method-override');
-//날짜 관련 라이브러리인 moment 사용
-const moment = require('moment');
 // 로그인 관련 미들웨어
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -58,6 +59,7 @@ passport.deserializeUser(function (id, done) {
 
 app.set('views', './routes/views');
 app.set('view engine', 'ejs');
+// db();
 
 
 
@@ -69,10 +71,9 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (
   // todoapp이라는 db로 연결
   db = client.db('todoapp');
 
-
-  app.listen(process.env.PORT, function () {
-    console.log('listening on 8080')
-  });
+});
+app.listen(process.env.PORT, function () {
+  console.log(`listening on ${process.env.PORT}`)
 });
 
 

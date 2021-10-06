@@ -11,14 +11,14 @@ const moment = require('moment');
 
 require('dotenv').config()
 
-// DB설정
-const MongoClient = require('mongodb').MongoClient;
-var db;
-MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (err, client) {
-  if (err) {return console.log(err)}
-  // todoapp이라는 db로 연결
-  db = client.db('todoapp');
-})
+// // DB설정
+// const MongoClient = require('mongodb').MongoClient;
+// var db;
+// MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (err, client) {
+//   if (err) {return console.log(err)}
+//   // todoapp이라는 db로 연결
+//   db = client.db('todoapp');
+// })
 
 //인증정보 저장(네이게이션바 로딩완료시)
 router.get('/getauth', (req, res) => {
