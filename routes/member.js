@@ -65,14 +65,14 @@ router.post("/add", function (req, res) {
     db.collection("counter").findOne(
       { name: "member" },
       function (err, result) {
-        console.log(result.totalMember);
-        var totalMember = result.totalMember;
+        console.log(result.total);
+        var total = result.total;
         bcrypt.hash(userPW, 10, (err, hash) => {
           db.collection("userinfo").findOne({ id: userID }, (err, result) => {
             if (result == null) {
               db.collection("userinfo").insertOne(
                 {
-                  _id: totalMember + 1,
+                  _id: total + 1,
                   id: userID,
                   pw: hash,
                   name: userName,
@@ -86,7 +86,7 @@ router.post("/add", function (req, res) {
                   console.log(userID, userPW, userName, userEmail);
                   db.collection("counter").updateOne(
                     { name: "member" },
-                    { $inc: { totalMember: 1 } },
+                    { $inc: { total: 1, current : 1 } },
                     function (err, result) {
                       if (err) {
                         return console.log(err);
@@ -172,7 +172,7 @@ router.delete("/del", (req, res) => {
     //DB 내에 있는 현재 회원숫자 정보에 -1
     db.collection("userinfo").updateOne(
       { name: "member" },
-      { $inc: { currentMember: -1 } },
+      { $inc: { current: -1 } },
       function (err, result) {
         if (err) {
           return console.log(err);

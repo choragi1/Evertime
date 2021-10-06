@@ -1,5 +1,0 @@
-{
-    "clientID" :  "e97224ee49c8de8a61404e93d71c0cea",
-    "clientSecret" :  "G7Ijv64GcCuHiHpZzyX9fVUM77C6gYjZ",
-    "redirectUri" :  "http://localhost:8080/auth/kakao/callback"
-}

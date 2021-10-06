@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const Post = require('../models/post')
+const freecommentSchema = require('../models/freecomment')
 
 
 //날짜 관련 라이브러리인 moment 사용
@@ -11,7 +13,7 @@ require('dotenv').config()
 // DB설정
 const MongoClient = require('mongodb').MongoClient;
 var db;
-MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (err, client) {
+MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, (err, client) => {
   if (err) {return console.log(err)}
   // todoapp이라는 db로 연결
   db = client.db('todoapp');
@@ -21,13 +23,17 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (
 // 자유게시판 페이지 GET 요청
 router.get('/board/:page', (req, res) => {
   let page = parseInt(req.params.page);
-  const maxPost = 1;
+  const maxPost = 3;
   const viewPage = page-2
-    db.collection('post').find().limit(maxPost).skip(maxPost*(page-1)).sort({ "_id": -1 }).toArray(function (err, result) {
+    db.collection('post').find().limit(maxPost).skip(maxPost*(page-1)).sort({ "_id": -1 }).toArray( (err, result) => {
       db.collection('post').count({},(err,count)=>{
         let pagenum = Math.ceil(count / maxPost);
         const maxPage = pagenum<5 ? count : 5;
+        if(page<=pagenum){
         res.render('freeboard.ejs', { post: result, pagenum : pagenum, page:page, maxPage : maxPage, count:count, viewPage : viewPage});
+      }else{
+        res.redirect('/free/board/1')
+      }
       })
       
     });
@@ -58,8 +64,7 @@ router.get('/board/:page', (req, res) => {
   })
   
   //자유게시판 게시글 작성 페이지 GET 요청
-  router.get('/write', isLogin, function (req, res) {
-    console.log(req.body)
+  router.get('/write', isLogin, (req, res) => {
     res.render('freepost.ejs', { user: req.user });
   });
   
@@ -71,11 +76,11 @@ router.get('/board/:page', (req, res) => {
     let content = req.body.content;
     let id = req.body.id;
     console.log(req.body.title, req.body.content)
-    db.collection('counter').findOne({ name: 'totalfreeposts' }, function (err, result) {
-      let totalPosts = result.totalPosts;
-      db.collection('post').insertOne({ _id: totalPosts + 1, post_title: title, post_content: content, date: uploadtime, writer: id, viewcounts: 0, recommend: 0, commentcnt: 0, likeusers : []}, function (err, result2) {
+    db.collection('counter').findOne({ name: 'freeposts' }, (err, result) => {
+      let total = result.total;
+      db.collection('post').insertOne({ _id: total + 1, post_title: title, post_content: content, date: uploadtime, writer: id, viewcounts: 0, recommend: 0, commentcnt: 0, likeusers : []}, (err, result2) => {
         console.log('게시글 등록완료');
-        db.collection('counter').updateOne({ name: 'totalfreeposts' }, { $inc: { totalPosts: 1 } }, function () {
+        db.collection('counter').updateOne({ name: 'freeposts' }, { $inc: { total: 1, current: 1 } }, () => {
           if (err) { return console.log(err) }
           res.send('등록되었습니다.')
         })
@@ -88,11 +93,11 @@ router.get('/board/:page', (req, res) => {
   
   
   // 자유게시판 게시글 상세페이지 GET
-  router.get('/detail/:postno', function (req, res) {
+  router.get('/detail/:postno', (req, res) => {
     var postno = parseInt(req.params.postno);
-    db.collection('post').updateOne({ _id: postno }, { $inc: { viewcounts: 1 } }, function (err, result) {
-      db.collection('post').findOne({ _id: postno }, function (err, result) {
-        db.collection('freecomments').find({parent : postno}).sort({ "date": -1 }).toArray(function (err, result2) {
+    db.collection('post').updateOne({ _id: postno }, { $inc: { viewcounts: 1 } }, (err, result) => {
+      db.collection('post').findOne({ _id: postno }, (err, result) => {
+        db.collection('freecomments').find({parent : postno}).sort({ "date": -1 }).toArray((err, result2) => {
           if (result == null) {
             res.render('error404.ejs');
           } else {
@@ -105,7 +110,7 @@ router.get('/board/:page', (req, res) => {
   
   
   //자유게시판 게시글수정 페이지 POST 요청
-  router.post('/edit', isLogin, function (req, res) {
+  router.post('/edit', isLogin, (req, res) => {
     console.log('자유게시판 글수정 POST 요청', '게시글번호 : ' + req.user._id)
     if (req.user.id == req.body.writer) {
       db.collection('post').findOne({ _id: parseInt(req.body._id) }, (err, result) => {
@@ -117,8 +122,8 @@ router.get('/board/:page', (req, res) => {
   })
   
   //자유게시판 게시글 수정 PUT 요청
-  router.put('/edit', function (req, res) {
-    db.collection('post').updateOne({ _id: parseInt(req.body.id) }, { $set: { post_title: req.body.post_title, post_content: req.body.post_content } }, function () {
+  router.put('/edit', (req, res) => {
+    db.collection('post').updateOne({ _id: parseInt(req.body.id) }, { $set: { post_title: req.body.post_title, post_content: req.body.post_content } }, () => {
       console.log('게시글 수정 완료')
       res.redirect('/free/board/1');
     });
@@ -131,7 +136,7 @@ router.get('/board/:page', (req, res) => {
     var postno = parseInt(req.body._id)
     if (req.user.id == req.body.writer) {
     db.collection('post').deleteOne({ _id: postno , writer: req.user.id }, (err, result) => {
-      db.collection('counter').updateOne({ name: 'totalposts' }, { $inc: { currentPosts: -1 } }, function () {
+      db.collection('counter').updateOne({ name: 'posts' }, { $inc: { current: -1 } }, () => {
         if (err) { return console.log(err) }
         console.log("자유게시판 " + postno + "번 게시글 삭제 완료")
         res.send('삭제되었습니다.')
@@ -147,14 +152,14 @@ router.get('/board/:page', (req, res) => {
   
   
   // 자유게시판 댓글 작성
-  router.post('/comment' ,function (req, res) {
+  router.post('/comment' , (req, res) => {
     if(req.user!=undefined){
     var postid = parseInt(req.body.postid);
     var uploadtime = moment().format("YYYY-MM-DD HH:mm");
-    db.collection('counter').findOne({name : "totalfreecomments"},(err,count)=>{
-      let commentNum = parseInt(count.currentcomments);
-      db.collection('counter').updateOne({name : "totalfreecomments"},{$inc:{currentcomments : 1}},()=>{
-        db.collection('freecomments').insertOne({ _id : commentNum+1 ,comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id }, function (err, result) {
+    db.collection('counter').findOne({name : "freecomments"},(err,count) => {
+      let commentNum = parseInt(count.current);
+      db.collection('counter').updateOne({name : "freecomments"},{$inc:{total : 1, current : 1}},()=>{
+        db.collection('freecomments').insertOne({ _id : commentNum+1 ,comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id }, (err, result) => {
           db.collection('post').updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
           console.log(`자유게시판 ${postid}번 게시글에 댓글이 작성되었습니다.`)
           res.send('등록되었습니다.')
@@ -199,7 +204,7 @@ router.get('/board/:page', (req, res) => {
         db.collection('freecomments').deleteOne({_id : commentid},(err,result2)=>{
           let parent = result.parent;
         db.collection('post').updateOne({_id:parent},{$inc:{commentcnt : -1}}, (err,result3) =>{
-          db.collection('counter').updateOne({name:"totalfreecomments"},{$inc:{currentcomments:-1}},(err,result4)=>{
+          db.collection('counter').updateOne({name:"freecomments"},{$inc:{current:-1}},(err,result4)=>{
             console.log(`자유게시판 ${parent}번 게시글에서 ${writer}님이 댓글을 삭제하셨습니다.`)
             res.send('삭제되었습니다.')
           })
@@ -213,7 +218,7 @@ router.get('/board/:page', (req, res) => {
   
   
   // 자유게시판 추천 (ID당 한명씩만 가능)
-  router.post('/detail/like', function (req, res) {
+  router.post('/detail/like', (req, res) => {
     if (req.user != null) {
       var postid = parseInt(req.body._id);
       var userid = req.user.id
