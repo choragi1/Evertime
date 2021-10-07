@@ -22,29 +22,35 @@ MongoClient.connect(
 );
 
 // 자유게시판 페이지 GET 요청
-router.get("/board/:page", (req, res) => {
+router.get('/board/:page', (req, res) => {
   let page = parseInt(req.params.page);
-  const maxPost = 3;
-  const viewPage = page - 2;
-  db.collection("qnapost")
-    .find()
-    .limit(maxPost)
-    .skip(maxPost * (page - 1))
-    .sort({ _id: -1 })
-    .toArray((err, result) => {
-      db.collection("qnapost").count({}, (err, count) => {
-        let pagenum = Math.ceil(count / maxPost);
-        const maxPage = pagenum < 5 ? pagenum : 5;
-        res.render("qnaboard.ejs", {
-          post: result,
-          pagenum: pagenum,
-          page: page,
-          maxPage: maxPage,
-          count: count,
-          viewPage: viewPage,
-        });
-      });
-    });
+  // 한 페이지에 보여줄 게시물 수
+  let countPost = 5
+  // 한 페이지에 보여줄 페이지 수
+  let countPage = 5
+  db.collection('qnapost').find().limit(countPost).skip(countPost * (page - 1)).sort({ "_id": -1 }).toArray((err, result) => {
+    db.collection('qnapost').count({}, (err, count) => {
+      // 전체 게시글 수
+      let totalPost = count;
+      // 총 페이지 수
+      let totalPage = Math.floor(totalPost / countPost);
+      // 페이지 수 관련 로직
+      (totalPost % countPost) > 0
+        ? totalPage++
+        : null
+      // 페이지 시작 번호
+      let startPage = Math.floor((page-1) / countPage) * countPage +1
+      let endPage = startPage + countPage - 1;
+      if (page>0 & page <= totalPage ) {
+        res.render('qnaboard.ejs', { post: result, totalPost: totalPost, page: page, totalPage: totalPage, countPage: countPage, count: count, startPage : startPage, endPage : endPage });
+      } else if(page > totalPage){
+        res.redirect(`/qna/board/${totalPage}`)
+      } else {
+        res.redirect('/qna/board/1')
+      }
+    })
+
+  });
 });
 
 // 질답게시판 게시글 상세페이지 GET

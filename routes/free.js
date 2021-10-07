@@ -23,7 +23,7 @@ MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, (err, clie
 router.get('/board/:page', (req, res) => {
   let page = parseInt(req.params.page);
   // 한 페이지에 보여줄 게시물 수
-  let countPost = 2
+  let countPost = 5
   // 한 페이지에 보여줄 페이지 수
   let countPage = 5
   db.collection('post').find().limit(countPost).skip(countPost * (page - 1)).sort({ "_id": -1 }).toArray((err, result) => {
@@ -32,11 +32,15 @@ router.get('/board/:page', (req, res) => {
       let totalPost = count;
       // 총 페이지 수
       let totalPage = Math.floor(totalPost / countPost);
+      // 페이지 수 관련 로직
       (totalPost % countPost) > 0
         ? totalPage++
         : null
+      // 페이지 시작 번호
+      let startPage = Math.floor((page-1) / countPage) * countPage +1
+      let endPage = startPage + countPage - 1;
       if (page>0 & page <= totalPage ) {
-        res.render('freeboard.ejs', { post: result, totalPost: totalPost, page: page, totalPage: totalPage, countPage: countPage, count: count });
+        res.render('freeboard.ejs', { post: result, totalPost: totalPost, page: page, totalPage: totalPage, countPage: countPage, count: count, startPage : startPage, endPage : endPage });
       } else if(page > totalPage){
         res.redirect(`/free/board/${totalPage}`)
       } else {
