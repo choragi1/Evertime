@@ -2,23 +2,12 @@ const express = require('express');
 const router = express.Router();
 
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const session = require('express-session');
 
-//날짜 관련 라이브러리인 moment 사용
-const moment = require('moment');
 
 
 require('dotenv').config()
 
-// // DB설정
-// const MongoClient = require('mongodb').MongoClient;
-// var db;
-// MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (err, client) {
-//   if (err) {return console.log(err)}
-//   // todoapp이라는 db로 연결
-//   db = client.db('todoapp');
-// })
+const User = require('../models/user')
 
 //인증정보 저장(네이게이션바 로딩완료시)
 router.get('/getauth', (req, res) => {
@@ -33,7 +22,7 @@ router.post('/checkid', (req, res) => {
         res.send("아이디를 입력해주세요!")
     } else {
 
-        db.collection('userinfo').findOne({ id: checkId }, (err, result) => {
+        User.findOne({ id: checkId }, (err, result) => {
             if (result != null) {
                 console.log(`중복된 아이디 확인 요청 : ${checkId}`)
                 res.send("이미 존재하는 아이디입니다.")
@@ -48,7 +37,7 @@ router.post('/checkid', (req, res) => {
 //로그인 post (관리자 로그인 확인)
 router.post('/login',
     passport.authenticate('local', { failureRedirect: '/auth/fail' }), function (req, res) {
-        db.collection('userinfo').findOne({ id: req.user.id }, (err, result) => {
+        User.findOne({ id: req.user.id }, (err, result) => {
             if (err) { return console.log(err) }
             if (result.auth == 'admin') {
                 res.send("<script>alert('관리자 로그인에 성공했습니다.');location.href = document.referrer;</script>")
