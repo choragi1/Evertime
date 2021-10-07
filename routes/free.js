@@ -12,32 +12,40 @@ require('dotenv').config()
 
 // DB설정
 const MongoClient = require('mongodb').MongoClient;
-var db;
+let db;
 MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, (err, client) => {
   if (err) {return console.log(err)}
   // todoapp이라는 db로 연결
   db = client.db('todoapp');
 })
 
-
 // 자유게시판 페이지 GET 요청
 router.get('/board/:page', (req, res) => {
   let page = parseInt(req.params.page);
-  const maxPost = 3;
-  const viewPage = page-2
-    db.collection('post').find().limit(maxPost).skip(maxPost*(page-1)).sort({ "_id": -1 }).toArray( (err, result) => {
-      db.collection('post').count({},(err,count)=>{
-        let pagenum = Math.ceil(count / maxPost);
-        const maxPage = pagenum<5 ? count : 5;
-        if(page<=pagenum){
-        res.render('freeboard.ejs', { post: result, pagenum : pagenum, page:page, maxPage : maxPage, count:count, viewPage : viewPage});
-      }else{
+  // 한 페이지에 보여줄 게시물 수
+  let countPost = 2
+  // 한 페이지에 보여줄 페이지 수
+  let countPage = 5
+  db.collection('post').find().limit(countPost).skip(countPost * (page - 1)).sort({ "_id": -1 }).toArray((err, result) => {
+    db.collection('post').count({}, (err, count) => {
+      // 전체 게시글 수
+      let totalPost = count;
+      // 총 페이지 수
+      let totalPage = Math.floor(totalPost / countPost);
+      (totalPost % countPost) > 0
+        ? totalPage++
+        : null
+      if (page>0 & page <= totalPage ) {
+        res.render('freeboard.ejs', { post: result, totalPost: totalPost, page: page, totalPage: totalPage, countPage: countPage, count: count });
+      } else if(page > totalPage){
+        res.redirect(`/free/board/${totalPage}`)
+      } else {
         res.redirect('/free/board/1')
       }
-      })
-      
-    });
+    })
+
   });
+});
   
   
   
