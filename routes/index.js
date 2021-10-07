@@ -4,15 +4,6 @@ const router = express.Router();
 
 require('dotenv').config()
 
-// DB설정
-const MongoClient = require('mongodb').MongoClient;
-var db;
-MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (err, client) {
-  if (err) {return console.log(err)}
-  // todoapp이라는 db로 연결
-  db = client.db('todoapp');
-})
-
 // 메인페이지(index)
 router.get('/', (req, res) => {
     // console.log(req.session.passport)

@@ -65,8 +65,9 @@
 
           $.ajax({
           method : 'DELETE',
-          url : '/deleteqnapost',
-          data : {_id : postno}
+          url : '/manage/qnapost',
+          data : {_id : postno},
+          success : alert(data)
         }).done(function(result){
           console.log('서버 연결에 성공했습니다.');
           $(this).parents('ul').fadeOut;

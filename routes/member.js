@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-
+const User = require('../models/user')
+const Counter = require('../models/counter')
 //날짜 관련 라이브러리인 moment 사용
 const moment = require("moment");
 
@@ -8,20 +9,7 @@ const bcrypt = require("bcrypt");
 
 require("dotenv").config();
 
-// DB설정
-const MongoClient = require("mongodb").MongoClient;
-var db;
-MongoClient.connect(
-  process.env.DB_URL,
-  { useUnifiedTopology: true },
-  function (err, client) {
-    if (err) {
-      return console.log(err);
-    }
-    // todoapp이라는 db로 연결
-    db = client.db("todoapp");
-  }
-);
+
 
 //회원가입
 router.post("/add", function (req, res) {
@@ -62,15 +50,15 @@ router.post("/add", function (req, res) {
     res.send("이메일 양식을 확인해주세요.");
   } else {
     var uploadtime = moment().format("YYYY-MM-DD");
-    db.collection("counter").findOne(
+    Counter.findOne(
       { name: "member" },
       function (err, result) {
         console.log(result.total);
         var total = result.total;
         bcrypt.hash(userPW, 10, (err, hash) => {
-          db.collection("userinfo").findOne({ id: userID }, (err, result) => {
+          User.findOne({ id: userID }, (err, result) => {
             if (result == null) {
-              db.collection("userinfo").insertOne(
+              User.create(
                 {
                   _id: total + 1,
                   id: userID,
@@ -84,7 +72,7 @@ router.post("/add", function (req, res) {
                 function (err, result) {
                   console.log("회원정보 저장완료");
                   console.log(userID, userPW, userName, userEmail);
-                  db.collection("counter").updateOne(
+                  Counter.updateOne(
                     { name: "member" },
                     { $inc: { total: 1, current : 1 } },
                     function (err, result) {
@@ -119,7 +107,7 @@ router.put("/edit", function (req, res) {
   let userEmail = req.body.userEmail;
   let userNo = parseInt(req.body.userNo);
   
-  db.collection("userinfo").findOne({ _id: userNo }, (err, user) => {
+  User.findOne({ _id: userNo }, (err, user) => {
     bcrypt.compare(userPW, user.pw, (err, result) => {
       if (result!=true) {
         res.send('비밀번호가 틀렸습니다.');
@@ -135,7 +123,7 @@ router.put("/edit", function (req, res) {
     res.send("이메일 양식을 확인해주세요.");
   } else {
     bcrypt.hash(userPW, 10, (err, hash) => {
-      db.collection("userinfo").updateOne(
+      User.updateOne(
         { _id: userNo },
         {
           $set: {
@@ -145,7 +133,7 @@ router.put("/edit", function (req, res) {
           },
         },
         function (err, result) {
-          db.collection("userinfo").findOne({ _id: userNo }, (err, user) => {
+          User.findOne({ _id: userNo }, (err, user) => {
             if (err) {
               return console.log(err);
             }
@@ -167,10 +155,10 @@ router.delete("/del", (req, res) => {
   //데이터 전송으로 문자열로 자동 형변환된 데이터를 정수로 변환
   req.body._id = parseInt(req.body._id);
   //DB연동(userinfo 테이블)하여 클릭한 회원 정보를 삭제 후 콘솔에 회원정보 삭제 완료 메세지 출력
-  db.collection("userinfo").deleteOne(req.body, function (err, result) {
+  User.deleteOne(req.body, function (err, result) {
     console.log("회원정보 삭제 완료");
     //DB 내에 있는 현재 회원숫자 정보에 -1
-    db.collection("userinfo").updateOne(
+    User.updateOne(
       { name: "member" },
       { $inc: { current: -1 } },
       function (err, result) {

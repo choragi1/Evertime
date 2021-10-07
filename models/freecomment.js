@@ -4,7 +4,8 @@ const freecommentSchema = new mongoose.Schema({
     comment : String,
     parent : Number,
     date : String,
-    writer : String
+    writer : String,
+    depth : Number
 })
 
-module.exports = mongoose.model('Freecomment',freecommentSchema);
+module.exports = mongoose.model('FreeComment',freecommentSchema);

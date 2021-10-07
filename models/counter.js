@@ -1,11 +1,9 @@
 const mongoose = require('mongoose');
 const counterSchema = new mongoose.Schema({
-    _id : ObjectId,
+    _id : Number,
     name : String,
-    totalMember : String,
-    currentMember : String,
-    auth : String,
-    nickname : String
+    current : Number,
+    total : Number
 })
 
-module.exports = mongoose.model('User',counterSchema);
+module.exports = mongoose.model('Counter',counterSchema);
