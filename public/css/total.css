@@ -130,3 +130,9 @@ svg {cursor: pointer;}
     border-style: hidden;
     border-radius: 5px;
 }
+
+#search-option{
+    width:100px;
+    height:38px;
+    text-align: center;
+    border-color: lightgrey;}

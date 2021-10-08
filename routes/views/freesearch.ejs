@@ -26,10 +26,7 @@
   <%- include('nav.ejs') %>
 
     <h4 class="ml-2 my-3 text-center font-weight-bold">자유게시판</h4>
-    <div class="container input-group mb-2" style="width:500px;height: 50px;display: flex;">
-      <input class="form-control" id="search-input">
-      <button class="input-group-append btn btn-danger" id="search">검색</button>
-    </div>
+    
 
         <table class="table table-hover text-center">
           <thead>
@@ -58,16 +55,57 @@
           </tbody>
         </table>
 
-        <div class="justify-content-center text-center">
-          <a href="/free/write" class="btn btn-outline-success">글쓰기</a>
+        <div class="container input-group mb-2" style="width:500px;height: 50px;display: flex;">
+          <select id="search-option">
+            <option>제목</option>
+            <option>내용</option>
+            <option>작성자</option>
+          </select>
+          <input class="form-control" id="search-input">
+          <button class="input-group-append btn btn-danger" id="search">검색</button>
+          <a href="/free/write" class="ml-2 mb-2 btn btn-outline-success">글쓰기</a>
+        </div>
+
+
+        <div class="justify-content-center">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+              
+              <% if(page!=1){ %>
+              <li class="page-item mt-2"><a class="page-link" id="page-first" href="/free/search/1/<%=query%>"> << </a></li>
+              <li class="page-item mt-2"><a class="page-link" id="page-prev" href="/free/search/<%=page-5%>/<%=query%>"> < </a></li>
+              <% } else { %>
+              <li class="page-item mt-2"><a class="page-link" id="page-first"> << </a></li>
+              <li class="page-item mt-2"><a class="page-link" id="page-prev"> < </a></li>
+                <% } %>
+              <% if(endPage>totalPage){ %>
+                <% endPage = totalPage} %>
+              <% for(let i=startPage;i<=endPage;i++){ %>
+                <% if(i == page){%>
+                <li class="page-item mt-2"><a class="page-link" id="page-<%=i%>"><b><%=i%></b></a></li>    
+                <% }else{ %>
+                <li class="page-item mt-2"><a class="page-link" id="page-<%=i%>" href="/free/search/<%=i%>/<%=query%>"><%=i%></a></li>
+              <% } %>
+              <% }%>
+            
+              <% if(page!=totalPage){ %>
+              <li class="page-item mt-2"><a class="page-link" id="page-next" href="/free/search/<%=page+5%>/<%=query%>"> > </a></li>
+              <li class="page-item mt-2"><a class="page-link" id="page-last" href="/free/search/<%=totalPage%>/<%=query%>"> >> </a></li>
+              <% } else { %>
+                <li class="page-item mt-2"><a class="page-link" id="page-next"> > </a></li>
+              <li class="page-item mt-2"><a class="page-link" id="page-last"> >> </a></li>
+                <% } %>
+            </ul>
+          </nav>
         </div>
 
         <%- include('loginani.ejs') %>
       
-      <script>
-        $("#search").click(function(){
-          var input = $("#search-input").val()
-          window.location.replace('/search?value='+input)
+        <script>
+          $("#search").click(function(){
+          let input = $("#search-input").val()
+          let option = $("#search-option").val()
+          window.location.replace(`/free/search/1?value=${input}?option=${option}`)
         })
 
         

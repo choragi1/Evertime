@@ -53,4 +53,6 @@ const postSchema = new mongoose.Schema(
   }
 );
 
+postSchema.index({post_title : 'text', post_content : 'text', writer : 'text'})
+
 module.exports = mongoose.model("Post", postSchema);
