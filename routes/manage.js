@@ -31,6 +31,13 @@ router.get('/freeboard', isAdmin, (req, res) => {
     });
 });
 
+// 자유게시판 게시글 삭제
+router.delete('/post', isAdmin, (req,res) => {
+    let postno = req.body._id;
+    Post.findOneAndDelete({"_id":postno},(err,result)=>{
+        res.send('삭제되었습니다.')})        
+})
+
 
 //질답게시판 관리
 router.get('/qnaboard', isAdmin, (req, res) => {
@@ -40,11 +47,11 @@ router.get('/qnaboard', isAdmin, (req, res) => {
     });
 });
 
+// 질답게시판 게시글 삭제
 router.delete('/qnapost', isAdmin, (req,res) => {
     let postno = req.body._id;
-    QnaPost.findOneAndDelete({"_id":postno}).exec((err,result)=>{
-        res.send('삭제되었습니다.')
-    })
+    QnaPost.findOneAndDelete({"_id":postno},(err,result)=>{
+        res.send('삭제되었습니다.')})        
 })
 
 //관리자 로그인 확인(관리자세요?)

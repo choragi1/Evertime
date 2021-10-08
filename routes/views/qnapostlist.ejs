@@ -40,7 +40,7 @@
       <% for(var i=0;i<qnapost.length;i++){ %>
         <ul class="qnapostlist list-group list-group-horizontal justify-content-center text-center">
           <td style="width: 6%" id="board-qnapost" ><%= qnapost[i]._id %></td>
-          <td style="width: 20%; cursor:pointer" id="board-qnapost" onclick="location.href='/detail/free/<%= qnapost[i]._id %>'"><%= qnapost[i].post_title %></td>
+          <td style="width: 20%; cursor:pointer" id="board-qnapost" onclick="location.href='/free/detail/<%= qnapost[i]._id %>'"><%= qnapost[i].post_title %></td>
           <td style="width: 10%" id="board-qnapost" ><%= qnapost[i].writer %></td>
           <td style="width: 10%" id="board-qnapost" ><%= qnapost[i].viewcounts %></td>
           <td style="width: 10%" id="board-qnapost" ><%= qnapost[i].commentcnt %></td>
@@ -60,20 +60,16 @@
         
         $('.qnapost_delete').click(function(e){
           flag=confirm('해당 게시글을 삭제하시겠습니까?');
-          if(flag==true){
+          if(flag===true){
           var postno = e.target.dataset.id;
-
           $.ajax({
           method : 'DELETE',
           url : '/manage/qnapost',
           data : {_id : postno},
-          success : alert(data)
-        }).done(function(result){
-          console.log('서버 연결에 성공했습니다.');
-          $(this).parents('ul').fadeOut;
-          
-
-          // textStatus : 에러코드, errorThrown : 에러메세지
+          success : (data) => {
+            alert(data)
+            $(this).parents('ul').fadeOut;
+          }
         }).fail(function(xhr,textStatus,errorThrown){
           console.log(xhr,textStatus,errorThrown);
         });
