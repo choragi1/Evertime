@@ -49,16 +49,17 @@ router.get("/detail/:postno", (req, res) => {
     { $inc: { viewcounts: 1 } },
     (err, result) => {
       QnaPost.findOne({ _id: postno }, (err, result) => {
-        QnaComment.find({parent : postno}).sort({ "date": -1 }).exec((err, result2) => {
-            if (result == null) {
-              res.render("error404.ejs");
-            } else {
-              res.render("qnadetail.ejs", {
-                qnapost: result,
-                qnapost2: result2,
-              });
-            }
-          });
+        QnaComment.find({ parent: postno }).sort({ "date": -1 }).exec((err, comment) => {
+          if (result == null) {
+            res.render("error404.ejs");
+          } else {
+            res.render("qnadetail.ejs", {
+              qnapost: result,
+              comment: comment,
+              user: req.user
+            });
+          }
+        });
       });
     }
   );
