@@ -62,7 +62,6 @@ router.get("/search/:page", (req, res) => {
   let countPost = 5;
   // 한 페이지에 보여줄 페이지 수
   let countPage = 5;
-  console.log(fullquery)
 
   if(search[1]==='제목'){
   Post.find({

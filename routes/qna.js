@@ -51,6 +51,130 @@ router.get("/board/:page", (req, res) => {
     });
 });
 
+
+//자유게시판 검색기능
+router.get("/search/:page", (req, res) => {
+  let query = req.query.value;
+  let fullquery = `?value=${query}`
+  let search = query.split('?option=')
+
+  let page = parseInt(req.params.page);
+  // 한 페이지에 보여줄 게시물 수
+  let countPost = 5;
+  // 한 페이지에 보여줄 페이지 수
+  let countPage = 5;
+
+  if(search[1]==='제목'){
+  QnaPost.find({
+    post_title : new RegExp(search[0])
+  }).sort({ _id: -1 })
+  .skip(countPost * (page - 1))
+  .limit(countPost)
+  .exec((err,result)=>{
+    QnaPost.count({post_title : new RegExp(search[0])}, (err, count) => {
+      // 전체 게시글 수
+      let totalPost = count;
+      // 총 페이지 수
+      let totalPage = Math.floor(totalPost / countPost);
+      // 페이지 수 관련 로직
+      totalPost % countPost > 0 ? totalPage++ : null;
+      // 페이지 시작 번호
+      let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
+      let endPage = startPage + countPage - 1;
+      if ((page > 0) & (page <= totalPage)) {
+        res.render("qnasearch.ejs", {
+          post: result,
+          totalPost: totalPost,
+          page: page,
+          totalPage: totalPage,
+          countPage: countPage,
+          count: count,
+          startPage: startPage,
+          endPage: endPage,
+          query : fullquery
+        });
+      } else if (page > totalPage) {
+        res.redirect(`/qna/search/${totalPage}`);
+      } else {
+        res.redirect("/qna/search/1");
+      }
+    });
+  })
+  } else if(search[1]==='내용'){
+    QnaPost.find({
+      post_content : new RegExp(search[0])
+    }).sort({ _id: -1 })
+    .skip(countPost * (page - 1))
+    .limit(countPost)
+    .exec((err,result)=>{
+      QnaPost.count({post_content : new RegExp(search[0])}, (err, count) => {
+        // 전체 게시글 수
+        let totalPost = count;
+        // 총 페이지 수
+        let totalPage = Math.floor(totalPost / countPost);
+        // 페이지 수 관련 로직
+        totalPost % countPost > 0 ? totalPage++ : null;
+        // 페이지 시작 번호
+        let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
+        let endPage = startPage + countPage - 1;
+        if ((page > 0) & (page <= totalPage)) {
+          res.render("qnasearch.ejs", {
+            post: result,
+            totalPost: totalPost,
+            page: page,
+            totalPage: totalPage,
+            countPage: countPage,
+            count: count,
+            startPage: startPage,
+            endPage: endPage,
+            query : fullquery
+          });
+        } else if (page > totalPage) {
+          res.redirect(`/qna/search/${totalPage}`);
+        } else {
+          res.redirect("/qna/search/1");
+        }
+      });
+    })
+  } else if(search[1]==='작성자'){
+    QnaPost.find({
+      writer : new RegExp(search[0])
+    }).sort({ _id: -1 })
+    .skip(countPost * (page - 1))
+    .limit(countPost)
+    .exec((err,result)=>{
+      QnaPost.count({writer : new RegExp(search[0])}, (err, count) => {
+        // 전체 게시글 수
+        let totalPost = count;
+        // 총 페이지 수
+        let totalPage = Math.floor(totalPost / countPost);
+        // 페이지 수 관련 로직
+        totalPost % countPost > 0 ? totalPage++ : null;
+        // 페이지 시작 번호
+        let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
+        let endPage = startPage + countPage - 1;
+        if ((page > 0) & (page <= totalPage)) {
+          res.render("qnasearch.ejs", {
+            post: result,
+            totalPost: totalPost,
+            page: page,
+            totalPage: totalPage,
+            countPage: countPage,
+            count: count,
+            startPage: startPage,
+            endPage: endPage,
+            query : fullquery
+          });
+        } else if (page > totalPage) {
+          res.redirect(`/qna/search/${totalPage}`);
+        } else {
+          res.redirect("/qna/search/1");
+        }
+      });
+    })
+}});
+
+
 // 질답게시판 게시글 상세페이지 GET
 router.get("/detail/:postno", (req, res) => {
   var postno = parseInt(req.params.postno);
