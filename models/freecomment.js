@@ -1,11 +1,17 @@
-const mongoose = require('mongoose');
-const freecommentSchema = new mongoose.Schema({
-    _id : Number,
-    comment : String,
-    parent : Number,
-    date : String,
-    writer : String,
-    depth : Number
-})
+const mongoose = require("mongoose");
+const freecommentSchema = new mongoose.Schema(
+    {
+        _id: {type :Number,required: true,},
+        comment: {type : String,required: true,},
+        parent: {type : Number,required: true,},
+        parentcomment: {type : Number,required: true,},
+        date: {type : String,required: true,},
+        writer: {type : String,required: true,},
+        depth: {type : Number,required: true,default:0},
+      },
+  {
+    versionKey: false,
+  }
+);
 
-module.exports = mongoose.model('FreeComment',freecommentSchema);
+module.exports = mongoose.model("FreeComment", freecommentSchema);

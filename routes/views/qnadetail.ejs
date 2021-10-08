@@ -78,6 +78,7 @@
             <input type="button" id="comment-regist" class="btn btn-outline-primary" data-id="<%= qnapost._id%>" value="등록">
 
 
+            <% if(comment!=''){ %>
             <table class="table mt-4">
               <thead>
                 <tr style="background-color: rgb(233, 232, 232);">
@@ -130,6 +131,7 @@
                   <% } %>
               </tbody>
             </table>
+            <% } %>
           </form>
         </div>
       </div>

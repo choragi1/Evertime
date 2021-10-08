@@ -1,11 +1,17 @@
-const mongoose = require('mongoose');
-const qnacommentSchema = new mongoose.Schema({
-    _id : Number,
-    comment : String,
-    parent : Number,
-    date : String,
-    writer : String,
-    depth : Number
-})
+const mongoose = require("mongoose");
+const qnacommentSchema = new mongoose.Schema(
+  {
+    _id: {type :Number,required: true,},
+    comment: {type : String,required: true,},
+    parent: {type : Number,required: true,},
+    parentcomment: {type : Number,default:null},
+    date: {type : String,required: true,},
+    writer: {type : String,required: true,},
+    depth: {type : Number,required: true,default:0},
+  },
+  {
+    versionKey: false,
+  }
+);
 
-module.exports = mongoose.model('QnaComment',qnacommentSchema);
+module.exports = mongoose.model("QnaComment", qnacommentSchema);

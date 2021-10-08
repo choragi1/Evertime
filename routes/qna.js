@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const Counter = require('../models/counter')
-const QnaComment = require('../models/qnacomment')
-const QnaPost = require('../models/qnapost')
+const Counter = require("../models/counter");
+const QnaComment = require("../models/qnacomment");
+const QnaPost = require("../models/qnapost");
 
 //날짜 관련 라이브러리인 moment 사용
 const moment = require("moment");
@@ -10,35 +10,45 @@ const moment = require("moment");
 require("dotenv").config();
 
 // 자유게시판 페이지 GET 요청
-router.get('/board/:page', (req, res) => {
+router.get("/board/:page", (req, res) => {
   let page = parseInt(req.params.page);
   // 한 페이지에 보여줄 게시물 수
-  let countPost = 5
+  let countPost = 5;
   // 한 페이지에 보여줄 페이지 수
-  let countPage = 5
-  QnaPost.find({}).sort({"_id":-1}).skip(countPost * (page - 1)).limit(countPost).exec((err,result)=>{
-    QnaPost.count({}, (err, count) => {
-      // 전체 게시글 수
-      let totalPost = count;
-      // 총 페이지 수
-      let totalPage = Math.floor(totalPost / countPost);
-      // 페이지 수 관련 로직
-      (totalPost % countPost) > 0
-        ? totalPage++
-        : null
-      // 페이지 시작 번호
-      let startPage = Math.floor((page-1) / countPage) * countPage +1
-      let endPage = startPage + countPage - 1;
-      if (page>0 & page <= totalPage ) {
-        res.render('qnaboard.ejs', { post: result, totalPost: totalPost, page: page, totalPage: totalPage, countPage: countPage, count: count, startPage : startPage, endPage : endPage });
-      } else if(page > totalPage){
-        res.redirect(`/qna/board/${totalPage}`)
-      } else {
-        res.redirect('/qna/board/1')
-      }
-    })
-
-  });
+  let countPage = 5;
+  QnaPost.find({})
+    .sort({ _id: -1 })
+    .skip(countPost * (page - 1))
+    .limit(countPost)
+    .exec((err, result) => {
+      QnaPost.count({}, (err, count) => {
+        // 전체 게시글 수
+        let totalPost = count;
+        // 총 페이지 수
+        let totalPage = Math.floor(totalPost / countPost);
+        // 페이지 수 관련 로직
+        totalPost % countPost > 0 ? totalPage++ : null;
+        // 페이지 시작 번호
+        let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
+        let endPage = startPage + countPage - 1;
+        if ((page > 0) & (page <= totalPage)) {
+          res.render("qnaboard.ejs", {
+            post: result,
+            totalPost: totalPost,
+            page: page,
+            totalPage: totalPage,
+            countPage: countPage,
+            count: count,
+            startPage: startPage,
+            endPage: endPage,
+          });
+        } else if (page > totalPage) {
+          res.redirect(`/qna/board/${totalPage}`);
+        } else {
+          res.redirect("/qna/board/1");
+        }
+      });
+    });
 });
 
 // 질답게시판 게시글 상세페이지 GET
@@ -49,17 +59,19 @@ router.get("/detail/:postno", (req, res) => {
     { $inc: { viewcounts: 1 } },
     (err, result) => {
       QnaPost.findOne({ _id: postno }, (err, result) => {
-        QnaComment.find({ parent: postno }).sort({ "date": -1 }).exec((err, comment) => {
-          if (result == null) {
-            res.render("error404.ejs");
-          } else {
-            res.render("qnadetail.ejs", {
-              qnapost: result,
-              comment: comment,
-              user: req.user
-            });
-          }
-        });
+        QnaComment.find({ parent: postno })
+          .sort({ date: -1 })
+          .exec((err, comment) => {
+            if (result == null) {
+              res.render("error404.ejs");
+            } else {
+              res.render("qnadetail.ejs", {
+                qnapost: result,
+                comment: comment,
+                user: req.user,
+              });
+            }
+          });
       });
     }
   );
@@ -88,11 +100,6 @@ router.post("/post", (req, res) => {
         post_content: content,
         date: uploadtime,
         writer: id,
-        viewcounts: 0,
-        recommend: 0,
-        commentcnt: 0,
-        likeusers: [],
-        depth : 0
       },
       (err, result2) => {
         console.log("게시글 등록완료");
@@ -113,24 +120,43 @@ router.post("/post", (req, res) => {
 
 // 질답게시판 댓글 작성
 router.post("/comment", isLogin, (req, res) => {
-  if(req.user!=undefined){
+  if (req.user != undefined) {
     var postid = parseInt(req.body.postid);
     var uploadtime = moment().format("YYYY-MM-DD HH:mm");
-    Counter.findOne({name : "qnacomments"},(err,count) => {
+    Counter.findOne({ name: "qnacomments" }, (err, count) => {
       let commentNum = parseInt(count.current);
-      Counter.updateOne({name : "qnacomments"},{$inc:{total : 1, current : 1}},()=>{
-      FreeComment.create({_id : commentNum+1 ,comment: req.body.comment, parent: postid, date: uploadtime, writer: req.user.id, depth : 0}, (err, result) => {
-          Post.updateOne({_id : postid}, {$inc : {commentcnt : 1}},(err,result)=>{
-          console.log(`자유게시판 ${postid}번 게시글에 댓글이 작성되었습니다.`)
-          res.send('등록되었습니다.')
-        })
-        })
-      })
-    })
-  }else{
-    res.send('로그인 후 작성 가능합니다.')
+      Counter.updateOne(
+        { name: "qnacomments" },
+        { $inc: { total: 1, current: 1 } },
+        () => {
+          FreeComment.create(
+            {
+              _id: commentNum + 1,
+              comment: req.body.comment,
+              parent: postid,
+              date: uploadtime,
+              writer: req.user.id,
+            },
+            (err, result) => {
+              Post.updateOne(
+                { _id: postid },
+                { $inc: { commentcnt: 1 } },
+                (err, result) => {
+                  console.log(
+                    `자유게시판 ${postid}번 게시글에 댓글이 작성되었습니다.`
+                  );
+                  res.send("등록되었습니다.");
+                }
+              );
+            }
+          );
+        }
+      );
+    });
+  } else {
+    res.send("로그인 후 작성 가능합니다.");
   }
-  })
+});
 
 // 자유게시판 댓글 수정
 router.put("/comment", (req, res) => {
@@ -166,28 +192,25 @@ router.delete("/comment", (req, res) => {
     res.send("로그인 후 이용 가능합니다.");
   } else if (req.user.id === writer) {
     QnaComment.findOne({ _id: commentid }, (err, result) => {
-      QnaComment.deleteOne(
-        { _id: commentid },
-        (err, result2) => {
-          let parent = result.parent;
-          QnaPost.updateOne(
-            { _id: parent },
-            { $inc: { commentcnt: -1 } },
-            (err, result3) => {
-              Counter.updateOne(
-                { name: "qnacomments" },
-                { $inc: { current: -1 } },
-                (err, result4) => {
-                  console.log(
-                    `자유게시판 ${parent}번 게시글에서 ${writer}님이 댓글을 삭제하셨습니다.`
-                  );
-                  res.send("삭제되었습니다.");
-                }
-              );
-            }
-          );
-        }
-      );
+      QnaComment.deleteOne({ _id: commentid }, (err, result2) => {
+        let parent = result.parent;
+        QnaPost.updateOne(
+          { _id: parent },
+          { $inc: { commentcnt: -1 } },
+          (err, result3) => {
+            Counter.updateOne(
+              { name: "qnacomments" },
+              { $inc: { current: -1 } },
+              (err, result4) => {
+                console.log(
+                  `자유게시판 ${parent}번 게시글에서 ${writer}님이 댓글을 삭제하셨습니다.`
+                );
+                res.send("삭제되었습니다.");
+              }
+            );
+          }
+        );
+      });
     });
   } else {
     res.send("작성자만 삭제 가능합니다.");
@@ -199,19 +222,23 @@ router.post("/detail/like", (req, res) => {
   if (req.user != null) {
     var postid = parseInt(req.body._id);
     var userid = req.user.id;
-    console.log(postid);
     QnaPost.findOne({ _id: postid }, (err, result) => {
       if (result.likeusers.includes(userid)) {
         res.send("이미 추천한 게시글입니다.");
       } else {
-        QnaPost.updateMany(
+        QnaPost.updateOne(
           { _id: postid },
-          { $inc: { recommend: 1 }, $push: { likeusers: userid } }
+          { $inc: { recommend: 1 },
+            $push: { likeusers: userid },
+           
+          },
+          (err, result) => {
+            console.log(
+              `질답게시판 ${postid}번 게시글이 추천되었습니다. 추천한 User : ${userid}`
+            );
+            res.send("추천하였습니다.");
+          }
         );
-        console.log(
-          `질답게시판 ${postid}번 게시글이 추천되었습니다. 추천한 User : ${userid}`
-        );
-        res.send("추천하였습니다.");
       }
     });
   } else {
@@ -223,12 +250,9 @@ router.post("/detail/like", (req, res) => {
 router.post("/edit", isLogin, (req, res) => {
   console.log("QnA게시판 글수정 POST 요청", "게시글번호 : " + req.user._id);
   if (req.user.id == req.body.writer) {
-    QnaPost.findOne(
-      { _id: parseInt(req.body._id) },
-      (err, result) => {
-        res.render("qnaedit.ejs", { qnapost: result });
-      }
-    );
+    QnaPost.findOne({ _id: parseInt(req.body._id) }, (err, result) => {
+      res.render("qnaedit.ejs", { qnapost: result });
+    });
   } else {
     res.send(
       "<script>alert('수정 권한이 없습니다.');location.href = document.referrer;</script>"
@@ -258,22 +282,15 @@ router.delete("/del", isLogin, (req, res) => {
   console.log(req.user, req.body.writer);
   var postno = parseInt(req.body._id);
   if (req.user.id == req.body.writer) {
-    QnaPost.deleteOne(
-      { _id: postno, writer: req.user.id },
-      (err, result) => {
-        Counter.updateOne(
-          { name: "qnaposts" },
-          { $inc: { current: -1 } },
-          () => {
-            if (err) {
-              return console.log(err);
-            }
-            console.log("질답게시판 " + postno + "번 게시글 삭제 완료");
-            res.send("삭제되었습니다.");
-          }
-        );
-      }
-    );
+    QnaPost.deleteOne({ _id: postno, writer: req.user.id }, (err, result) => {
+      Counter.updateOne({ name: "qnaposts" }, { $inc: { current: -1 } }, () => {
+        if (err) {
+          return console.log(err);
+        }
+        console.log("질답게시판 " + postno + "번 게시글 삭제 완료");
+        res.send("삭제되었습니다.");
+      });
+    });
   } else {
     res.send("작성자만 삭제 가능합니다.");
   }

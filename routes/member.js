@@ -66,8 +66,7 @@ router.post("/add", function (req, res) {
                   name: userName,
                   email: userEmail,
                   nickname: userNick,
-                  joinDate: uploadtime,
-                  auth: "normal",
+                  joinDate: uploadtime
                 },
                 function (err, result) {
                   console.log("회원정보 저장완료");
