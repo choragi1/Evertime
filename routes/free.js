@@ -106,11 +106,11 @@ router.get('/board/:page', (req, res) => {
     var postno = parseInt(req.params.postno);
     Post.updateOne({ _id: postno }, { $inc: { viewcounts: 1 } }, (err, result) => {
       Post.findOne({ _id: postno }, (err, result) => {
-        FreeComment.find({parent : postno}).sort({ "date": -1 }).exec((err, result2) => {
+        FreeComment.find({parent : postno}).sort({ "date": -1 }).exec((err, comment) => {
           if (result == null) {
             res.render('error404.ejs');
           } else {
-            res.render('freedetail.ejs', { post: result, post2 : result2});
+            res.render('freedetail.ejs', { post: result, comment : comment, user : req.user });
           }
         })
       })

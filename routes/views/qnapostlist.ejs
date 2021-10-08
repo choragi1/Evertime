@@ -40,7 +40,7 @@
       <% for(var i=0;i<qnapost.length;i++){ %>
         <ul class="qnapostlist list-group list-group-horizontal justify-content-center text-center">
           <td style="width: 6%" id="board-qnapost" ><%= qnapost[i]._id %></td>
-          <td style="width: 20%; cursor:pointer" id="board-qnapost" onclick="location.href='/free/detail/<%= qnapost[i]._id %>'"><%= qnapost[i].post_title %></td>
+          <td style="width: 20%; cursor:pointer" id="board-qnapost" onclick="location.href='/qna/detail/<%= qnapost[i]._id %>'"><%= qnapost[i].post_title %></td>
           <td style="width: 10%" id="board-qnapost" ><%= qnapost[i].writer %></td>
           <td style="width: 10%" id="board-qnapost" ><%= qnapost[i].viewcounts %></td>
           <td style="width: 10%" id="board-qnapost" ><%= qnapost[i].commentcnt %></td>
@@ -53,6 +53,38 @@
       <% }; %>
     </tbody>
   </table>
+
+  <div class="justify-content-center">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        
+        <% if(page!=1){ %>
+        <li class="page-item mt-2"><a class="page-link" id="page-first" href="/manage/qnaboard/1"> << </a></li>
+        <li class="page-item mt-2"><a class="page-link" id="page-prev" href="/manage/qnaboard/<%=page-5%>"> < </a></li>
+        <% } else { %>
+        <li class="page-item mt-2"><a class="page-link" id="page-first"> << </a></li>
+        <li class="page-item mt-2"><a class="page-link" id="page-prev"> < </a></li>
+          <% } %>
+        <% if(endPage>totalPage){ %>
+          <% endPage = totalPage} %>
+        <% for(let i=startPage;i<=endPage;i++){ %>
+          <% if(i == page){%>
+          <li class="page-item mt-2"><a class="page-link" id="page-<%=i%>"><b><%=i%></b></a></li>    
+          <% }else{ %>
+          <li class="page-item mt-2"><a class="page-link" id="page-<%=i%>" href="/manage/qnaboard/<%=i%>"><%=i%></a></li>
+        <% } %>
+        <% }%>
+      
+        <% if(page!=totalPage){ %>
+        <li class="page-item mt-2"><a class="page-link" id="page-next" href="/manage/qnaboard/<%=page+5%>"> > </a></li>
+        <li class="page-item mt-2"><a class="page-link" id="page-last" href="/manage/qnaboard/<%=totalPage%>"> >> </a></li>
+        <% } else { %>
+          <li class="page-item mt-2"><a class="page-link" id="page-next"> > </a></li>
+        <li class="page-item mt-2"><a class="page-link" id="page-last"> >> </a></li>
+          <% } %>
+      </ul>
+    </nav>
+  </div>
     
       
 
