@@ -54,9 +54,16 @@
       </tbody>
     </table>
 
-        <div class="justify-content-center text-center">
-          <a href="/qna/write" class="btn btn-outline-success">글쓰기</a>
-        </div>
+    <div class="container input-group mb-2" style="width:500px;height: 50px;display: flex;">
+      <select id="search-option">
+        <option>제목</option>
+        <option>내용</option>
+        <option>작성자</option>
+      </select>
+      <input class="form-control" id="search-input">
+      <button class="input-group-append btn btn-danger" id="search">검색</button>
+      <a href="/free/write" class="ml-2 mb-2 btn btn-outline-success">글쓰기</a>
+    </div>
 
         <div class="justify-content-center">
           <nav aria-label="Page navigation example">
@@ -92,8 +99,18 @@
           </nav>
         </div>
 
-        <!-- 로그인 버튼 클릭 시 애니메이션 -->
       <%- include('loginani.ejs') %>
+
+      <script>
+        $("#search").click(function(){
+          let input = $("#search-input").val()
+          let option = $("#search-option").val()
+          window.location.replace(`/qna/search/1?value=${input}?option=${option}`)
+        })
+
+        
+
+      </script>
 
 
 </body>

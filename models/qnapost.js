@@ -53,4 +53,6 @@ const qnapostSchema = new mongoose.Schema(
   }
 );
 
+qnapostSchema.index({post_title : 'text', post_content : 'text', writer : 'text'})
+
 module.exports = mongoose.model("QnaPost", qnapostSchema);
