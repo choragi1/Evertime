@@ -49,7 +49,12 @@
         <td style="width: 11%" id="board-post"><%= member[i].joinDate %></td>
         <td style="width: 11%" id="board-post"><%= member[i].auth %></td>
         <td style="width: 12%" id="board-post">
-          
+            <select id="auth-select-<%=i%>">
+                <option>일반회원</option>
+                <option>관리자</option>
+                <option>운영자</option>
+              </select>
+              <button class="btn btn-sm btn-outline-primary change-auth" data-no="<%=i%>" data-id="<%= member[i]._id%>">변경</button>
           <button class="user_delete btn-danger" data-id="<%= member[i]._id %>">탈퇴</button>
         </td>
       </tr>
@@ -62,8 +67,8 @@
       <ul class="pagination justify-content-center">
         
         <% if(page!=1){ %>
-        <li class="page-item mt-2"><a class="page-link" id="page-first" href="/manage/members/1"> << </a></li>
-        <li class="page-item mt-2"><a class="page-link" id="page-prev" href="/manage/members/<%=page-5%>"> < </a></li>
+        <li class="page-item mt-2"><a class="page-link" id="page-first" href="/manage/users/1"> << </a></li>
+        <li class="page-item mt-2"><a class="page-link" id="page-prev" href="/manage/users/<%=page-5%>"> < </a></li>
         <% } else { %>
         <li class="page-item mt-2"><a class="page-link" id="page-first"> << </a></li>
         <li class="page-item mt-2"><a class="page-link" id="page-prev"> < </a></li>
@@ -74,13 +79,13 @@
           <% if(i == page){%>
           <li class="page-item mt-2"><a class="page-link" id="page-<%=i%>"><b><%=i%></b></a></li>
           <% }else{ %>
-          <li class="page-item mt-2"><a class="page-link" id="page-<%=i%>" href="/manage/members/<%=i%>"><%=i%></a></li>
+          <li class="page-item mt-2"><a class="page-link" id="page-<%=i%>" href="/manage/users/<%=i%>"><%=i%></a></li>
         <% } %>
         <% }%>
       
         <% if(page!=totalPage){ %>
-        <li class="page-item mt-2"><a class="page-link" id="page-next" href="/manage/members/<%=page+5%>"> > </a></li>
-        <li class="page-item mt-2"><a class="page-link" id="page-last" href="/manage/members/<%=totalPage%>"> >> </a></li>
+        <li class="page-item mt-2"><a class="page-link" id="page-next" href="/manage/users/<%=page+5%>"> > </a></li>
+        <li class="page-item mt-2"><a class="page-link" id="page-last" href="/manage/users/<%=totalPage%>"> >> </a></li>
         <% } else { %>
           <li class="page-item mt-2"><a class="page-link" id="page-next"> > </a></li>
         <li class="page-item mt-2"><a class="page-link" id="page-last"> >> </a></li>
@@ -112,6 +117,33 @@
         });
       };
     })
+    
+    $(".change-auth").click((e)=>{
+      let datano = e.target.dataset.no;
+      let userID = e.target.dataset.id;
+      let select = $(`#auth-select-${datano}`).val();
+      let flag = false;
+      flag = confirm(`해당 회원의 회원등급을 ${select}로 변경하시겠습니까?`)
+      if(flag===true){
+      $.ajax({
+        method: "PUT",
+        url: `/manage/users/${userID}`,
+        data: {select : select},
+        success:(data)=>{
+          alert(data)
+          history.go();
+        }
+      })
+    }
+
+      console.log(`번호:${datano}`)
+      console.log(`아이디:${userID}`)
+      console.log(`선택값:${select}`)
+      
+
+    })
+
+      
         
       </script>
       

@@ -10,17 +10,79 @@ require('dotenv').config()
 
 //관리자 페이지
 router.get('/admin', isAdmin, function (req, res) {
-    res.render('admin.ejs');
+    res.render('admin.ejs',{user : req.user});
   })
 
-//회원 관리
-router.get('/member', isAdmin, (req, res) => {
-
-    User.find().exec(function (err, result) {
-        res.render('memberlist.ejs', { userinfo: result });
-
+//일반회원 관리
+router.get('/members/:page', isAdmin, (req, res) => {
+  let page = parseInt(req.params.page);
+  // 한 페이지에 보여줄 회원 수
+  let countMember = 5
+  // 한 페이지에 보여줄 페이지 수
+  let countPage = 5
+  User.find({auth:'normal'}).sort({"_id":-1}).skip(countMember * (page - 1)).limit(countMember).exec((err,result)=>{
+    User.count({auth:'normal'}, (err, count) => {
+      // 전체 회원 수
+      let totalMember = count;
+      // 총 페이지 수
+      let totalPage = Math.floor(totalMember / countMember);
+      // 페이지 수 관련 로직
+      (totalMember % countMember) > 0
+        ? totalPage++
+        : null
+      // 페이지 시작 번호
+      let startPage = Math.floor((page-1) / countPage) * countPage +1
+      let endPage = startPage + countPage - 1;
+      if (page>0 & page <= totalPage ) {
+        res.render('memberlist.ejs', { member: result, totalMember: totalMember, page: page, totalPage: totalPage, countPage: countPage, startPage : startPage, endPage : endPage });
+      } else if(page > totalPage){
+        res.redirect(`/manage/members/${totalPage}`)
+      } else {
+        res.redirect('/manage/members/1')
+      }
     });
-});
+  })
+})
+
+//총회원 관리
+router.get('/users/:page', isOperator, (req, res) => {
+  let page = parseInt(req.params.page);
+  // 한 페이지에 보여줄 회원 수
+  let countMember = 5
+  // 한 페이지에 보여줄 페이지 수
+  let countPage = 5
+  User.find({}).sort({"_id":-1}).skip(countMember * (page - 1)).limit(countMember).exec((err,result)=>{
+    User.count({}, (err, count) => {
+      // 전체 회원 수
+      let totalMember = count;
+      // 총 페이지 수
+      let totalPage = Math.floor(totalMember / countMember);
+      // 페이지 수 관련 로직
+      (totalMember % countMember) > 0
+        ? totalPage++
+        : null
+      // 페이지 시작 번호
+      let startPage = Math.floor((page-1) / countPage) * countPage +1
+      let endPage = startPage + countPage - 1;
+      if (page>0 & page <= totalPage ) {
+        res.render('userlist.ejs', { member: result, totalMember: totalMember, page: page, totalPage: totalPage, countPage: countPage, startPage : startPage, endPage : endPage });
+      } else if(page > totalPage){
+        res.redirect(`/manage/users/${totalPage}`)
+      } else {
+        res.redirect('/manage/users/1')
+      }
+    });
+  })
+})
+
+router.put("/users/:userNo", (req,res)=>{
+  let userNo = parseInt(req.params.userNo);
+  let select = req.body.select;
+  User.updateOne({_id : userNo},{$set:{auth:select}},(err,result)=>{
+    res.send("회원등급이 변경되었습니다.");
+  })
+
+})
 
 
 //자유게시판 관리
@@ -100,11 +162,11 @@ router.delete('/qnapost', isAdmin, (req,res) => {
         res.send('삭제되었습니다.')})        
 })
 
-//관리자 로그인 확인(관리자세요?)
+//관리자 권한 확인(관리자세요?)
 function isAdmin(req, res, next) {
     if (req.user != null) {
         User.findOne({ id: req.user.id }, function (err, result) {
-            if (result.auth === 'admin') {
+            if (result.auth === 'admin' | result.auth === 'operator') {
                 next()
             } else {
                 res.send("<script>alert('관리자 권한이 없습니다.');location.href = '/'</script>")
@@ -113,6 +175,21 @@ function isAdmin(req, res, next) {
     } else {
         res.send("<script>alert('관리자 권한이 없습니다.');location.href = '/'</script>")
     }
+}
+
+//운영자 권한 확인(운영자세요?)
+function isOperator(req, res, next) {
+  if (req.user != null) {
+      User.findOne({ id: req.user.id }, function (err, result) {
+          if (result.auth === 'operator') {
+              next()
+          } else {
+              res.send("<script>alert('운영자 권한이 없습니다.');location.href = '/'</script>")
+          }
+      })
+  } else {
+      res.send("<script>alert('운영자 권한이 없습니다.');location.href = '/'</script>")
+  }
 }
 
 module.exports=router;
