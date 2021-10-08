@@ -39,7 +39,7 @@ router.post('/login',
     passport.authenticate('local', { failureRedirect: '/auth/fail' }), function (req, res) {
         User.findOne({ id: req.user.id }, (err, result) => {
             if (err) { return console.log(err) }
-            if (result.auth == 'admin') {
+            if (result.auth === 'admin' | result.auth === 'operator') {
                 res.send("<script>alert('관리자 로그인에 성공했습니다.');location.href = document.referrer;</script>")
             } else {
                 res.send("<script>location.href = document.referrer;</script>")

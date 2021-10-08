@@ -125,3 +125,8 @@ svg {cursor: pointer;}
     width:700px;
     text-align: center;
 }
+
+#auth-select{
+    border-style: hidden;
+    border-radius: 5px;
+}

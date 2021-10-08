@@ -42,11 +42,11 @@
                   method : 'GET',
                   url : "/auth/getauth",
                 }).done( (data, textStatus, xhr) => {
+                  
                 if(data.id!=null){
                   $("#login").attr({"id":"logout","href":"/auth/logout","class":"btn btn-outline-danger"}).text("로그아웃")
                   $("#mypage").css("display",'block')
-                  
-                  if(data.auth!="admin"){
+                  if(data.auth!="admin"&data.auth!="operator"){
                   $("#adminlink").css("display","none")
                   }else{
                     $("#adminlink").css("display","block")
