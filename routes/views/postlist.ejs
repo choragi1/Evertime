@@ -42,7 +42,7 @@
       <% for(var i=0;i<post.length;i++){ %>
         <ul class="postlist list-group list-group-horizontal justify-content-center text-center">
           <td style="width: 6%" id="board-post" ><%= post[i]._id %></td>
-          <td style="width: 20%; cursor:pointer" id="board-post" onclick="location.href='/detail/free/<%= post[i]._id %>'"><%= post[i].post_title %></td>
+          <td style="width: 20%; cursor:pointer" id="board-post" onclick="location.href='/free/detail/<%= post[i]._id %>'"><%= post[i].post_title %></td>
           <td style="width: 10%" id="board-post" ><%= post[i].writer %></td>
           <td style="width: 10%" id="board-post" ><%= post[i].viewcounts %></td>
           <td style="width: 10%" id="board-post" ><%= post[i].commentcnt %></td>
@@ -61,19 +61,16 @@
         
         $('.post_delete').click(function(e){
           flag=confirm('해당 게시글을 삭제하시겠습니까?');
-          if(flag==true){
+          if(flag===true){
           var postno = e.target.dataset.id;
-
           $.ajax({
           method : 'DELETE',
-          url : '/deletepost',
-          data : {_id : postno}
-        }).done(function(result){
-          console.log('서버 연결에 성공했습니다.');
-          $(this).parents('ul').fadeOut;
-          
-
-          // textStatus : 에러코드, errorThrown : 에러메세지
+          url : '/manage/post',
+          data : {_id : postno},
+          success : (data) => {
+            alert(data)
+            $(this).parents('ul').fadeOut;
+          }
         }).fail(function(xhr,textStatus,errorThrown){
           console.log(xhr,textStatus,errorThrown);
         });
