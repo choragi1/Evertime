@@ -1,36 +1,16 @@
 const express = require('express');
 const app = express();
-// const MongoClient = require('mongodb').MongoClient;
 require('dotenv').config()
-const mongoose = require("mongoose");
-mongoose.Promise = global.Promise;
-mongoose.connect(process.env.DB_URL,{ dbName: "todoapp", useNewUrlParser: true });
-let db = mongoose.connection;
-db.on('error', console.error.bind(console, "connection error:"));
-db.once('open', () => {
-	console.log("DB connected");
-});
 
-
+const mongoose = require('./lib/db')
 
 //method-override 라이브러리 사용
 const methodOverride = require('method-override');
+
 // 로그인 관련 미들웨어
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+const passport = require('./lib/passport')
 const session = require('express-session');
 const bcrypt = require('bcrypt');
-
-
-const Counter = require('./models/counter')
-const FreeComment = require('./models/freecomment')
-const Post = require('./models/post')
-const QnaPost = require('./models/qnapost')
-const QnaComment = require('./models/qnacomment')
-const User = require('./models/user')
-
-
-
 
 
 app.use(express.json());
@@ -59,59 +39,15 @@ app.use('/', indexRouter );
 // public 폴더에 path 지정
 app.use('/public', express.static('public'));
 
-// 로그인 성공시 호출되며 유저의 정보를 세션에 저장함
-passport.serializeUser(function (user, done) {
-  done(null, user.id)
-});
-
-// 세션에 저장된 데이터를 기준으로 해서 필요한 정보를 조회할 때 사용
-passport.deserializeUser(function (id, done) {
-  User.findOne({ id: id }, function (err, result) {
-    done(null, result)
-  })
-})
-
+// View 페이지 path 지정
 app.set('views', './routes/views');
+
+// view engine ejs로 설정
 app.set('view engine', 'ejs');
-// db();
-// var db;
-// MongoClient.connect(process.env.DB_URL, { useUnifiedTopology: true }, function (err, client) {
-//   if (err) {
-//     return console.log(err)
-//   }
-//   // todoapp이라는 db로 연결
-//   db = client.db('todoapp');
-// });
 
 app.listen(process.env.PORT, function () {
   console.log(`listening on ${process.env.PORT}`)
 });
-
-
-// 로그인 인증 관련 미들웨어
-passport.use(new LocalStrategy({
-  usernameField: 'user_id', // 클라이언트가 제출한 아이디가 어디 적혀있는지 (input name)
-  passwordField: 'user_pw', // 클라이언트가 제출한 비밀번호가 어디 적혀있는지 (input name)
-  session: true,  //세션 정보 저장할래?
-  passReqToCallback: false, // 아이디, 비밀번호 이외의 다른 정보 검사가 필요한지
-}, function (input_id, input_pw, done) {
-  User.findOne({ id: input_id }, function (err, result) {
-    if (err) return done(err)
-    if (!result) return done(null, false, { message: '존재하지 않는 아이디입니다.' })
-    bcrypt.compare(input_pw,result.pw,(err,result2) => {
-      if (result2) {
-        return done(null, result)
-      } else {
-        return done(null, false, { message: '비밀번호가 틀렸습니다.' })
-      }
-    })
-    
-  })
-}));
-
-
-
-
 
 
 
