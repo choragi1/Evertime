@@ -136,6 +136,48 @@ router.get("/search/:page", (req, res) => {
         }
       });
     })
+  } else if(search[1]==='제목 내용'){
+    QnaPost.find({
+      $or : 
+      [{post_title : new RegExp(search[0])},
+      {post_content : new RegExp(search[0])}]
+    }).sort({ _id: -1 })
+    .skip(countPost * (page - 1))
+    .limit(countPost)
+    .exec((err,result)=>{
+      QnaPost.count({
+        $or : 
+        [{post_title : new RegExp(search[0])},
+        {post_content : new RegExp(search[0])}]
+      }, (err, count) => {
+        // 전체 게시글 수
+        let totalPost = count;
+        // 총 페이지 수
+        let totalPage = Math.floor(totalPost / countPost);
+        // 페이지 수 관련 로직
+        totalPost % countPost > 0 ? totalPage++ : null;
+        // 페이지 시작 번호
+        let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
+        let endPage = startPage + countPage - 1;
+        if ((page > 0) & (page <= totalPage)) {
+          res.render("qnasearch.ejs", {
+            post: result,
+            totalPost: totalPost,
+            page: page,
+            totalPage: totalPage,
+            countPage: countPage,
+            count: count,
+            startPage: startPage,
+            endPage: endPage,
+            query : fullquery
+          });
+        } else if (page > totalPage) {
+          res.redirect(`/qna/search/${totalPage}`);
+        } else {
+          res.redirect("/qna/search/1");
+        }
+      });
+    })
   } else if(search[1]==='작성자'){
     QnaPost.find({
       writer : new RegExp(search[0])
@@ -253,7 +295,7 @@ router.post("/comment", isLogin, (req, res) => {
         { name: "qnacomments" },
         { $inc: { total: 1, current: 1 } },
         () => {
-          FreeComment.create(
+          QnaComment.create(
             {
               _id: commentNum + 1,
               comment: req.body.comment,
@@ -262,12 +304,12 @@ router.post("/comment", isLogin, (req, res) => {
               writer: req.user.id,
             },
             (err, result) => {
-              Post.updateOne(
+              QnaPost.updateOne(
                 { _id: postid },
                 { $inc: { commentcnt: 1 } },
                 (err, result) => {
                   console.log(
-                    `자유게시판 ${postid}번 게시글에 댓글이 작성되었습니다.`
+                    `질답게시판 ${postid}번 게시글에 댓글이 작성되었습니다.`
                   );
                   res.send("등록되었습니다.");
                 }

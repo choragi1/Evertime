@@ -135,6 +135,48 @@ router.get("/search/:page", (req, res) => {
         }
       });
     })
+  } else if(search[1]==='제목 내용'){
+    Post.find({
+      $or : 
+      [{post_title : new RegExp(search[0])},
+      {post_content : new RegExp(search[0])}]
+    }).sort({ _id: -1 })
+    .skip(countPost * (page - 1))
+    .limit(countPost)
+    .exec((err,result)=>{
+      Post.count({
+        $or : 
+        [{post_title : new RegExp(search[0])},
+        {post_content : new RegExp(search[0])}]
+      }, (err, count) => {
+        // 전체 게시글 수
+        let totalPost = count;
+        // 총 페이지 수
+        let totalPage = Math.floor(totalPost / countPost);
+        // 페이지 수 관련 로직
+        totalPost % countPost > 0 ? totalPage++ : null;
+        // 페이지 시작 번호
+        let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
+        let endPage = startPage + countPage - 1;
+        if ((page > 0) & (page <= totalPage)) {
+          res.render("freesearch.ejs", {
+            post: result,
+            totalPost: totalPost,
+            page: page,
+            totalPage: totalPage,
+            countPage: countPage,
+            count: count,
+            startPage: startPage,
+            endPage: endPage,
+            query : fullquery
+          });
+        } else if (page > totalPage) {
+          res.redirect(`/free/search/${totalPage}`);
+        } else {
+          res.redirect("/free/search/1");
+        }
+      });
+    })
   } else if(search[1]==='작성자'){
     Post.find({
       writer : new RegExp(search[0])
@@ -293,16 +335,17 @@ router.delete("/del", (req, res) => {
 });
 
 // 자유게시판 댓글 작성
-router.post("/comment", (req, res) => {
+router.post("/comment", isLogin, (req, res) => {
   if (req.user != undefined) {
-    let postid = parseInt(req.body.postid);
-    let uploadtime = moment().format("YYYY-MM-DD HH:mm");
+    var postid = parseInt(req.body.postid);
+    var uploadtime = moment().format("YYYY-MM-DD HH:mm");
     Counter.findOne({ name: "freecomments" }, (err, count) => {
       let commentNum = parseInt(count.current);
       Counter.updateOne(
         { name: "freecomments" },
         { $inc: { total: 1, current: 1 } },
         () => {
+          console.log
           FreeComment.create(
             {
               _id: commentNum + 1,
