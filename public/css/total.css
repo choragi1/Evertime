@@ -41,6 +41,9 @@ html,body{
     height: 100vh;
 }
 
+.board-body{
+    overflow: hidden;
+}
 
 
 
@@ -89,7 +92,9 @@ html,body{
     width:80%
 }
 
-tr:hover {font-weight: bold;}
+tbody > tr:hover {
+    background: lightyellow;
+    font-weight: bold;}
 
 .hide{
     display:none;

@@ -70,7 +70,7 @@ router.post("/add", function (req, res) {
                 },
                 function (err, result) {
                   console.log("회원정보 저장완료");
-                  console.log(userID, userPW, userName, userEmail);
+                  console.log(`아이디 : ${userID}\n비밀번호 : ${userPW}\n이름:${userName}\n닉네임${userNick}\n이메일${userEmail}`);
                   Counter.updateOne(
                     { name: "member" },
                     { $inc: { total: 1, current : 1 } },

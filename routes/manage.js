@@ -17,7 +17,7 @@ router.get('/admin', isAdmin, function (req, res) {
 router.get('/members/:page', isAdmin, (req, res) => {
   let page = parseInt(req.params.page);
   // 한 페이지에 보여줄 회원 수
-  let countMember = 5
+  let countMember = 10
   // 한 페이지에 보여줄 페이지 수
   let countPage = 5
   User.find({auth:'normal'}).sort({"_id":-1}).skip(countMember * (page - 1)).limit(countMember).exec((err,result)=>{
@@ -48,7 +48,7 @@ router.get('/members/:page', isAdmin, (req, res) => {
 router.get('/users/:page', isOperator, (req, res) => {
   let page = parseInt(req.params.page);
   // 한 페이지에 보여줄 회원 수
-  let countMember = 5
+  let countMember = 10
   // 한 페이지에 보여줄 페이지 수
   let countPage = 5
   User.find({}).sort({"_id":-1}).skip(countMember * (page - 1)).limit(countMember).exec((err,result)=>{
@@ -89,7 +89,7 @@ router.put("/users/:userNo", (req,res)=>{
 router.get('/freeboard/:page', isAdmin, (req, res) => {
     let page = parseInt(req.params.page);
     // 한 페이지에 보여줄 게시물 수
-    let countPost = 5
+    let countPost = 10
     // 한 페이지에 보여줄 페이지 수
     let countPage = 5
     Post.find({}).sort({"_id":-1}).skip(countPost * (page - 1)).limit(countPost).exec((err,result)=>{
@@ -128,7 +128,7 @@ router.delete('/post', isAdmin, (req,res) => {
 router.get('/qnaboard/:page', isAdmin, (req, res) => {
     let page = parseInt(req.params.page);
     // 한 페이지에 보여줄 게시물 수
-    let countPost = 5
+    let countPost = 10
     // 한 페이지에 보여줄 페이지 수
     let countPage = 5
     QnaPost.find({}).sort({"_id":-1}).skip(countPost * (page - 1)).limit(countPost).exec((err,result)=>{

@@ -13,7 +13,7 @@ require("dotenv").config();
 router.get("/board/:page", (req, res) => {
   let page = parseInt(req.params.page);
   // 한 페이지에 보여줄 게시물 수
-  let countPost = 5;
+  let countPost = 10;
   // 한 페이지에 보여줄 페이지 수
   let countPage = 5;
   Post.find({})
@@ -31,6 +31,7 @@ router.get("/board/:page", (req, res) => {
         // 페이지 시작 번호
         let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
         let endPage = startPage + countPage - 1;
+
         if ((page > 0) & (page <= totalPage)) {
           res.render("freeboard.ejs", {
             post: result,
@@ -41,6 +42,7 @@ router.get("/board/:page", (req, res) => {
             count: count,
             startPage: startPage,
             endPage: endPage,
+            flag : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/free/board/${totalPage}`);
@@ -59,7 +61,7 @@ router.get("/search/:page", (req, res) => {
 
   let page = parseInt(req.params.page);
   // 한 페이지에 보여줄 게시물 수
-  let countPost = 5;
+  let countPost = 10;
   // 한 페이지에 보여줄 페이지 수
   let countPage = 5;
 
@@ -90,7 +92,8 @@ router.get("/search/:page", (req, res) => {
           count: count,
           startPage: startPage,
           endPage: endPage,
-          query : fullquery
+          query : fullquery,
+          flag : req.user
         });
       } else if (page > totalPage) {
         res.redirect(`/free/search/${totalPage}`);
@@ -222,11 +225,10 @@ router.get("/write", isLogin, (req, res) => {
 
 // 자유게시판 게시글 쓰기
 router.post("/post", function (req, res) {
-  let uploadtime = moment().format("YYYY-MM-DD hh:mm");
+  let uploadtime = moment().format("YYYY-MM-DD HH:mm");
   let title = req.body.title;
   let content = req.body.content;
   let id = req.body.id;
-  console.log(req.body.title, req.body.content);
   Counter.findOne({ name: "freeposts" }, (err, result) => {
     let total = result.total;
     Post.create(

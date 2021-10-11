@@ -13,7 +13,7 @@ require("dotenv").config();
 router.get("/board/:page", (req, res) => {
   let page = parseInt(req.params.page);
   // 한 페이지에 보여줄 게시물 수
-  let countPost = 5;
+  let countPost = 10;
   // 한 페이지에 보여줄 페이지 수
   let countPage = 5;
   QnaPost.find({})
@@ -41,6 +41,7 @@ router.get("/board/:page", (req, res) => {
             count: count,
             startPage: startPage,
             endPage: endPage,
+            flag : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/qna/board/${totalPage}`);
@@ -60,7 +61,7 @@ router.get("/search/:page", (req, res) => {
 
   let page = parseInt(req.params.page);
   // 한 페이지에 보여줄 게시물 수
-  let countPost = 5;
+  let countPost = 10;
   // 한 페이지에 보여줄 페이지 수
   let countPage = 5;
 
@@ -91,7 +92,8 @@ router.get("/search/:page", (req, res) => {
           count: count,
           startPage: startPage,
           endPage: endPage,
-          query : fullquery
+          query : fullquery,
+          flag : req.user
         });
       } else if (page > totalPage) {
         res.redirect(`/qna/search/${totalPage}`);
@@ -252,7 +254,7 @@ router.get("/write", isLogin, (req, res) => {
 
 // 질답게시판 게시글 쓰기
 router.post("/post", (req, res) => {
-  let uploadtime = moment().format("YYYY-MM-DD hh:mm");
+  let uploadtime = moment().format("YYYY-MM-DD HH:mm");
   let title = req.body.title;
   let content = req.body.content;
   let id = req.body.id;
