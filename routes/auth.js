@@ -16,9 +16,10 @@ router.get('/getauth', (req, res) => {
 // 회원가입 중복 아이디 검사
 router.post('/checkid', (req, res) => {
     let checkId = req.body.id
-
     if (checkId == null | checkId == '') {
         res.send("아이디를 입력해주세요!")
+    } else if(checkId.length>12){
+        res.send("글자수를 초과하였습니다.")
     } else {
 
         User.findOne({ id: checkId }, (err, result) => {
