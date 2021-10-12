@@ -29,7 +29,7 @@
             <a class="btn btn-outline-primary" id="login">로그인</a>
         </li>
         <li class="nav-item">
-            <a class="btn btn-outline-primary" id="logout" href="/auth/logout">로그아웃</a>
+            <a class="btn btn-outline-danger" id="logout" href="/auth/logout">로그아웃</a>
         </li>
 
       </ul>
@@ -44,7 +44,7 @@
                 }).done( (data, textStatus, xhr) => {
                   
                 if(data.id!=null){
-                  $("#login").attr({"id":"logout","href":"/auth/logout","class":"btn btn-outline-danger"}).text("로그아웃")
+                  $("#login").css("display",'none')
                   $("#mypage").css("display",'block')
                   $("#logout").css("display",'block')
                   if(data.auth!="admin"&data.auth!="operator"){
@@ -54,7 +54,6 @@
                 } 
 
                 } else {
-                  $("#logout").attr({"id":"login","href":"/auth/login","class":"btn btn-outline-danger"}).text("로그인")
                   $("#mypage").css("display","none")
                 }
               })

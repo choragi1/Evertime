@@ -1,52 +1,69 @@
 <!doctype html>
 <html>
-  <head>
-    <%- include('script.ejs') %>
+
+<head>
+  <%- include('script.ejs') %>
+  <script type="text/javascript" src="../../public/se2/js/HuskyEZCreator.js" charset="utf-8"></script>
 
 
     <title>게시판</title>
-  </head>
-  <body>
-    
-    <div>
+</head>
+
+<body>
+
+  <div>
 
 
-      <%- include('login.ejs')  %>
-      <%- include('nav.ejs')  %>
+    <%- include('login.ejs') %>
+      <%- include('nav.ejs') %>
 
 
-      <div>
-        <form style="padding: 10px;" action="/free/edit?_method=PUT" method="POST">
-          <div class="card col-md-12">
-            <div class="card-body">
+        <div>
+          <form style="padding: 10px;" action="/free/edit?_method=PUT" method="POST">
+            <div class="card col-md-12">
+              <div class="card-body">
 
-              <div class="row col-md-12">
-                <div class="mb-3 col-md-10">
-                  
-                  <h3>자유게시판</h3>
-                  <br/>
-                  <h5>게시글 수정</h5>
-                  <br />
+                <div class="row col-md-12">
+                  <div class="mb-3 col-md-8">
 
-            <input value="<%= post._id %>" name="id" style="display : none">
-            <label for="title" class="form-label"><b>제목</b></label>
-            <input type="text" value="<%= post.post_title %>" class="form-control" id="title" name="title">
-          </div>
-          </div>
-          <div class="row col-md-12">
-            <div class="mb-3 col-md-10">
-              <label for="content" class="form-label"><b>내용</b></label>
-              <textarea class="form-control" id="content" name="content" rows="15"><%=post.post_content%></textarea>
+                    <h3>자유게시판</h3>
+                    <br />
+                    <h5>게시글 수정</h5>
+                    <br />
+
+                    <input value="<%= post._id %>" name="id" style="display : none">
+                    <label for="title" class="form-label"><b>제목</b></label>
+                    <input type="text" value="<%= post.post_title %>" class="form-control" id="title" name="title">
+                  </div>
+                </div>
+                <div class="row col-md-12">
+                  <div class="mb-3 col-md-8">
+                    <label for="content" class="form-label"><b>내용</b></label>
+                    <textarea class="form-control" id="content" name="content"
+                      rows="15"><%=post.post_content%></textarea>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-danger">등록</button>
+          </form>
+
         </div>
-        </div>
-        <button type="submit" class="btn btn-danger">등록</button>
-      </form>
 
-    </div>
+        <!-- 로그인 버튼 클릭 시 애니메이션 -->
+        <%- include('loginani.ejs') %>
 
-    <!-- 로그인 버튼 클릭 시 애니메이션 -->
-    <%- include('loginani.ejs') %>
+          <script>
 
-    
-  </body>
+            let oEditors = [];
+            nhn.husky.EZCreator.createInIFrame({
+              oAppRef: oEditors,
+              elPlaceHolder: "content",
+              sSkinURI: "../../public/se2/SmartEditor2Skin.html",
+              fCreator: "createSEditor2"
+            });
+
+          </script>
+
+
+</body>
+
 </html>

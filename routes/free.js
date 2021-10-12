@@ -285,7 +285,6 @@ router.get("/detail/:postno", (req, res) => {
 
 //자유게시판 게시글수정 페이지 POST 요청
 router.post("/edit", isLogin, (req, res) => {
-  console.log("자유게시판 글수정 POST 요청", "게시글번호 : " + req.user._id);
   if (req.user.id == req.body.writer) {
     Post.findOne({ _id: parseInt(req.body._id) }, (err, result) => {
       res.render("freeedit.ejs", { post: result });

@@ -2,6 +2,7 @@
 <html>
   <head>
     <%- include('script.ejs') %>
+    <script type="text/javascript" src="../../public/se2/js/HuskyEZCreator.js" charset="utf-8"></script>
 
 
     <title>게시글 수정</title>
@@ -22,7 +23,7 @@
               <div class="card-body">
   
                 <div class="row col-md-12">
-                  <div class="mb-3 col-md-10">
+                  <div class="mb-3 col-md-8">
                     
                     <h3>질답게시판</h3>
                     <br/>
@@ -35,7 +36,7 @@
             </div>
             </div>
             <div class="row col-md-12">
-              <div class="mb-3 col-md-10">
+              <div class="mb-3 col-md-8">
                 <label for="content" class="form-label"><b>내용</b></label>
                 <textarea class="form-control" id="content" name="content" rows="15"><%=qnapost.post_content%></textarea>
           </div>
@@ -47,6 +48,18 @@
 
     <!-- 로그인 버튼 클릭 시 애니메이션 -->
     <%- include('loginani.ejs') %>
+
+    <script>
+
+      let oEditors = [];
+      nhn.husky.EZCreator.createInIFrame({
+        oAppRef: oEditors,
+        elPlaceHolder: "content",
+        sSkinURI: "../../public/se2/SmartEditor2Skin.html",
+        fCreator: "createSEditor2"
+      });
+
+    </script>
 
     
   </body>
