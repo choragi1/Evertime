@@ -3,9 +3,9 @@
 
 <head>
   <%- include('script.ejs') %>
+    <script type="text/javascript" src="../../public/se2/js/HuskyEZCreator.js" charset="utf-8"></script>
 
-
-    <title>게시판</title>
+    <title>글쓰기</title>
 </head>
 
 <body>
@@ -24,20 +24,20 @@
               <div class="card-body">
 
                 <div class="row col-md-12">
-                  <div class="mb-3 col-md-10">
+                  <div class="mb-3 col-md-8">
 
                     <h3>자유게시판</h3>
                     <br />
 
-                    <label for="post_title" class="form-label">제목</label>
-                    <input type="text" class="form-control" id="post_title" name="post_title">
+                    <label for="title" class="form-label">제목</label>
+                    <input type="text" class="form-control" id="title" name="title">
                   </div>
                 </div>
 
                 <div class="row col-md-12">
-                  <div class="mb-3 col-md-10">
-                    <label for="post_content" class="form-label">내용</label>
-                    <textarea class="form-control" id="post_content" name="post_content" rows="15"></textarea>
+                  <div class="mb-3 col-md-8">
+                    <label for="content" class="form-label">내용</label>
+                    <textarea class="form-control" id="content" name="content" rows="15"></textarea>
                   </div>
                 </div>
 
@@ -50,19 +50,35 @@
 
   <%- include('loginani.ejs') %>
 
+
     <script>
 
+      let oEditors = [];
+      nhn.husky.EZCreator.createInIFrame({
+        oAppRef: oEditors,
+        elPlaceHolder: "content",
+        sSkinURI: "../../public/se2/SmartEditor2Skin.html",
+        fCreator: "createSEditor2"
+      });
+
       $('#post').click((e) => {
-        let title = $("#post_title").val();
-        let content = $("#post_content").val();
+
+        oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+
+        let title = $("#title").val();
+        let content = document.getElementById("content").value;
         let id = e.target.dataset.id;
-        console.log(title)
-        console.log(content)
-        if (title === '') {
-          alert('제목을 작성해주세요')
-        } else if (content === '') {
-          alert('내용을 작성해주세요.')
-        } else {
+        if (title == null || title == "") {
+          alert("제목을 입력해주세요.");
+          $("#title").focus(); return;
+        } if (content == "" || content == null || content == '&nbsp;' || content == '<br>' || content == '<br/>' || content == '<p>&nbsp;</p>') {
+          alert("본문을 작성해주세요.");
+          oEditors.getById["content"].exec("FOCUS");
+          return;
+        }
+
+        let result = confirm("작성하시겠습니까?");
+        if (result) {
           $.ajax({
             method: "POST",
             url: '/free/post',
@@ -73,12 +89,13 @@
               location.replace(url);
             }
           })
-        }
 
+        }
       })
 
-    </script>
 
+
+    </script>
 </body>
 
 </html>

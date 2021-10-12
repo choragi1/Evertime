@@ -420,7 +420,6 @@ router.post("/detail/like", (req, res) => {
 
 //질답게시판(qna) 게시글 수정 페이지 POST 요청
 router.post("/edit", isLogin, (req, res) => {
-  console.log("QnA게시판 글수정 POST 요청", "게시글번호 : " + req.user._id);
   if (req.user.id == req.body.writer) {
     QnaPost.findOne({ _id: parseInt(req.body._id) }, (err, result) => {
       res.render("qnaedit.ejs", { qnapost: result });
