@@ -228,6 +228,7 @@ router.post("/post", function (req, res) {
   let uploadtime = moment().format("YYYY-MM-DD HH:mm");
   let title = req.body.title;
   let content = req.body.content;
+  content = content.replace(/(?:\r\n|\r|\n)/g,'<br/>')
   let id = req.body.id;
   Counter.findOne({ name: "freeposts" }, (err, result) => {
     let total = result.total;
@@ -298,12 +299,18 @@ router.post("/edit", isLogin, (req, res) => {
 
 //자유게시판 게시글 수정 PUT 요청
 router.put("/edit", (req, res) => {
+  
+
+  let title = req.body.title;
+  let content = req.body.content;
+  content = content.replace(/(?:\r\n|\r|\n)/g,'<br/>')
+
   Post.updateOne(
     { _id: parseInt(req.body.id) },
     {
       $set: {
-        post_title: req.body.post_title,
-        post_content: req.body.post_content,
+        post_title: title,
+        post_content: content,
       },
     },
     () => {
@@ -338,9 +345,11 @@ router.delete("/del", (req, res) => {
 
 // 자유게시판 댓글 작성
 router.post("/comment", isLogin, (req, res) => {
+
   if (req.user != undefined) {
-    var postid = parseInt(req.body.postid);
-    var uploadtime = moment().format("YYYY-MM-DD HH:mm");
+    let postid = parseInt(req.body.postid);
+    let uploadtime = moment().format("YYYY-MM-DD HH:mm");
+    let comment = req.body.comment
     Counter.findOne({ name: "freecomments" }, (err, count) => {
       let commentNum = parseInt(count.current);
       Counter.updateOne(
@@ -351,7 +360,7 @@ router.post("/comment", isLogin, (req, res) => {
           FreeComment.create(
             {
               _id: commentNum + 1,
-              comment: req.body.comment,
+              comment: comment,
               parent: postid,
               date: uploadtime,
               writer: req.user.id,

@@ -15,16 +15,29 @@
       <%- include('nav.ejs')  %>
 
 
-    
-    <form style="padding: 10px;" action="/free/edit?_method=PUT" method="POST">
-      <input value="<%= post._id %>" name="id" style="display : none">
-        <div class="mb-3">
-            <label>제목</label>
-            <input type="text" value="<%= post.post_title %>" class="form-control" name="post_title">
+      <div>
+        <form style="padding: 10px;" action="/free/edit?_method=PUT" method="POST">
+          <div class="card col-md-12">
+            <div class="card-body">
+
+              <div class="row col-md-12">
+                <div class="mb-3 col-md-10">
+                  
+                  <h3>자유게시판</h3>
+                  <br/>
+                  <h5>게시글 수정</h5>
+                  <br />
+
+            <input value="<%= post._id %>" name="id" style="display : none">
+            <label for="title" class="form-label"><b>제목</b></label>
+            <input type="text" value="<%= post.post_title %>" class="form-control" id="title" name="title">
           </div>
-        <div class="mb-3">
-          <label>내용</label>
-          <input type="text" value="<%= post.post_content %>" class="form-control" name="post_content">
+          </div>
+          <div class="row col-md-12">
+            <div class="mb-3 col-md-10">
+              <label for="content" class="form-label"><b>내용</b></label>
+              <textarea class="form-control" id="content" name="content" rows="15"><%=post.post_content%></textarea>
+        </div>
         </div>
         <button type="submit" class="btn btn-danger">등록</button>
       </form>

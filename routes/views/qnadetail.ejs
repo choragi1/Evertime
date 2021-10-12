@@ -15,7 +15,6 @@
 
 
       <div class="container">
-        <!-- mt-4,pt-4 margintop,paddingtop을 숫자에 비례해서 준다(1~5) -->
         <div class="card w-100 mt-4 text-left">
           <div class="card-body">
             <h4 class="card-title">
@@ -27,7 +26,7 @@
             <p class="card-text">작성일 : <%=qnapost.date %>
             </p>
             <hr>
-            <p class="card-text">
+            <p class="card-text" id="qna-content">
               <%=qnapost.post_content %>
             </p>
             <hr>
@@ -54,7 +53,7 @@
           <form class="m-4" method="POST" action="/qna/comment">
 
             <h5><b>댓글</b></h5>
-            <input type="text" id="comment" style="width:500px;height:100px;" name="comment">
+            <textarea type="text" id="comment" style="width:500px;height:100px;" name="comment"></textarea>
             <input type="button" id="comment-regist" class="btn btn-outline-primary" data-id="<%= qnapost._id%>" value="등록">
 
 
@@ -70,7 +69,7 @@
               <tbody>
                 <% for(var i=0;i<comment.length;i++){ %>
                   <tr>
-                    <td width="62%" class="p-2" align="center">
+                    <td width="62%" class="p-2" align="center" id="qna-comment-<%=i%>">
                       <%= comment[i].comment %>
                     </td>
                     <td width="8%" class="p-2" align="center">
@@ -119,6 +118,14 @@
 
       <script>
 
+        // 엔터키 변환
+        let content = $('#qna-content').text();
+        $('#qna-content').html(content)
+        let comment = $('#qna-comment').text();
+        $('#qna-comment').html(comment)
+        
+        
+
         // 게시글 삭제 버튼 클릭시
         $('#qna-del').click(function (e) {
           let flag=confirm('정말로 해당 게시글을 삭제하시겠습니까?')
@@ -147,18 +154,7 @@
         $('.comment-edit').click((e) => {
           let commno = e.target.dataset.no;
           let writer = e.target.dataset.writer;
-          $.ajax({
-            method: 'GET',
-            url: "/auth/getauth",
-          }).done((data, textStatus, xhr) => {
-            if (data.id === undefined) {
-              alert('로그인 후 이용 가능합니다.')
-            } else if (data.id != writer) {
-              alert('수정 권한이 없습니다.')
-            } else {
-              $(`#comment-edit-${commno}`).show()
-            }
-          })
+          $(`#comment-edit-${commno}`).show()
         })
 
 

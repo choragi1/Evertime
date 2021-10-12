@@ -35,7 +35,7 @@
           <tr>
             <td style="width: 5%" id="board-post"><%= post[i]._id %></td>
             <td style="width: 45%; text-align: left; cursor:pointer" id="board-post" class="pl-5"
-            onclick="location.href='/free/detail/<%= post[i]._id %>'">
+            onclick="location.href='/qna/detail/<%= post[i]._id %>'">
             <%= post[i].post_title %>
             <% if(post[i].commentcnt>0){ %>
               <b>[<%=post[i].commentcnt%>]</b>
