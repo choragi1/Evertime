@@ -115,7 +115,7 @@ tbody > tr:hover {
 float:right;
 }
 
-#adminlink, #mypage{
+#adminlink, #mypage, #logout{
     display : none;
 }
 
