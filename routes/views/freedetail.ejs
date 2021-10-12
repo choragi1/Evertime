@@ -27,7 +27,7 @@
             <p class="card-text">작성일 : <%=post.date %>
             </p>
             <hr>
-            <p class="card-text">
+            <p class="card-text" id="free-content">
               <%=post.post_content %>
             </p>
             <hr>
@@ -54,7 +54,7 @@
           <form class="m-4" method="POST" action="/free/comment">
 
             <h5><b>댓글</b></h5>
-            <input type="text" id="comment" style="width:500px;height:100px;" name="comment">
+            <textarea type="text" id="comment" style="width:500px;height:100px;" name="comment"></textarea>
             <input type="button" id="comment-regist" class="btn btn-outline-primary" data-id="<%= post._id%>" value="등록">
 
             <% if(comment!=''){ %>
@@ -69,7 +69,7 @@
               <tbody>
                 <% for(var i=0;i<comment.length;i++){ %>
                   <tr>
-                    <td width="62%" class="p-2" align="center">
+                    <td width="62%" class="p-2" align="center" id="free-comment">
                       <%= comment[i].comment %>
                     </td>
                     <td width="8%" class="p-2" align="center">
@@ -80,6 +80,7 @@
                         
                       <% try {%>
                       <% if(user.id===comment[i].writer){ %>
+                        
                         <svg class="comment-edit" data-no="<%=i%>" data-writer="<%= comment[i].writer %>"
                           data-id="<%= comment[i]._id %>" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                           fill="currentColor" class="bi bi-pencil-fill" id="com-edlt" viewBox="0 0 16 16">
@@ -118,6 +119,12 @@
 
       <script>
 
+        // 엔터키 변환
+        let content = $('#free-content').text();
+        $('#free-content').html(content)
+        let comment = $('#free-comment').text();
+        $('#free-comment').html(comment)
+
         // 게시글 삭제 버튼 클릭시
         $('#free-del').click(function (e) {
           let flag=confirm('정말로 해당 게시글을 삭제하시겠습니까?')
@@ -145,18 +152,7 @@
         $('.comment-edit').click((e) => {
           let commno = e.target.dataset.no;
           let writer = e.target.dataset.writer;
-          $.ajax({
-            method: 'GET',
-            url: "/auth/getauth",
-          }).done((data, textStatus, xhr) => {
-            if (data.id === undefined) {
-              alert('로그인 후 이용 가능합니다.')
-            } else if (data.id != writer) {
-              alert('수정 권한이 없습니다.')
-            } else {
-              $(`#comment-edit-${commno}`).show()
-            }
-          })
+          $(`#comment-edit-${commno}`).show()
         })
 
 

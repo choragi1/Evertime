@@ -37,7 +37,7 @@
                 <div class="row col-md-12">
                   <div class="mb-3 col-md-10">
                     <label for="post_content" class="form-label">내용</label>
-                    <textarea class="form-control" id="post_content" name="post_content" rows="10"></textarea>
+                    <textarea class="form-control" id="post_content" name="post_content" rows="15"></textarea>
                   </div>
                 </div>
 
@@ -51,6 +51,7 @@
   <%- include('loginani.ejs') %>
 
     <script>
+
       $('#post').click((e) => {
         let title = $("#post_title").val();
         let content = $("#post_content").val();
