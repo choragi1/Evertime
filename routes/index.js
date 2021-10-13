@@ -22,11 +22,6 @@ router.get('/signup', (req, res) => {
 
 
 
-//마이페이지
-router.get('/mypage', isLogin, function (req, res) {
-    res.render('mypage.ejs', { userinfo: req.user })
-})
-
 //로그인 확인(로그인했니?)
 function isLogin(req, res, next) {
     if (req.user) {

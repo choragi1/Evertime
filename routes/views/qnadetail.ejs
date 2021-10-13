@@ -1,24 +1,26 @@
 <!doctype html>
 <html>
-
-<head>
-  <%- include('script.ejs') %>
-
-  <title>
-    <%=qnapost.post_title %>
-  </title>
-</head>
-
-<body>
-  <%- include('login.ejs') %>
+  
+  <head>
+    <%- include('script.ejs') %>
+    
+    <title>
+      <%=qnapost.post_title %>
+    </title>
+  </head>
+  
+  <body>
+    <%- include('login.ejs') %>
     <%- include('nav.ejs') %>
-
-
-      <div class="container">
-        <div class="card w-100 mt-4 text-left">
-          <div class="card-body">
-            <h4 class="card-title"><%=qnapost.post_title %></h4>    
-              <p class="card-text">작성자 : <%=qnapost.writer %> &nbsp;&nbsp;&nbsp; 작성일 : <%=qnapost.date %></p>
+    
+    
+    <div class="container">
+      <div class="card w-100 mt-4 text-left">
+        <div class="card-body">
+          <h4 class="card-title"><%=qnapost.post_title %></h4>    
+          <p class="card-text">작성자 : <%=qnapost.writer %> &nbsp;&nbsp;&nbsp; 작성일 : <%=qnapost.date %>
+          <button style="display: inline-block;" class="btn btn-sm btn-outline-primary" id="like" data-id="<%= qnapost._id%>">추천</button>
+          </p>
                 
             <hr>
             <p class="card-text" id="qna-content">
@@ -33,22 +35,17 @@
               <input type="hidden" name="writer" value="<%= qnapost.writer %>">
               <input type="submit" id="qna-edit" class="btn btn-outline-success" value="수정">
             </form>
-
-            <form style="display: inline-block;" method="POST" action="/qna/del?_method=DELETE">
-              <input type="hidden" id="_id" value="<%= qnapost._id %>">
-              <input type="hidden" id="writer" value="<%= qnapost.writer %>">
-              <button type="button" id="qna-del" class="btn btn-outline-danger" data-id="<%= qnapost._id%>">삭제</button>
-            </form>
+            <button type="button" id="qna-del" class="btn btn-outline-danger" data-id="<%= qnapost._id%>" data-writer="<%= qnapost.writer %>">삭제</button>
             <% }%>
             <% }catch{}%>
 
-            <button style="display: inline-block;" class="btn btn-outline-primary" id="like"
-              data-id="<%= qnapost._id%>">추천</button>
+            <a id="list" class="btn btn-outline-primary" href="/qna/board/1" data-id="<%= qnapost._id%>">목록</a>
           </div>
           <form class="m-4" method="POST" action="/qna/comment">
 
             <h5><b>댓글</b></h5>
-            <textarea type="text" id="comment" style="width:500px;height:100px;" name="comment"></textarea>
+            <textarea type="text" id="comment" style="min-width:700px;min-height: 100px;" name="comment"></textarea>
+            <br/>
             <button type="button" id="comment-regist" class="btn btn-outline-primary" data-id="<%= qnapost._id%>">등록</button>
 
 
@@ -126,7 +123,7 @@
           let flag=confirm('정말로 해당 게시글을 삭제하시겠습니까?')
           if(flag===true){
             var postno = e.target.dataset.id;
-          var writer = $('#writer').val();
+            var writer = e.target.dataset.writer;
           $.ajax({
             method: 'DELETE',
             url: '/qna/del',

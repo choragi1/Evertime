@@ -9,7 +9,7 @@ require('dotenv').config()
 const User = require('../models/user')
 
 //인증정보 저장(네비게이션바 로딩완료시)
-router.get('/getauth', (req, res) => {
+router.post('/getauth', (req, res) => {
     res.send(req.user)
 })
 

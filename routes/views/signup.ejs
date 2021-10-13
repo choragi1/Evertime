@@ -127,12 +127,15 @@
                 data: { userID: userID, userPW: userPW, userNick: userNick, userName: userName, userEmail: userEmail },
                 success: (data) => {
                   alert(data)
-                  location.href('/')
                 }
               }).fail((data, textStatus, xhr) => {
                 console.log(data)
                 alert(data);
-              })
+              }).done((data, textStatus, xhr) => {
+                if (data === '회원가입에 성공했습니다.') {
+                  location.href = "/"
+                }}
+              )
             }
           })
 

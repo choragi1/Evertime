@@ -18,10 +18,11 @@
         <form style="padding: 10px;" action="/member/edit?_method=PUT" method="POST">
           <div class="card col-md-12">
             <div class="card-body">
+              <h3 class="text-center"><%= userinfo.id %> 님의 마이페이지입니다.</h3>
+              <%- include('myselect.ejs') %>
               <div class="row">
                 <div class="col-md-4"></div>
                 <div class="col-md-5">
-                  <h3><%= userinfo.id %> 님의 마이페이지입니다.</h3>
                   <br/>
                 </div>
               </div>
@@ -44,7 +45,6 @@
                 <label for="my-email" class="col-sm-1 col-form-label">이메일 : </label>
                 <div class="col-sm-3">
                   <input type="email" class="form-control" id="my-email" name="my-email" value="<%= userinfo.email %>">
-                  <input type="hidden" id="my-keyid" name="keyid" value="<%= userinfo._id %>">
                 </div>
               </div>
         <div class="form-group row">
@@ -52,10 +52,10 @@
           <label for="my-pw" class="col-sm-1 col-form-label">암호 확인 : </label>
           <div class="col-sm-3">
             <input type="password" class="form-control" id="my-pw" name="my-pw">
+            <button type="button" id="useredit" class="btn btn-outline-danger mt-2" style="float:right;">수정</button>
           </div>
         </div>
         </form>
-        <button type="button" id="useredit" class="btn btn-outline-danger" style="float:right;">수정</button>
       </div>
 
 
@@ -64,12 +64,12 @@
 
         <script>
 
-          $('#useredit').click(() => {
+          $('#useredit').click((e) => {
             let userPW = $("#my-pw").val();
             let userNick = $("#my-nick").val();
             let userName = $("#my-name").val();
             let userEmail = $("#my-email").val();
-            let userNo = $("#my-keyid").val();
+            let userNo = e.target.dataset.id;
 
             let reg_nick = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,10}$/;
             let reg_name = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,10}$/;
@@ -86,7 +86,7 @@
             } else {
               $.ajax({
                 method: 'PUT',
-                url: '/member/edit',
+                url: '/member/info',
                 data: { userPW: userPW, userNick: userNick, userName: userName, userEmail: userEmail, userNo: userNo },
 
               }).done((data, textStatus, xhr) => {
@@ -95,19 +95,9 @@
                   location.href = "/"
                 } else {
                   $("#my-pw").val('');
-                }
-              })
-            }
-
-
-          })
-
-
-
-
-
-
-
+                }}
+              )}
+             })
 
         </script>
 

@@ -112,7 +112,7 @@ tbody > tr:hover {
 }
 
 #login{
-float:right;
+    float:right;
 }
 
 #adminlink, #mypage, #logout{
@@ -140,4 +140,10 @@ svg {cursor: pointer;}
     width:100px;
     height:38px;
     text-align: center;
-    border-color: lightgrey;}
+    border-color: lightgrey;
+}
+
+.my-nav-link {   
+    color : black;
+    font-weight: bold;
+}
