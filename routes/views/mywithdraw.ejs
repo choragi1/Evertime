@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+
+<head>
+  <%- include('script.ejs') %>
+
+  <title>마이페이지</title>
+</head>
+
+<body>
+  <%- include('login.ejs') %>
+    <%- include('nav.ejs') %>
+
+
+
+
+      <div>
+          <div class="card col-md-12">
+            <div class="card-body">
+              <h3 class="text-center"><%= userinfo.id %> 님의 마이페이지입니다.</h3>
+              <%- include('myselect.ejs') %>
+              <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-5">
+                  <br/>
+                </div>
+              </div>
+                
+              <div class="form-group row">
+                <div class="col-md-4"></div>
+                <label for="currentPw" class="col-sm-1 col-form-label">비밀번호 : </label>
+                <div class="col-sm-3">
+                  <input type="password" class="form-control" id="currentPw" name="currentPw">
+                </div>
+              </div>
+              <div class="form-group row">
+                <div class="col-md-4"></div>
+                <label for="checkPw" class="col-sm-1 col-form-label">비밀번호 확인 : </label>
+                <div class="col-sm-3">
+                  <input type="password" class="form-control" id="checkPw" name="checkPw">
+                  <button type="button" id="withdraw" class="btn btn-outline-danger mt-2" style="float:right;" data-id="<%= userinfo._id %>">탈퇴</button>
+                </div>
+              </div>
+
+              <div class="text-center">
+              <h5 style="color: red;"><b>회원 정보 삭제</b></h5>
+              <h6><b>회원 탈퇴와 함께 등록된 모든 개인정보는 즉시 삭제, 폐기 처리되며 복구되지 않습니다.</b></h6>
+            </div>
+      </div>
+
+
+      <%- include('loginani.ejs') %>
+
+
+        <script>
+
+          $("#withdraw").click((e)=>{
+          let currentPw = $("#currentPw").val();
+          let checkPw = $("#checkPw").val();
+          let flag = confirm("정말 탈퇴하시겠습니까?\n탈퇴 하신 이후 데이터는 복구 불가능하니 신중히 선택해주세요.")
+          let userNo = e.target.dataset.id;
+          if(flag===true){
+            if(currentPw==='' | currentPw.length===0){
+              alert("비밀번호를 입력해주세요.")
+            } else if(checkPw==='' | checkPw.length===0){
+              alert("비밀번호 확인을 입력해주세요.")
+            } else if(currentPw!=checkPw){
+              alert("비밀번호가 일치하지 않습니다.")
+            } else{
+              $.ajax({
+              method : "DELETE",
+              url : "/member/user",
+              data : {userNo : userNo, password : currentPw},
+              success : (data) => {
+                console.log(userNo)
+                alert(data);
+              }
+            }).fail((data, textStatus, xhr) => {
+              alert(data)
+            }).done((data, textStatus, xhr) => {
+              if(data === "탈퇴 처리 되었습니다."){
+                location.href = "/"
+              }
+            })
+            }
+          }})
+
+             
+
+
+
+
+
+
+        </script>
+
+</body>
+
+</html>

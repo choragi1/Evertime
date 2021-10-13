@@ -28,6 +28,7 @@ const memberRouter = require('./routes/member')
 const authRouter = require('./routes/auth')
 const manageRouter = require('./routes/manage')
 const indexRouter = require('./routes/index')
+const mypageRouter = require('./routes/mypage')
 
 app.use('/free', freeRouter );
 app.use('/qna', qnaRouter );
@@ -35,6 +36,7 @@ app.use('/member', memberRouter );
 app.use('/auth', authRouter );
 app.use('/manage', manageRouter );
 app.use('/', indexRouter );
+app.use('/mypage', mypageRouter );
 
 // public 폴더에 path 지정
 app.use('/public', express.static('public'));

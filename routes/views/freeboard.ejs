@@ -116,6 +116,19 @@
       <%- include('loginani.ejs') %>
 
         <script>
+
+          function notLogin(){
+              Swal.fire({
+                icon: 'error',
+                title: '로그인 후 이용 가능합니다.',
+              })
+              $('.swal2-confirm').click(()=>{
+                $("#login").click();
+                $("#user_id").focus();
+              }) 
+            }
+
+
           $("#search").click(function () {
             let input = $("#search-input").val()
             let option = $("#search-option").val()
@@ -123,9 +136,10 @@
           })
 
           $("#writebtn").click(() => {
-            alert('로그인 후 이용 가능합니다.');
-            $("#login").click();
-            $("#user_id").focus();
+            notLogin();
+            // alert('로그인 후 이용 가능합니다.');
+            // $("#login").click();
+            // $("#user_id").focus();
           })
 
 

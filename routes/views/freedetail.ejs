@@ -1,55 +1,51 @@
 <!doctype html>
 <html>
-
-<head>
-  <%- include('script.ejs') %>
-
-  <title>
-    <%=post.post_title %>
-  </title>
-</head>
-
-<body>
-  <%- include('login.ejs') %>
+  
+  <head>
+    <%- include('script.ejs') %>
+    
+    <title>
+      <%=post.post_title %>
+    </title>
+  </head>
+  
+  <body>
+    <%- include('login.ejs') %>
     <%- include('nav.ejs') %>
-
-
-      <div class="container">
-        <!-- mt-4,pt-4 margintop,paddingtop을 숫자에 비례해서 준다(1~5) -->
-        <div class="card w-100 mt-4 text-left">
-          <div class="card-body">
-            <h4 class="card-title"><%=post.post_title %></h4>    
-              <p class="card-text">작성자 : <%=post.writer %> &nbsp;&nbsp;&nbsp; 작성일 : <%=post.date %></p>
+    
+    
+    <div class="container">
+      <!-- mt-4,pt-4 margintop,paddingtop을 숫자에 비례해서 준다(1~5) -->
+      <div class="card w-100 mt-4 text-left">
+        <div class="card-body">
+          <h4 class="card-title"><%=post.post_title %></h4>    
+          <p class="card-text">작성자 : <%=post.writer %> &nbsp;&nbsp;&nbsp; 작성일 : <%=post.date %>
+          <button style="display: inline-block;" class="btn btn-sm btn-outline-primary" id="like" data-id="<%= post._id%>">추천</button>
+          </p>
                 
             <hr>
             <p class="card-text" id="free-content">
               <%=post.post_content %>
             </p>
             <hr>
-
+            
             <% try {%>
               <% if(user.id===post.writer){ %>
-            <form style="display: inline-block;" method="POST" action="/free/edit">
+                <form style="display: inline-block;" method="POST" action="/free/edit">
               <input type="hidden" name="_id" value="<%= post._id %>">
               <input type="hidden" name="writer" value="<%= post.writer %>">
               <input type="submit" id="free-edit" class="btn btn-outline-success" data-id="<%= post._id%>" value="수정">
             </form>
-
-            <form style="display: inline-block;" method="POST" action="/free/del?_method=DELETE">
-              <input type="hidden" id="_id" value="<%= post._id %>">
-              <input type="hidden" id="writer" value="<%= post.writer %>">
-              <button type="button" id="free-del" class="btn btn-outline-danger" data-id="<%= post._id%>">삭제</button>
-            </form>
-              <% }%>
+            <button type="button" id="free-del" class="btn btn-outline-danger" data-id="<%= post._id%>" data-writer="<%= post.writer %>">삭제</button>
+            <% }%>
             <% }catch{}%>
-
-            <button style="display: inline-block;" class="btn btn-outline-primary" id="like"
-              data-id="<%= post._id%>">추천</button>
+            <a id="list" class="btn btn-outline-primary" href="/free/board/1" data-id="<%= post._id%>">목록</a>
           </div>
           <form class="m-4" method="POST" action="/free/comment">
 
             <h5><b>댓글</b></h5>
-            <textarea type="text" id="comment" style="width:500px;height:100px;" name="comment"></textarea>
+            <textarea type="text" id="comment" style="min-width:700px;min-height: 100px;" name="comment"></textarea>
+            <br/>
             <button type="button" id="comment-regist" class="btn btn-outline-primary" data-id="<%= post._id%>">등록</button>
 
             <% if(comment!=''){ %>
@@ -125,7 +121,7 @@
           let flag=confirm('정말로 해당 게시글을 삭제하시겠습니까?')
           if(flag===true){
           var postno = e.target.dataset.id;
-          var writer = $('#writer').val();
+          var writer = e.target.dataset.writer;
           $.ajax({
             method: 'DELETE',
             url: '/free/del',
