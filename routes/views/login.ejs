@@ -1,6 +1,7 @@
 <div class="login-bg">
-    <div class="login-modal row">
-        <div class="col-md-12">
+    <div class="login-modal">
+        <div class="row">
+            <div class="col-md-12">
             <form method="POST" action="/auth/login">
                 <h4 class="text-center">로그인</h4>
                 <div class="form-group">
@@ -15,12 +16,12 @@
                 <button type="submit" id="login-btn" class="btn btn-outline-primary">로그인</button>
                 <button type="button" id="loginCancle" class="btn btn-outline-danger">닫기</button>
                 <a class="signup btn btn-outline-primary" style="float:right;" href="/signup">회원가입</a>
-                <!-- <a class="btn btn-block" href="/auth/google" role="button"><img src="../../public/img/btn_google_signin_dark_normal_web.png"></a> -->
-                </div>
-                
-                
-                
+                <a class="btn btn-block mt-2" href="/auth/google" role="button"><img src="../../public/img/google-login-btn.png"></a>
+                <a class="btn btn-block" href="/auth/kakao" role="button"><img src="../../public/img/kakao-login-btn.png"></a>
+                <a class="btn btn-block" href="/auth/facebook" role="button"><img src="../../public/img/facebook-login-btn.png"></a>
+                </div>     
             </form>
+        </div>
         </div>
         
     </div>

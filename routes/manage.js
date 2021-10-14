@@ -162,6 +162,12 @@ router.delete('/qnapost', isAdmin, (req,res) => {
         res.send('삭제되었습니다.')})        
 })
 
+router.get('/ga', isAdmin ,(req,res) => {
+  res.render('analytics.ejs')
+})
+
+
+
 //관리자 권한 확인(관리자세요?)
 function isAdmin(req, res, next) {
     if (req.user != null) {

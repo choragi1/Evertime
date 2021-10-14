@@ -52,7 +52,7 @@
           <label for="my-pw" class="col-sm-1 col-form-label">암호 확인 : </label>
           <div class="col-sm-3">
             <input type="password" class="form-control" id="my-pw" name="my-pw">
-            <button type="button" id="useredit" class="btn btn-outline-danger mt-2" style="float:right;">수정</button>
+            <button type="button" id="useredit" class="btn btn-outline-danger mt-2" style="float:right;" data-id="<%= userinfo._id %>">수정</button>
           </div>
         </div>
         </form>
@@ -70,6 +70,7 @@
             let userName = $("#my-name").val();
             let userEmail = $("#my-email").val();
             let userNo = e.target.dataset.id;
+            console.log(userNo)
 
             let reg_nick = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,10}$/;
             let reg_name = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,10}$/;

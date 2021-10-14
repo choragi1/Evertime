@@ -3,7 +3,6 @@ const router = express.Router();
 const passport = require('passport');
 
 
-
 require('dotenv').config()
 
 const User = require('../models/user')
@@ -60,5 +59,47 @@ router.get('/logout', (req, res) => {
     res.send("<script>alert('로그아웃 되었습니다.');location.href = '/'</script>")
 })
 
+
+// 구글 로그인
+
+router.get('/google',
+  passport.authenticate('google', { scope:
+      [ 'email', 'profile' ] }
+));
+
+router.get( '/google/callback',
+    passport.authenticate( 'google', {
+        successRedirect: '/auth/google/success',
+        failureRedirect: '/auth/google/failure'
+}));
+
+router.get("/google/success", (req,res) => {
+    res.redirect('/')
+})
+
+router.get("/google/failure", (req,res) => {
+    res.render("<script>alert('로그인에 실패했습니다.');location.href = document.referrer;</script>")
+})
+
+// 카카오 로그인
+
+router.get('/kakao', passport.authenticate('kakao'));
+
+router.get('/kakao/callback', passport.authenticate('kakao', {
+  failureRedirect: '/',
+}), (req, res) => {
+  res.redirect('/');
+});
+
+
+// 페이스북 로그인
+
+router.get('/facebook', passport.authenticate('facebook', {
+    authType: 'rerequest', scope: ['public_profile', 'email']
+  }));
+
+router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/' }), function(req, res) {
+    res.redirect('/');
+});
 
 module.exports = router;
