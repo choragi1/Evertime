@@ -16,7 +16,7 @@ const bcrypt = require('bcrypt');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-app.use(session({ secret: 'choragi', resave: true, saveUninitialized: false }));
+app.use(session({ secret: 'choragi', resave: false, saveUninitialized: false, cookie: { maxAge: 60 * 60 * 1000 } }));
 app.use(passport.initialize());
 app.use(passport.session());
 

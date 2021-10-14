@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const findOrCreate = require("mongoose-findorcreate");
 const userSchema = new mongoose.Schema(
   {
     _id: {
@@ -7,7 +8,6 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
     },
     id: {
       type: String,
@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema(
     },
     pw: {
       type: String,
-      required: true,
     },
     joinDate: {
       type: String,
@@ -34,10 +33,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    googleId : {
+      type : Number
+    },
+    kakaoId : {
+      type : Number
+    },
+    facebookId : {
+      type : Number
+    }
   },
   {
     versionKey: false,
   }
 );
+
+userSchema.plugin(findOrCreate);
 
 module.exports = mongoose.model("User", userSchema);

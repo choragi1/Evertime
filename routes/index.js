@@ -6,7 +6,6 @@ require('dotenv').config()
 
 // 메인페이지(index)
 router.get('/', (req, res) => {
-    // console.log(req.session.passport)
     res.render('index.ejs')
 });
 
