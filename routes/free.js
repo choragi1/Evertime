@@ -305,19 +305,18 @@ router.put("/edit", (req, res) => {
 
   let title = req.body.title;
   let content = req.body.content;
-  content = content.replace(/(?:\r\n|\r|\n)/g,'<br/>')
+  let postno = parseInt(req.body.postno)
 
   Post.updateOne(
-    { _id: parseInt(req.body.id) },
+    { _id: postno },
     {
       $set: {
         post_title: title,
         post_content: content,
       },
     },
-    () => {
-      console.log("게시글 수정 완료");
-      res.redirect("/free/board/1");
+    (err, result) => {
+      res.send("수정되었습니다.");
     }
   );
 });

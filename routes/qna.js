@@ -425,7 +425,7 @@ router.post("/detail/like", (req, res) => {
 router.post("/edit", isLogin, (req, res) => {
   if (req.user.id == req.body.writer) {
     QnaPost.findOne({ _id: parseInt(req.body._id) }, (err, result) => {
-      res.render("qnaedit.ejs", { qnapost: result });
+      res.render("qnaedit.ejs", { qnapost: result});
     });
   } else {
     res.send(
@@ -439,10 +439,10 @@ router.put("/edit", (req, res) => {
 
   let title = req.body.title;
   let content = req.body.content;
-  content = content.replace(/(?:\r\n|\r|\n)/g,'<br/>')
+  let postno = parseInt(req.body.postno)
 
   QnaPost.updateOne(
-    { _id: parseInt(req.body.id) },
+    { _id: postno },
     {
       $set: {
         post_title: title,
@@ -450,8 +450,7 @@ router.put("/edit", (req, res) => {
       },
     },
     () => {
-      console.log("게시글 수정 완료");
-      res.redirect("/qna/board/1");
+      res.send("수정되었습니다.");
     }
   );
 });

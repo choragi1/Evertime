@@ -19,7 +19,6 @@
 
 
         <div>
-          <form style="padding: 10px;" action="/free/edit?_method=PUT" method="POST">
             <div class="card col-md-12">
               <div class="card-body">
 
@@ -31,7 +30,6 @@
                     <h5>게시글 수정</h5>
                     <br />
 
-                    <input value="<%= post._id %>" name="id" style="display : none">
                     <label for="title" class="form-label"><b>제목</b></label>
                     <input type="text" value="<%= post.post_title %>" class="form-control" id="title" name="title">
                   </div>
@@ -43,8 +41,7 @@
                       rows="15"><%=post.post_content%></textarea>
                   </div>
                 </div>
-                <button type="submit" class="btn btn-danger">등록</button>
-          </form>
+                <button type="button" id="edit" class="btn btn-outline-danger" data-id="<%= post._id %>">수정</button>
 
         </div>
 
@@ -58,8 +55,41 @@
               oAppRef: oEditors,
               elPlaceHolder: "content",
               sSkinURI: "../../public/se2/SmartEditor2Skin.html",
-              fCreator: "createSEditor2"
+              fCreator: "createSEditor2",
             });
+
+            $('#edit').click((e) => {
+
+              oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+
+              let title = $("#title").val();
+              let content = document.getElementById("content").value;
+              let postno = e.target.dataset.id
+              if (title == null || title == "") {
+                alert("제목을 입력해주세요.");
+                $("#title").focus(); return;
+              } if (content == "" || content == null || content == '&nbsp;' || content == '<br>' || content == '<br/>' || content == '<p>&nbsp;</p>') {
+                alert("본문을 작성해주세요.");
+                oEditors.getById["content"].exec("FOCUS");
+                return;
+              }
+
+              let result = confirm("수정하시겠습니까?");
+              if (result) {
+                $.ajax({
+                  method: "PUT",
+                  url: '/free/edit',
+                  data: { title: title, content: content, postno: postno },
+                  success: (data) => {
+                    alert(data)
+                    let url = `/free/detail/${postno}`
+                    if(data === "수정되었습니다."){
+                    location.replace(url);
+                  }}
+                })
+
+              }
+              })
 
           </script>
 
