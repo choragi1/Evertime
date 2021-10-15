@@ -41,7 +41,11 @@ const userSchema = new mongoose.Schema(
     },
     facebookId : {
       type : Number
-    }
+    },
+    division : {
+      type : String,
+      default : "normal"
+    },
   },
   {
     versionKey: false,
