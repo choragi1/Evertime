@@ -69,9 +69,10 @@ router.get('/google',
 
 router.get( '/google/callback',
     passport.authenticate( 'google', {
-        successRedirect: '/auth/google/success',
-        failureRedirect: '/auth/google/failure'
-}));
+        failureRedirect: '/'
+ }), (req, res) => {
+    res.redirect('/');
+});
 
 router.get("/google/success", (req,res) => {
     res.redirect('/')
@@ -98,7 +99,9 @@ router.get('/facebook', passport.authenticate('facebook', {
     authType: 'rerequest', scope: ['public_profile', 'email']
   }));
 
-router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/' }), function(req, res) {
+router.get('/facebook/callback', passport.authenticate('facebook', {
+    failureRedirect: '/'
+ }), (req, res) => {
     res.redirect('/');
 });
 

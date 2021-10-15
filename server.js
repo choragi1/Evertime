@@ -4,6 +4,9 @@ require('dotenv').config()
 
 const mongoose = require('./lib/db')
 
+// 로그 수집을 위한 morgan 라이브러리 사용
+// const morgan = require('morgan');
+
 //method-override 라이브러리 사용
 const methodOverride = require('method-override');
 
@@ -19,6 +22,7 @@ app.use(methodOverride('_method'));
 app.use(session({ secret: 'choragi', resave: false, saveUninitialized: false, cookie: { maxAge: 60 * 60 * 1000 } }));
 app.use(passport.initialize());
 app.use(passport.session());
+// app.use(morgan("tiny"));
 
 // 라우터 설정
 
@@ -29,6 +33,17 @@ const authRouter = require('./routes/auth')
 const manageRouter = require('./routes/manage')
 const indexRouter = require('./routes/index')
 const mypageRouter = require('./routes/mypage')
+
+// http로 요청시 https로 자동 변환
+// app.use((req,res,next)=>{
+//   if(!req.secure){
+//     res.redirect("https://evertime-326013.du.r.appspot.com/"+req.url);
+//   }else{
+//     next();
+//   }
+// })
+
+app.enable("trust proxy");
 
 app.use('/free', freeRouter );
 app.use('/qna', qnaRouter );
