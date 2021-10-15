@@ -4,7 +4,7 @@
 <head>
   <%- include('script.ejs') %>
 
-  <title>마이페이지</title>
+    <title>마이페이지</title>
 </head>
 
 <body>
@@ -15,47 +15,109 @@
 
 
       <div>
-        <form style="padding: 10px;" action="/member/edit?_method=PUT" method="POST">
           <div class="card col-md-12">
             <div class="card-body">
-              <h3 class="text-center"><%= userinfo.id %> 님의 마이페이지입니다.</h3>
+              <h3 class="text-center">
+                <%= userinfo.id %> 님의 마이페이지입니다.(<%=userinfo.division %>)
+              </h3>
               <%- include('myselect.ejs') %>
-              <div class="row">
-                <div class="col-md-4"></div>
-                <div class="col-md-5">
-                  <br/>
-                </div>
-              </div>
-                <div class="form-group row">
+                <div class="row">
                   <div class="col-md-4"></div>
-                  <label for="my-nick" class="col-sm-1 col-form-label">닉네임 : </label>
-                  <div class="col-sm-3">
-                    <input type="text" class="form-control" id="my-nick" value="<%= userinfo.nickname %>">
+                  <div class="col-md-6">
+                    <br />
                   </div>
                 </div>
-                <div class="form-group row">
-                  <div class="col-md-4"></div>
-                  <label for="my-name" class="col-sm-1 col-form-label">이름 : </label>
-                  <div class="col-sm-3">
-                    <input type="text" class="form-control" id="my-name" name="my-name" value="<%= userinfo.name %>">
+
+
+                <div class="tab-content show">
+                  <div class="form-group row">
+                    <div class="col-md-4"></div>
+                    <label for="my-nick" class="col-sm-2 col-form-label">닉네임 : </label>
+                    <div class="col-sm-3">
+                      <input type="text" class="form-control" id="my-nick" value="<%= userinfo.nickname %>">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-md-4"></div>
+                    <label for="my-name" class="col-sm-2 col-form-label">이름 : </label>
+                    <div class="col-sm-3">
+                      <input type="text" class="form-control" id="my-name" name="my-name" value="<%= userinfo.name %>">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-md-4"></div>
+                    <label for="my-email" class="col-sm-2 col-form-label">이메일 : </label>
+                    <div class="col-sm-3">
+                      <input type="email" class="form-control" id="my-email" name="my-email" value="<%= userinfo.email %>">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-md-4"></div>
+                    <label for="my-pw" class="col-sm-2 col-form-label">암호 확인 : </label>
+                    <div class="col-sm-3">
+                      <input type="password" class="form-control" id="my-pw" name="my-pw">
+                      <button type="button" id="useredit" class="btn btn-outline-danger mt-2" style="float:right;"
+                        data-id="<%= userinfo._id %>">수정</button>
+                    </div>
                   </div>
                 </div>
-              <div class="form-group row">
-                <div class="col-md-4"></div>
-                <label for="my-email" class="col-sm-1 col-form-label">이메일 : </label>
-                <div class="col-sm-3">
-                  <input type="email" class="form-control" id="my-email" name="my-email" value="<%= userinfo.email %>">
+
+
+                <div class="tab-content">
+                  <div class="form-group row">
+                    <div class="col-md-4"></div>
+                    <label for="currentpw" class="col-sm-2 col-form-label">현재 비밀번호</label>
+                    <div class="col-sm-3">
+                      <input type="password" class="form-control" id="currentpw">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-md-4"></div>
+                    <label for="changepw" class="col-sm-2 col-form-label">새 비밀번호</label>
+                    <div class="col-sm-3">
+                      <input type="password" class="form-control" id="changepw">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-md-4"></div>
+                    <label for="checkpw" class="col-sm-2 col-form-label">새 비밀번호 확인</label>
+                    <div class="col-sm-3">
+                      <input type="password" class="form-control" id="checkpw">
+                      <button type="button" id="editpw" class="btn btn-outline-danger mt-4" style="float:right"
+                        data-id="<%= userinfo._id %>">수정</button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-        <div class="form-group row">
-          <div class="col-md-4"></div>
-          <label for="my-pw" class="col-sm-1 col-form-label">암호 확인 : </label>
-          <div class="col-sm-3">
-            <input type="password" class="form-control" id="my-pw" name="my-pw">
-            <button type="button" id="useredit" class="btn btn-outline-danger mt-2" style="float:right;" data-id="<%= userinfo._id %>">수정</button>
+
+                <div class="tab-content">
+                  <div class="form-group row">
+                    <div class="col-md-4"></div>
+                    <label for="currentPw" class="col-sm-2 col-form-label">비밀번호 : </label>
+                    <div class="col-sm-3">
+                      <input type="password" class="form-control" id="currentPw" name="currentPw">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-md-4"></div>
+                    <label for="checkPw" class="col-sm-2 col-form-label">비밀번호 확인 : </label>
+                    <div class="col-sm-3">
+                      <input type="password" class="form-control" id="checkPw" name="checkPw">
+                      <button type="button" id="withdraw" class="btn btn-outline-danger mt-2" style="float:right;"
+                        data-id="<%= userinfo._id %>">탈퇴</button>
+                    </div>
+                  </div>  
+                  <div class="text-center">
+                    <h5 style="color: red;"><b>회원 정보 삭제</b></h5>
+                    <h6><b>회원 탈퇴와 함께 등록된 모든 개인정보는 즉시 삭제, 폐기 처리되며 복구되지 않습니다.</b></h6>
+                  </div>
+                </div>
+
+
+
+
+
+            </div>
           </div>
-        </div>
-        </form>
       </div>
 
 
@@ -64,13 +126,22 @@
 
         <script>
 
+          for (let i=0; i<3 ; i++){
+          $(".tab-button").eq(i).click( () => {
+            console.log("hi")
+            $('.tab-button').removeClass('my-select-active'); 
+            $('.tab-content').removeClass('show');
+            $(".tab-button").eq(i).addClass("my-select-active")
+            $(".tab-content").eq(i).addClass("show")
+          } )
+          }
+
           $('#useredit').click((e) => {
             let userPW = $("#my-pw").val();
             let userNick = $("#my-nick").val();
             let userName = $("#my-name").val();
             let userEmail = $("#my-email").val();
             let userNo = e.target.dataset.id;
-            console.log(userNo)
 
             let reg_nick = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,10}$/;
             let reg_name = /^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,10}$/;
@@ -96,9 +167,78 @@
                   location.href = "/"
                 } else {
                   $("#my-pw").val('');
+                }
+              }
+              )
+            }
+          })
+
+
+          $('#editpw').click((e) => {
+            let currentPw = $("#currentpw").val();
+            let changePw = $("#changepw").val();
+            let checkPw = $("#checkpw").val();
+            let userNo = e.target.dataset.id;
+            let reg_pw = /(?=.*\d)(?=.*[a-zA-ZS]).{8,}/;
+
+            if (currentPw === '') {
+              alert('현재 비밀번호를 입력해주세요')
+            } else if (changePw === '') {
+              alert('새 비밀번호를 입력해주세요')
+            } else if (checkPw === '') {
+              alert('새 비밀번호 확인을 입력해주세요')
+            } else if (!reg_pw.test(changePw)) {
+              alert("새 비밀번호는 문자,숫자를 1개 이상 포함한 8자리 이상만 가능합니다.")
+            } else if (changePw != checkPw) {
+              alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+            } else {
+              $.ajax({
+                method: "PUT",
+                url: "/member/password",
+                data: { currentPw: currentPw, changePW: changePw, userNo: userNo, checkPw: checkPw },
+                success: (data) => {
+                  alert(data);
+                }}
+                ).fail((data, textStatus, xhr)=>{
+                  alert(data)
+                }).done((data, textStatus, xhr) => {
+                if (data === '비밀번호가 변경되었습니다.') {
+                  location.href = "/"
                 }}
               )}
-             })
+            })
+
+            
+            $("#withdraw").click((e)=>{
+          let currentPw = $("#currentPw").val();
+          let checkPw = $("#checkPw").val();
+          let flag = confirm("정말 탈퇴하시겠습니까?\n탈퇴 하신 이후 데이터는 복구 불가능하니 신중히 선택해주세요.")
+          let userNo = e.target.dataset.id;
+          if(flag===true){
+            if(currentPw==='' | currentPw.length===0){
+              alert("비밀번호를 입력해주세요.")
+            } else if(checkPw==='' | checkPw.length===0){
+              alert("비밀번호 확인을 입력해주세요.")
+            } else if(currentPw!=checkPw){
+              alert("비밀번호가 일치하지 않습니다.")
+            } else{
+              $.ajax({
+              method : "DELETE",
+              url : "/member/user",
+              data : {userNo : userNo, password : currentPw},
+              success : (data) => {
+                console.log(userNo)
+                alert(data);
+              }
+            }).fail((data, textStatus, xhr) => {
+              alert(data)
+            }).done((data, textStatus, xhr) => {
+              if(data === "탈퇴 처리 되었습니다."){
+                location.href = "/"
+              }
+            })
+            }
+          }})
 
         </script>
 
