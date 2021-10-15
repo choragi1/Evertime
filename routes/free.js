@@ -129,7 +129,8 @@ router.get("/search/:page", (req, res) => {
             count: count,
             startPage: startPage,
             endPage: endPage,
-            query : fullquery
+            query : fullquery,
+            flag : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/free/search/${totalPage}`);
@@ -171,7 +172,8 @@ router.get("/search/:page", (req, res) => {
             count: count,
             startPage: startPage,
             endPage: endPage,
-            query : fullquery
+            query : fullquery,
+            flag : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/free/search/${totalPage}`);
@@ -207,7 +209,8 @@ router.get("/search/:page", (req, res) => {
             count: count,
             startPage: startPage,
             endPage: endPage,
-            query : fullquery
+            query : fullquery,
+            flag : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/free/search/${totalPage}`);
