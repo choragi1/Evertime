@@ -100,9 +100,6 @@ tbody > tr:hover {
     display:none;
 }
 
-.show{
-    display:block;
-}
 
 .idCheckMsg{
     color:red;
@@ -147,3 +144,43 @@ svg {cursor: pointer;}
     color : black;
     font-weight: bold;
 }
+
+.tab-content{
+    display: none;
+	padding: 10px;
+}
+
+.my-select-active {
+    border-top: 2px solid orange;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid white;
+	border-left: 1px solid #ccc;
+	color: black;
+	margin-top: -2px;
+}
+
+.show{
+    display:block;
+}
+
+ul.list {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	border-bottom: 1px solid #ccc;
+  }
+  ul.list::after {
+	content: '';
+	display: block;
+	clear: both;
+  }
+  .tab-button {
+	display: block;
+	padding: 10px 20px 10px 20px;
+	float: left;
+	margin-right: -1px;
+	margin-bottom: -1px;
+	color: grey;
+	text-decoration: none;
+	cursor: pointer;
+  }

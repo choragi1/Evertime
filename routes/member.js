@@ -25,15 +25,8 @@ router.post("/add", function (req, res) {
   let userEmail = req.body.userEmail;
 
   if (
-    (userID == null) |
-    (userPW == null) |
-    (userName == null) |
-    (userEmail == null) |
-    (userID.length == 0) |
-    (userPW.length == 0) |
-    (userNick.length == 0) |
-    (userName.length == 0) |
-    (userEmail.length == 0)
+    (userID == null) | (userPW == null) | (userNick == null) |(userName == null) | (userEmail == null) |
+    (userID.length == 0) | (userPW.length == 0) | (userNick.length == 0) | (userName.length == 0) | (userEmail.length == 0)
   ) {
     res.send("필수정보를 입력해주세요");
   } else if (!reg_id.test(userID)) {
