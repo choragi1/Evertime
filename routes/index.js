@@ -6,17 +6,17 @@ require('dotenv').config()
 
 // 메인페이지(index)
 router.get('/', (req, res) => {
-    res.render('index.ejs')
+    res.render('index.ejs', {user : req.user})
 });
 
 // 소개 페이지
 router.get('/intro', (req, res) => {
-    res.render('introduce.ejs');
+    res.render('introduce.ejs', {user : req.user});
 });
 
 //회원가입
 router.get('/signup', (req, res) => {
-    res.render('signup.ejs');
+    res.render('signup.ejs', {user : req.user});
 });
 
 

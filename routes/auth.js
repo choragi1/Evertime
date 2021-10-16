@@ -12,6 +12,10 @@ router.post('/getauth', (req, res) => {
     res.send(req.user)
 })
 
+router.post('/userinfo'), (req, res) => {
+    res.render('nav.ejs',{user:req.user})
+}
+
 // 회원가입 중복 아이디 검사
 router.post('/checkid', (req, res) => {
     let checkId = req.body.id
@@ -79,7 +83,7 @@ router.get("/google/success", (req,res) => {
 })
 
 router.get("/google/failure", (req,res) => {
-    res.render("<script>alert('로그인에 실패했습니다.');location.href = document.referrer;</script>")
+    res.send("<script>alert('로그인에 실패했습니다.');location.href = document.referrer;</script>")
 })
 
 // 카카오 로그인

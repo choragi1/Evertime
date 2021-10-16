@@ -112,10 +112,6 @@ tbody > tr:hover {
     float:right;
 }
 
-#adminlink, #mypage, #logout{
-    display : none;
-}
-
 svg {cursor: pointer;}
 
 

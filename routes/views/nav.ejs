@@ -18,6 +18,8 @@
               <a class="dropdown-item" href="/qna/board/1">질답게시판</a>
             </div>
           </div>
+          <% try { %>
+          <% if(user!=undefined){ %>
         </li>
         <li class="nav-item">
           <a class="nav-link" id="mypage" href="/mypage/info">마이페이지</a>
@@ -25,37 +27,32 @@
         <li class="nav-item">
           <a class="nav-link" id="adminlink" href="/manage/admin">관리</a>
         </li>
-        <li class="nav-item">
-            <a class="btn btn-outline-primary" id="login">로그인</a>
-        </li>
-        <li class="nav-item">
+          <li class="nav-item">
             <a class="btn btn-outline-danger" id="logout" href="/auth/logout">로그아웃</a>
-        </li>
+          </li>
+          
+          <li class="ml-4">
+            <img src="<%=user.img %>" width="28px" height="35px">
+            <span style="font-size: 16px;font-weight: bold;"><%=user.nickname %></span>
+          </li>
+          <% } %>
+          <% } catch {} %>
+          
+          <% if(user===undefined){ %>
+          <li class="nav-item">
+              <a class="btn btn-outline-primary" id="login">로그인</a>
+          </li>
+          <% } %>
 
       </ul>
     </div>
   </nav>
 
   <script>
-            
-                $.ajax({
-                  method : 'POST',
-                  url : "/auth/getauth",
-                }).done( (data, textStatus, xhr) => {
-                  
-                if(data.id!=null){
-                  $("#login").css("display",'none')
-                  $("#mypage").css("display",'block')
-                  $("#logout").css("display",'block')
-                  if(data.auth!="admin"&data.auth!="operator"){
-                  $("#adminlink").css("display","none")
-                  }else{
-                    $("#adminlink").css("display","block")
-                } 
 
-                } else {
-                  $("#mypage").css("display","none")
-                }
-              })
-              
+    $.ajax({
+      method : "POST",
+      url : "/auth/userinfo"
+    })
+
   </script>

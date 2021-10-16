@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema(
       type : String,
       default : "normal"
     },
+    img : {
+      type : String,
+      default : "/public/userimage/default_profile.png"
+    },
   },
   {
     versionKey: false,

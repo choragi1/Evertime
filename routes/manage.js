@@ -34,7 +34,7 @@ router.get('/members/:page', isAdmin, (req, res) => {
       let startPage = Math.floor((page-1) / countPage) * countPage +1
       let endPage = startPage + countPage - 1;
       if (page>0 & page <= totalPage ) {
-        res.render('memberlist.ejs', { member: result, totalMember: totalMember, page: page, totalPage: totalPage, countPage: countPage, startPage : startPage, endPage : endPage });
+        res.render('memberlist.ejs', { member: result, totalMember: totalMember, page: page, totalPage: totalPage, countPage: countPage, startPage : startPage, endPage : endPage, user : req.user });
       } else if(page > totalPage){
         res.redirect(`/manage/members/${totalPage}`)
       } else {
@@ -65,7 +65,7 @@ router.get('/users/:page', isOperator, (req, res) => {
       let startPage = Math.floor((page-1) / countPage) * countPage +1
       let endPage = startPage + countPage - 1;
       if (page>0 & page <= totalPage ) {
-        res.render('userlist.ejs', { member: result, totalMember: totalMember, page: page, totalPage: totalPage, countPage: countPage, startPage : startPage, endPage : endPage });
+        res.render('userlist.ejs', { member: result, totalMember: totalMember, page: page, totalPage: totalPage, countPage: countPage, startPage : startPage, endPage : endPage, user : req.user });
       } else if(page > totalPage){
         res.redirect(`/manage/users/${totalPage}`)
       } else {
@@ -106,7 +106,7 @@ router.get('/freeboard/:page', isAdmin, (req, res) => {
         let startPage = Math.floor((page-1) / countPage) * countPage +1
         let endPage = startPage + countPage - 1;
         if (page>0 & page <= totalPage ) {
-          res.render('postlist.ejs', { post: result, totalPost: totalPost, page: page, totalPage: totalPage, countPage: countPage, count: count, startPage : startPage, endPage : endPage });
+          res.render('postlist.ejs', { post: result, totalPost: totalPost, page: page, totalPage: totalPage, countPage: countPage, count: count, startPage : startPage, endPage : endPage, user : req.user });
         } else if(page > totalPage){
           res.redirect(`/manage/freeboard/${totalPage}`)
         } else {
@@ -145,7 +145,7 @@ router.get('/qnaboard/:page', isAdmin, (req, res) => {
         let startPage = Math.floor((page-1) / countPage) * countPage +1
         let endPage = startPage + countPage - 1;
         if (page>0 & page <= totalPage ) {
-          res.render('qnapostlist.ejs', { qnapost: result, totalPost: totalPost, page: page, totalPage: totalPage, countPage: countPage, count: count, startPage : startPage, endPage : endPage });
+          res.render('qnapostlist.ejs', { qnapost: result, totalPost: totalPost, page: page, totalPage: totalPage, countPage: countPage, count: count, startPage : startPage, endPage : endPage, user : req.user });
         } else if(page > totalPage){
           res.redirect(`/manage/qnaboard/${totalPage}`)
         } else {
@@ -163,7 +163,7 @@ router.delete('/qnapost', isAdmin, (req,res) => {
 })
 
 router.get('/ga', isAdmin ,(req,res) => {
-  res.render('analytics.ejs')
+  res.render('analytics.ejs', {user : req.user})
 })
 
 
