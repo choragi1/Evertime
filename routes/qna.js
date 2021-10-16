@@ -41,7 +41,7 @@ router.get("/board/:page", (req, res) => {
             count: count,
             startPage: startPage,
             endPage: endPage,
-            flag : req.user
+            user : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/qna/board/${totalPage}`);
@@ -93,7 +93,7 @@ router.get("/search/:page", (req, res) => {
           startPage: startPage,
           endPage: endPage,
           query : fullquery,
-          flag : req.user
+          user : req.user
         });
       } else if (page > totalPage) {
         res.redirect(`/qna/search/${totalPage}`);
@@ -130,7 +130,7 @@ router.get("/search/:page", (req, res) => {
             startPage: startPage,
             endPage: endPage,
             query : fullquery,
-            flag : req.user
+            user : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/qna/search/${totalPage}`);
@@ -173,7 +173,7 @@ router.get("/search/:page", (req, res) => {
             startPage: startPage,
             endPage: endPage,
             query : fullquery,
-            flag : req.user
+            user : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/qna/search/${totalPage}`);
@@ -210,7 +210,7 @@ router.get("/search/:page", (req, res) => {
             startPage: startPage,
             endPage: endPage,
             query : fullquery,
-            flag : req.user
+            user : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/qna/search/${totalPage}`);
@@ -248,8 +248,6 @@ router.get("/detail/:postno", (req, res) => {
   );
 });
 
-//질답게시판 검색 (미구현상태)
-
 //질답게시판 게시글 작성 페이지 GET 요청
 router.get("/write", isLogin, (req, res) => {
   res.render("qnapost.ejs", { user: req.user });
@@ -260,7 +258,6 @@ router.post("/post", (req, res) => {
   let uploadtime = moment().format("YYYY-MM-DD HH:mm");
   let title = req.body.title;
   let content = req.body.content;
-  content = content.replace(/(?:\r\n|\r|\n)/g,'<br/>')
   let id = req.body.id;
   console.log(req.body.title, req.body.content);
   Counter.findOne({ name: "qnaposts" }, (err, result) => {
@@ -425,7 +422,7 @@ router.post("/detail/like", (req, res) => {
 router.post("/edit", isLogin, (req, res) => {
   if (req.user.id == req.body.writer) {
     QnaPost.findOne({ _id: parseInt(req.body._id) }, (err, result) => {
-      res.render("qnaedit.ejs", { qnapost: result});
+      res.render("qnaedit.ejs", { qnapost: result, user : req.user});
     });
   } else {
     res.send(

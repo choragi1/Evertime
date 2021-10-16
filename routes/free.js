@@ -42,7 +42,7 @@ router.get("/board/:page", (req, res) => {
             count: count,
             startPage: startPage,
             endPage: endPage,
-            flag : req.user
+            user : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/free/board/${totalPage}`);
@@ -93,7 +93,7 @@ router.get("/search/:page", (req, res) => {
           startPage: startPage,
           endPage: endPage,
           query : fullquery,
-          flag : req.user
+          user : req.user
         });
       } else if (page > totalPage) {
         res.redirect(`/free/search/${totalPage}`);
@@ -130,7 +130,7 @@ router.get("/search/:page", (req, res) => {
             startPage: startPage,
             endPage: endPage,
             query : fullquery,
-            flag : req.user
+            user : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/free/search/${totalPage}`);
@@ -173,7 +173,7 @@ router.get("/search/:page", (req, res) => {
             startPage: startPage,
             endPage: endPage,
             query : fullquery,
-            flag : req.user
+            user : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/free/search/${totalPage}`);
@@ -210,7 +210,7 @@ router.get("/search/:page", (req, res) => {
             startPage: startPage,
             endPage: endPage,
             query : fullquery,
-            flag : req.user
+            user : req.user
           });
         } else if (page > totalPage) {
           res.redirect(`/free/search/${totalPage}`);
@@ -231,7 +231,6 @@ router.post("/post", function (req, res) {
   let uploadtime = moment().format("YYYY-MM-DD HH:mm");
   let title = req.body.title;
   let content = req.body.content;
-  content = content.replace(/(?:\r\n|\r|\n)/g,'<br/>')
   let id = req.body.id;
   Counter.findOne({ name: "freeposts" }, (err, result) => {
     let total = result.total;
@@ -290,7 +289,7 @@ router.get("/detail/:postno", (req, res) => {
 router.post("/edit", isLogin, (req, res) => {
   if (req.user.id == req.body.writer) {
     Post.findOne({ _id: parseInt(req.body._id) }, (err, result) => {
-      res.render("freeedit.ejs", { post: result });
+      res.render("freeedit.ejs", { post: result, user : req.user });
     });
   } else {
     res.send(
