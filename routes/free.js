@@ -42,7 +42,7 @@ router.get("/board/:page", (req, res) => {
             count: count,
             startPage: startPage,
             endPage: endPage,
-            user : req.user
+            user: req.user,
           });
         } else if (page > totalPage) {
           res.redirect(`/free/board/${totalPage}`);
@@ -55,171 +55,185 @@ router.get("/board/:page", (req, res) => {
 
 //자유게시판 검색기능
 router.get("/search/:page", (req, res) => {
-  let query = req.query.value;
-  let fullquery = `?value=${query}`
-  let search = query.split('?option=')
+  try {
+    let query = req.query.value;
+    let search = query.split("?option=");
+    let page = parseInt(req.params.page);
+    // 한 페이지에 보여줄 게시물 수
+    let countPost = 10;
+    // 한 페이지에 보여줄 페이지 수
+    let countPage = 5;
 
-  let page = parseInt(req.params.page);
-  // 한 페이지에 보여줄 게시물 수
-  let countPost = 10;
-  // 한 페이지에 보여줄 페이지 수
-  let countPage = 5;
-
-  if(search[1]==='제목'){
-  Post.find({
-    post_title : new RegExp(search[0])
-  }).sort({ _id: -1 })
-  .skip(countPost * (page - 1))
-  .limit(countPost)
-  .exec((err,result)=>{
-    Post.count({post_title : new RegExp(search[0])}, (err, count) => {
-      // 전체 게시글 수
-      let totalPost = count;
-      // 총 페이지 수
-      let totalPage = Math.floor(totalPost / countPost);
-      // 페이지 수 관련 로직
-      totalPost % countPost > 0 ? totalPage++ : null;
-      // 페이지 시작 번호
-      let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
-      let endPage = startPage + countPage - 1;
-      if ((page > 0) & (page <= totalPage)) {
-        res.render("freesearch.ejs", {
-          post: result,
-          totalPost: totalPost,
-          page: page,
-          totalPage: totalPage,
-          countPage: countPage,
-          count: count,
-          startPage: startPage,
-          endPage: endPage,
-          query : fullquery,
-          user : req.user
+    if (search[1] === "제목") {
+      Post.find({
+        post_title: new RegExp(search[0]),
+      })
+        .sort({ _id: -1 })
+        .skip(countPost * (page - 1))
+        .limit(countPost)
+        .exec((err, result) => {
+          Post.count({ post_title: new RegExp(search[0]) }, (err, count) => {
+            // 전체 게시글 수
+            let totalPost = count;
+            // 총 페이지 수
+            let totalPage = Math.floor(totalPost / countPost);
+            // 페이지 수 관련 로직
+            totalPost % countPost > 0 ? totalPage++ : null;
+            // 페이지 시작 번호
+            let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
+            let endPage = startPage + countPage - 1;
+            if ((page > 0) & (page <= totalPage)) {
+              res.render("freesearch.ejs", {
+                post: result,
+                totalPost: totalPost,
+                page: page,
+                totalPage: totalPage,
+                countPage: countPage,
+                count: count,
+                startPage: startPage,
+                endPage: endPage,
+                user: req.user,
+              });
+            } else if (page > totalPage) {
+              res.redirect(`/free/search/${totalPage}`);
+            } else {
+              res.redirect(`/free/search/${startPage}`);
+            }
+          });
         });
-      } else if (page > totalPage) {
-        res.redirect(`/free/search/${totalPage}`);
-      } else {
-        res.redirect("/free/search/1");
-      }
-    });
-  })
-  } else if(search[1]==='내용'){
-    Post.find({
-      post_content : new RegExp(search[0])
-    }).sort({ _id: -1 })
-    .skip(countPost * (page - 1))
-    .limit(countPost)
-    .exec((err,result)=>{
-      Post.count({post_content : new RegExp(search[0])}, (err, count) => {
-        // 전체 게시글 수
-        let totalPost = count;
-        // 총 페이지 수
-        let totalPage = Math.floor(totalPost / countPost);
-        // 페이지 수 관련 로직
-        totalPost % countPost > 0 ? totalPage++ : null;
-        // 페이지 시작 번호
-        let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
-        let endPage = startPage + countPage - 1;
-        if ((page > 0) & (page <= totalPage)) {
-          res.render("freesearch.ejs", {
-            post: result,
-            totalPost: totalPost,
-            page: page,
-            totalPage: totalPage,
-            countPage: countPage,
-            count: count,
-            startPage: startPage,
-            endPage: endPage,
-            query : fullquery,
-            user : req.user
+    } else if (search[1] === "내용") {
+      Post.find({
+        post_content: new RegExp(search[0]),
+      })
+        .sort({ _id: -1 })
+        .skip(countPost * (page - 1))
+        .limit(countPost)
+        .exec((err, result) => {
+          Post.count({ post_content: new RegExp(search[0]) }, (err, count) => {
+            // 전체 게시글 수
+            let totalPost = count;
+            // 총 페이지 수
+            let totalPage = Math.floor(totalPost / countPost);
+            // 페이지 수 관련 로직
+            totalPost % countPost > 0 ? totalPage++ : null;
+            // 페이지 시작 번호
+            let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
+            let endPage = startPage + countPage - 1;
+            if ((page > 0) & (page <= totalPage)) {
+              res.render("freesearch.ejs", {
+                post: result,
+                totalPost: totalPost,
+                page: page,
+                totalPage: totalPage,
+                countPage: countPage,
+                count: count,
+                startPage: startPage,
+                endPage: endPage,
+                query: fullquery,
+                user: req.user,
+              });
+            } else if (page > totalPage) {
+              res.redirect(`/free/search/${totalPage}`);
+            } else {
+              res.redirect("/free/search/1");
+            }
           });
-        } else if (page > totalPage) {
-          res.redirect(`/free/search/${totalPage}`);
-        } else {
-          res.redirect("/free/search/1");
-        }
-      });
-    })
-  } else if(search[1]==='제목 내용'){
-    Post.find({
-      $or : 
-      [{post_title : new RegExp(search[0])},
-      {post_content : new RegExp(search[0])}]
-    }).sort({ _id: -1 })
-    .skip(countPost * (page - 1))
-    .limit(countPost)
-    .exec((err,result)=>{
-      Post.count({
-        $or : 
-        [{post_title : new RegExp(search[0])},
-        {post_content : new RegExp(search[0])}]
-      }, (err, count) => {
-        // 전체 게시글 수
-        let totalPost = count;
-        // 총 페이지 수
-        let totalPage = Math.floor(totalPost / countPost);
-        // 페이지 수 관련 로직
-        totalPost % countPost > 0 ? totalPage++ : null;
-        // 페이지 시작 번호
-        let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
-        let endPage = startPage + countPage - 1;
-        if ((page > 0) & (page <= totalPage)) {
-          res.render("freesearch.ejs", {
-            post: result,
-            totalPost: totalPost,
-            page: page,
-            totalPage: totalPage,
-            countPage: countPage,
-            count: count,
-            startPage: startPage,
-            endPage: endPage,
-            query : fullquery,
-            user : req.user
+        });
+    } else if (search[1] === "제목 내용") {
+      Post.find({
+        $or: [
+          { post_title: new RegExp(search[0]) },
+          { post_content: new RegExp(search[0]) },
+        ],
+      })
+        .sort({ _id: -1 })
+        .skip(countPost * (page - 1))
+        .limit(countPost)
+        .exec((err, result) => {
+          Post.count(
+            {
+              $or: [
+                { post_title: new RegExp(search[0]) },
+                { post_content: new RegExp(search[0]) },
+              ],
+            },
+            (err, count) => {
+              // 전체 게시글 수
+              let totalPost = count;
+              // 총 페이지 수
+              let totalPage = Math.floor(totalPost / countPost);
+              // 페이지 수 관련 로직
+              totalPost % countPost > 0 ? totalPage++ : null;
+              // 페이지 시작 번호
+              let startPage =
+                Math.floor((page - 1) / countPage) * countPage + 1;
+              let endPage = startPage + countPage - 1;
+              if ((page > 0) & (page <= totalPage)) {
+                res.render("freesearch.ejs", {
+                  post: result,
+                  totalPost: totalPost,
+                  page: page,
+                  totalPage: totalPage,
+                  countPage: countPage,
+                  count: count,
+                  startPage: startPage,
+                  endPage: endPage,
+                  query: fullquery,
+                  user: req.user,
+                });
+              } else if (page > totalPage) {
+                res.redirect(`/free/search/${totalPage}`);
+              } else {
+                res.redirect("/free/search/1");
+              }
+            }
+          );
+        });
+    } else if (search[1] === "작성자") {
+      Post.find({
+        writer: new RegExp(search[0]),
+      })
+        .sort({ _id: -1 })
+        .skip(countPost * (page - 1))
+        .limit(countPost)
+        .exec((err, result) => {
+          Post.count({ writer: new RegExp(search[0]) }, (err, count) => {
+            // 전체 게시글 수
+            let totalPost = count;
+            // 총 페이지 수
+            let totalPage = Math.floor(totalPost / countPost);
+            // 페이지 수 관련 로직
+            totalPost % countPost > 0 ? totalPage++ : null;
+            // 페이지 시작 번호
+            let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
+            let endPage = startPage + countPage - 1;
+            if ((page > 0) & (page <= totalPage)) {
+              res.render("freesearch.ejs", {
+                post: result,
+                totalPost: totalPost,
+                page: page,
+                totalPage: totalPage,
+                countPage: countPage,
+                count: count,
+                startPage: startPage,
+                endPage: endPage,
+                query: fullquery,
+                user: req.user,
+              });
+            } else if (page > totalPage) {
+              res.redirect(`/free/search/${totalPage}`);
+            } else {
+              res.redirect("/free/search/1");
+            }
           });
-        } else if (page > totalPage) {
-          res.redirect(`/free/search/${totalPage}`);
-        } else {
-          res.redirect("/free/search/1");
-        }
-      });
-    })
-  } else if(search[1]==='작성자'){
-    Post.find({
-      writer : new RegExp(search[0])
-    }).sort({ _id: -1 })
-    .skip(countPost * (page - 1))
-    .limit(countPost)
-    .exec((err,result)=>{
-      Post.count({writer : new RegExp(search[0])}, (err, count) => {
-        // 전체 게시글 수
-        let totalPost = count;
-        // 총 페이지 수
-        let totalPage = Math.floor(totalPost / countPost);
-        // 페이지 수 관련 로직
-        totalPost % countPost > 0 ? totalPage++ : null;
-        // 페이지 시작 번호
-        let startPage = Math.floor((page - 1) / countPage) * countPage + 1;
-        let endPage = startPage + countPage - 1;
-        if ((page > 0) & (page <= totalPage)) {
-          res.render("freesearch.ejs", {
-            post: result,
-            totalPost: totalPost,
-            page: page,
-            totalPage: totalPage,
-            countPage: countPage,
-            count: count,
-            startPage: startPage,
-            endPage: endPage,
-            query : fullquery,
-            user : req.user
-          });
-        } else if (page > totalPage) {
-          res.redirect(`/free/search/${totalPage}`);
-        } else {
-          res.redirect("/free/search/1");
-        }
-      });
-    })
-}});
+        });
+    }
+  } catch {
+    res.send(
+      "<script>alert('검색 결과가 없습니다.');location.href = document.referrer;</script>"
+    );
+  }
+});
 
 //자유게시판 게시글 작성 페이지 GET 요청
 router.get("/write", isLogin, (req, res) => {
@@ -289,7 +303,7 @@ router.get("/detail/:postno", (req, res) => {
 router.post("/edit", isLogin, (req, res) => {
   if (req.user.id == req.body.writer) {
     Post.findOne({ _id: parseInt(req.body._id) }, (err, result) => {
-      res.render("freeedit.ejs", { post: result, user : req.user });
+      res.render("freeedit.ejs", { post: result, user: req.user });
     });
   } else {
     res.send(
@@ -300,11 +314,9 @@ router.post("/edit", isLogin, (req, res) => {
 
 //자유게시판 게시글 수정 PUT 요청
 router.put("/edit", (req, res) => {
-  
-
   let title = req.body.title;
   let content = req.body.content;
-  let postno = parseInt(req.body.postno)
+  let postno = parseInt(req.body.postno);
 
   Post.updateOne(
     { _id: postno },
@@ -345,18 +357,17 @@ router.delete("/del", (req, res) => {
 
 // 자유게시판 댓글 작성
 router.post("/comment", isLogin, (req, res) => {
-
   if (req.user != undefined) {
     let postid = parseInt(req.body.postid);
     let uploadtime = moment().format("YYYY-MM-DD HH:mm");
-    let comment = req.body.comment
+    let comment = req.body.comment;
     Counter.findOne({ name: "freecomments" }, (err, count) => {
       let commentNum = parseInt(count.current);
       Counter.updateOne(
         { name: "freecomments" },
         { $inc: { total: 1, current: 1 } },
         () => {
-          console.log
+          console.log;
           FreeComment.create(
             {
               _id: commentNum + 1,
@@ -456,10 +467,7 @@ router.post("/detail/like", (req, res) => {
       } else {
         Post.updateOne(
           { _id: postid },
-          { $inc: { recommend: 1 },
-            $push: { likeusers: userid },
-           
-          },
+          { $inc: { recommend: 1 }, $push: { likeusers: userid } },
           (err, result) => {
             console.log(
               `자유게시판 ${postid}번 게시글이 추천되었습니다. 추천한 User : ${userid}`
