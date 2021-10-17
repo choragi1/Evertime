@@ -111,7 +111,7 @@
           $("#search").click(function(){
           let input = $("#search-input").val()
           let option = $("#search-option").val()
-          window.location.replace(`/qna/search/1?value=${input}?option=${option}`)
+          window.location.href=`/qna/search/1?value=${input}?option=${option}`
         })
 
         $("#writebtn").click(() => {

@@ -122,7 +122,7 @@
           $("#search").click(function () {
             let input = $("#search-input").val()
             let option = $("#search-option").val()
-            window.location.replace(`/free/search/1?value=${input}?option=${option}`)
+            window.location.href=`/free/search/1?value=${input}?option=${option}`
           })
 
           $("#writebtn").click(() => {

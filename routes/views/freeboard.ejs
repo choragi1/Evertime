@@ -81,34 +81,32 @@
         <nav aria-label="Page navigation example">
           <ul class="pagination justify-content-center">
 
-            <% if(page!=1){ %>
-              <li class="page-item"><a class="page-link" id="page-first" href="/free/board/1">
-                  << </a>
-              </li>
-              <li class="page-item"><a class="page-link" id="page-prev" href="/free/board/<%=page-5%>">
-                  < </a>
-              </li>
-              <% } %>
-                <% if(endPage>totalPage){ %>
-                  <% endPage=totalPage} %>
-                    <% for(let i=startPage;i<=endPage;i++){ %>
-                      <% if(i==page){%>
-                        <li class="page-item"><a class="page-link" id="page-<%=i%>"><b>
-                              <%=i%>
-                            </b></a></li>
-                        <% }else{ %>
-                          <li class="page-item"><a class="page-link" id="page-<%=i%>" href="/free/board/<%=i%>">
-                              <%=i%>
-                            </a></li>
-                          <% } %>
-                            <% }%>
+            <li class="page-item"><a class="page-link" id="page-first" href="/free/board/1">
+                << </a>
+            </li>
+            <li class="page-item"><a class="page-link" id="page-prev" href="/free/board/<%=page-5%>">
+                < </a>
+            </li>
+            <% if(endPage>totalPage){ %>
+              <% endPage=totalPage} %>
+                <% for(let i=startPage;i<=endPage;i++){ %>
+                  <% if(i==page){%>
+                    <li class="page-item"><a class="page-link" id="page-<%=i%>"><b>
+                          <%=i%>
+                        </b></a></li>
+                    <% }else{ %>
+                      <li class="page-item"><a class="page-link" id="page-<%=i%>" href="/free/board/<%=i%>">
+                          <%=i%>
+                        </a></li>
+                      <% } %>
+                        <% }%>
 
-                              <% if(page!=totalPage){ %>
-                                <li class="page-item"><a class="page-link" id="page-next"
-                                    href="/free/board/<%=page+5%>"> > </a></li>
-                                <li class="page-item"><a class="page-link" id="page-last"
-                                    href="/free/board/<%=totalPage%>"> >> </a></li>
-                                <% } %>
+
+                          <li class="page-item"><a class="page-link" id="page-next" href="/free/board/<%=page+5%>"> >
+                            </a></li>
+                          <li class="page-item"><a class="page-link" id="page-last" href="/free/board/<%=totalPage%>">
+                              >> </a></li>
+
           </ul>
         </nav>
       </div>
@@ -117,22 +115,22 @@
 
         <script>
 
-          function notLogin(){
-              Swal.fire({
-                icon: 'error',
-                title: '로그인 후 이용 가능합니다.',
-              })
-              $('.swal2-confirm').click(()=>{
-                $("#login").click();
-                $("#user_id").focus();
-              }) 
-            }
+          function notLogin() {
+            Swal.fire({
+              icon: 'error',
+              title: '로그인 후 이용 가능합니다.',
+            })
+            $('.swal2-confirm').click(() => {
+              $("#login").click();
+              $("#user_id").focus();
+            })
+          }
 
 
           $("#search").click(function () {
             let input = $("#search-input").val()
             let option = $("#search-option").val()
-            window.location.replace(`/free/search/1?value=${input}?option=${option}`)
+            window.location.href=`/free/search/1?value=${input}?option=${option}`
           })
 
           $("#writebtn").click(() => {

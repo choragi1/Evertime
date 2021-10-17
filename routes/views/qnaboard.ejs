@@ -71,10 +71,9 @@
       <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
           
-          <% if(page!=1){ %>
+
           <li class="page-item"><a class="page-link" id="page-first" href="/qna/board/1"> << </a></li>
           <li class="page-item"><a class="page-link" id="page-prev" href="/qna/board/<%=page-5%>"> < </a></li>
-          <% } %>
           <% if(endPage>totalPage){ %>
             <% endPage = totalPage} %>
           <% for(let i=startPage;i<=endPage;i++){ %>
@@ -85,10 +84,8 @@
           <% } %>
           <% }%>
         
-          <% if(page!=totalPage){ %>
           <li class="page-item"><a class="page-link" id="page-next" href="/qna/board/<%=page+5%>"> > </a></li>
           <li class="page-item"><a class="page-link" id="page-last" href="/qna/board/<%=totalPage%>"> >> </a></li>
-          <% } %>
         </ul>
       </nav>
     </div>
@@ -99,7 +96,7 @@
     $("#search").click(function(){
       let input = $("#search-input").val()
       let option = $("#search-option").val()
-      window.location.replace(`/qna/search/1?value=${input}?option=${option}`)
+      window.location.href=`/qna/search/1?value=${input}?option=${option}`
     })
 
     $("#writebtn").click( () => {
